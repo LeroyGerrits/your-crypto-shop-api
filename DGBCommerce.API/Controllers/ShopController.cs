@@ -18,7 +18,7 @@ namespace api_dgbcommerce_com.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Shop>>> Get()
         {
-            IEnumerable<Shop> shops = await this._shopRepository.Get();
+            IEnumerable<Shop> shops = await _shopRepository.Get();
             return Ok(shops.ToList());
         }
         
@@ -34,7 +34,7 @@ namespace api_dgbcommerce_com.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Shop value)
         {
-            var result = await this._shopRepository.Insert(value);
+            var result = await _shopRepository.Insert(value);
             return CreatedAtAction(nameof(Get), new { id = value.Id });
         }
 
