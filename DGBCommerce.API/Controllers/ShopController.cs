@@ -15,9 +15,6 @@ namespace api_dgbcommerce_com.Controllers
             _shopRepository = shopRepository;
         }
 
-        /*
-        * Haal een lijst periodes op
-        */
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Shop>>> Get()
         {
