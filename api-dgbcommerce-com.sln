@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.API", "api-dgbcommerce-com\DGBCommerce.API.csproj", "{5BFE1BC1-88AA-4A65-BB43-1B75E0B6D60C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGBCommerce.Domain", "DGBCommerce.Domain\DGBCommerce.Domain.csproj", "{85D04AB4-4442-49FD-A537-5CDEEDA2FC65}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5BFE1BC1-88AA-4A65-BB43-1B75E0B6D60C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BFE1BC1-88AA-4A65-BB43-1B75E0B6D60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BFE1BC1-88AA-4A65-BB43-1B75E0B6D60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFE1BC1-88AA-4A65-BB43-1B75E0B6D60C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85D04AB4-4442-49FD-A537-5CDEEDA2FC65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85D04AB4-4442-49FD-A537-5CDEEDA2FC65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85D04AB4-4442-49FD-A537-5CDEEDA2FC65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85D04AB4-4442-49FD-A537-5CDEEDA2FC65}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0D19F26F-4692-41E5-BDA0-25766A027C90}
+	EndGlobalSection
+EndGlobal
