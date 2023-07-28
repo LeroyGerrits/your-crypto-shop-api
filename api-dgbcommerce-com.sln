@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.API", "api-dgbcommerce-com\DGBCommerce.API.csproj", "{5BFE1BC1-88AA-4A65-BB43-1B75E0B6D60C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.API", "DGBCommerce.API\DGBCommerce.API.csproj", "{5BFE1BC1-88AA-4A65-BB43-1B75E0B6D60C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGBCommerce.Domain", "DGBCommerce.Domain\DGBCommerce.Domain.csproj", "{85D04AB4-4442-49FD-A537-5CDEEDA2FC65}"
 EndProject
