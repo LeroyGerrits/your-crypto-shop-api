@@ -2,7 +2,7 @@ using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api_dgbcommerce_com.Controllers
+namespace DGGCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
