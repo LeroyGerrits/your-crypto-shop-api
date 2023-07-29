@@ -50,7 +50,7 @@ namespace DGBCommerce.Data.Repositories
             return shops;
         }
 
-        public Task<Merchant> GetById(Guid id)
+        public Task<Shop> GetById(Guid id)
         {
             throw new NotImplementedException();
         }
