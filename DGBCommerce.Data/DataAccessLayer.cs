@@ -13,13 +13,13 @@ namespace DGBCommerce.Data
         }
 
         public async Task<DataTable> GetDeliveryMethod(Guid? id, string? name)
-            => await Get("SP_GET_DeliveryMethod", new List<SqlParameter>() {
+            => await Get("SP_GET_DeliveryMethods", new List<SqlParameter>() {
                 new SqlParameter("DLM_ID", SqlDbType.UniqueIdentifier){Value = id },
                 new SqlParameter("DLM_NAME", SqlDbType.NVarChar) {Value = name }
             });
 
         public async Task<DataTable> GetShop(Guid? id, string? name, string? subDomain)
-            => await Get("SP_GET_Shop", new List<SqlParameter>() {
+            => await Get("SP_GET_Shops", new List<SqlParameter>() {
                 new SqlParameter("SHP_ID", SqlDbType.UniqueIdentifier){Value = id },
                 new SqlParameter("SHP_NAME", SqlDbType.NVarChar) {Value = name },
                 new SqlParameter("SHP_SUBDOMAIN", SqlDbType.NVarChar) {Value = subDomain }
