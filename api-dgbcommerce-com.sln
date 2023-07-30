@@ -5,9 +5,11 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.API", "DGBCommerce.API\DGBCommerce.API.csproj", "{5BFE1BC1-88AA-4A65-BB43-1B75E0B6D60C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGBCommerce.Domain", "DGBCommerce.Domain\DGBCommerce.Domain.csproj", "{85D04AB4-4442-49FD-A537-5CDEEDA2FC65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.Domain", "DGBCommerce.Domain\DGBCommerce.Domain.csproj", "{85D04AB4-4442-49FD-A537-5CDEEDA2FC65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGBCommerce.Data", "DGBCommerce.Data\DGBCommerce.Data.csproj", "{1566DFFF-CA69-46F7-B63A-0C2E6E954319}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.Data", "DGBCommerce.Data\DGBCommerce.Data.csproj", "{1566DFFF-CA69-46F7-B63A-0C2E6E954319}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGBCommerce.Domain.Test", "DGBCommerce.Domain.Test\DGBCommerce.Domain.Test.csproj", "{906237DD-63C4-4C8D-AA78-D517860D46B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{1566DFFF-CA69-46F7-B63A-0C2E6E954319}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1566DFFF-CA69-46F7-B63A-0C2E6E954319}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1566DFFF-CA69-46F7-B63A-0C2E6E954319}.Release|Any CPU.Build.0 = Release|Any CPU
+		{906237DD-63C4-4C8D-AA78-D517860D46B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{906237DD-63C4-4C8D-AA78-D517860D46B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{906237DD-63C4-4C8D-AA78-D517860D46B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{906237DD-63C4-4C8D-AA78-D517860D46B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

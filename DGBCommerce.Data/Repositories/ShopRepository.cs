@@ -2,13 +2,7 @@
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
-using DGBCommerce.Domain.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DGBCommerce.Data.Repositories
 {
@@ -35,14 +29,14 @@ namespace DGBCommerce.Data.Repositories
             {
                 shops.Add(new Shop()
                 {
-                    Name = DbNullables.NullableString(row["shp_name"]),
+                    Name = Utilities.DbNullableString(row["shp_name"]),
                     Merchant = new Merchant()
                     {
                         Id = new Guid(row["shp_merchant"].ToString()!),
-                        EmailAddress = DbNullables.NullableString(row["shp_merchant_email_address"]),
-                        Password = DbNullables.NullableString(row["shp_merchant_password"]),
+                        EmailAddress = Utilities.DbNullableString(row["shp_merchant_email_address"]),
+                        Password = Utilities.DbNullableString(row["shp_merchant_password"]),
                         Gender = (Gender)Convert.ToInt32(row["shp_merchant_gender"]),
-                        LastName = DbNullables.NullableString(row["shp_merchant_lastname"]),
+                        LastName = Utilities.DbNullableString(row["shp_merchant_lastname"]),
                     }
                 });
             }
