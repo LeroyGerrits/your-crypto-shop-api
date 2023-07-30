@@ -1,9 +1,10 @@
-﻿using System.Data;
-using System.Data.SqlClient;
+﻿using DGBCommerce.Domain.Interfaces;
+using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace DGBCommerce.Data
 {
-    public class DataAccessLayer
+    public class DataAccessLayer : IDataAccessLayer
     {
         private readonly string _connectionString;
 
@@ -12,13 +13,13 @@ namespace DGBCommerce.Data
             _connectionString = connectionString;
         }
 
-        public async Task<DataTable> GetDeliveryMethod(Guid? id, string? name)
+        public async Task<DataTable> GetDeliveryMethods(Guid? id, string? name)
             => await Get("SP_GET_DeliveryMethods", new List<SqlParameter>() {
                 new SqlParameter("DLM_ID", SqlDbType.UniqueIdentifier){Value = id },
                 new SqlParameter("DLM_NAME", SqlDbType.NVarChar) {Value = name }
             });
 
-        public async Task<DataTable> GetShop(Guid? id, string? name, string? subDomain)
+        public async Task<DataTable> GetShops(Guid? id, string? name, string? subDomain)
             => await Get("SP_GET_Shops", new List<SqlParameter>() {
                 new SqlParameter("SHP_ID", SqlDbType.UniqueIdentifier){Value = id },
                 new SqlParameter("SHP_NAME", SqlDbType.NVarChar) {Value = name },
@@ -33,10 +34,10 @@ namespace DGBCommerce.Data
             {
                 using SqlCommand command = new(storedProcedure, connection) { CommandType = CommandType.StoredProcedure };
                 foreach (var parameter in parameters)
-                    command.Parameters.Add(parameters);
-
-                var reader = await command.ExecuteReaderAsync();
-                table.Load(reader);
+                    command.Parameters.Add(parameter);
+                                
+                using SqlDataAdapter adapter = new(command);
+                await Task.Run(() => adapter.Fill(table));
             }
 
             return table;
