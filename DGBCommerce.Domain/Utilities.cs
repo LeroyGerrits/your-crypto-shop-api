@@ -1,21 +1,11 @@
-﻿using System.Security.Cryptography;
+﻿using System.Drawing;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace DGBCommerce.Domain
 {
     public static class Utilities
     {
-        public static string HashStringSha256(string value)
-        {
-            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(value));
-            StringBuilder builder = new();
-
-            for (int i = 0; i < bytes.Length; i++)
-                builder.Append(bytes[i].ToString("x2"));
-
-            return builder.ToString();
-        }
-
         public static DateTime? DBNullableDateTime(object value)
             => value != null && DateTime.TryParse(value.ToString(), out var valueDateTime) ? valueDateTime : null;
 
@@ -26,12 +16,7 @@ namespace DGBCommerce.Domain
             => value != null && int.TryParse(value.ToString(), out var valueInt) ? valueInt : null;
 
         public static string DbNullableString(object value)
-        {
-            if (value == null)
-                return string.Empty;
-
-            return value.ToString()!;
-        }
+            => value != null ? value.ToString()! : string.Empty;
 
         public static DateTime? NullableDateTime(object value)
                 => value != null && value != DBNull.Value && DateTime.TryParse(value.ToString(), out var valueDateTime) ? valueDateTime : null;
@@ -43,11 +28,26 @@ namespace DGBCommerce.Domain
             => value != null && value != DBNull.Value && int.TryParse(value.ToString(), out var valueInt) ? valueInt : null;
 
         public static string NullableString(object value)
-        {
-            if (value == null || value == DBNull.Value)
-                return string.Empty;
+            => value != null && value != DBNull.Value ? value.ToString()! : string.Empty;
 
-            return value.ToString()!;
+        public static string HashStringSha256(string value)
+        {
+            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(value));
+            StringBuilder builder = new();
+
+            for (int i = 0; i < bytes.Length; i++)
+                builder.Append(bytes[i].ToString("x2"));
+
+            return builder.ToString();
+        }
+
+        public static string GenerateSalt()
+        {
+            byte[] salt = new byte[128 / 8];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(salt);
+
+            return Convert.ToBase64String(salt);
         }
     }
 }

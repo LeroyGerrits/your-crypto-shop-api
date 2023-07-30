@@ -29,6 +29,7 @@ namespace DGBCommerce.Data.Repositories
             {
                 shops.Add(new Shop()
                 {
+                    Id = new Guid(row["shp_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["shp_name"]),
                     Merchant = new Merchant()
                     {
