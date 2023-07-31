@@ -23,7 +23,7 @@ namespace DGBCommerce.Data.Repositories
 
         public async Task<IEnumerable<DeliveryMethod>> Get()
         {
-            DataTable table = await _dataAccessLayer.GetFaqCategories(new GetFaqCategoriesParameters());
+            DataTable table = await _dataAccessLayer.GetDeliveryMethods(new GetDeliveryMethodsParameters());
             List<DeliveryMethod> faqcategories = new();
 
             foreach (DataRow row in table.Rows)
