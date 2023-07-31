@@ -2,6 +2,7 @@
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Parameters;
 using System.Data;
 
 namespace DGBCommerce.Data.Repositories
@@ -22,7 +23,7 @@ namespace DGBCommerce.Data.Repositories
 
         public async Task<IEnumerable<Shop>> Get()
         {
-            DataTable table = await _dataAccessLayer.GetShops(null, null, null);
+            DataTable table = await _dataAccessLayer.GetShops(new GetShopsParameters());
             List<Shop> shops = new();
 
             foreach (DataRow row in table.Rows)
