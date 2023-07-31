@@ -6,7 +6,8 @@ namespace DGBCommerce.Domain.Models
     {
         public Guid? Id { get; set; }
         public required string EmailAddress { get; set; }
-        public required string Password { get; set; }
+        public string? PasswordSalt { get; set; }
+        public string? Password { get; set; }
         public required Gender Gender { get; set; }
         public string? FirstName { get; set; }
         public required string LastName { get; set; }

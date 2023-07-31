@@ -39,7 +39,6 @@ namespace DGBCommerce.Data.Repositories
                         {
                             Id = new Guid(row["dlm_shop_merchant"].ToString()!),
                             EmailAddress = Utilities.DbNullableString(row["dlm_shop_merchant_email_address"]),
-                            Password = Utilities.DbNullableString(row["dlm_shop_merchant_password"]),
                             Gender = (Gender)Convert.ToInt32(row["dlm_shop_merchant_gender"]),
                             LastName = Utilities.DbNullableString(row["dlm_shop_merchant_lastname"]),
                         }

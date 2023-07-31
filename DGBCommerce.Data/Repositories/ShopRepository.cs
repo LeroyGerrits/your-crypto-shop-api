@@ -36,7 +36,6 @@ namespace DGBCommerce.Data.Repositories
                     {
                         Id = new Guid(row["shp_merchant"].ToString()!),
                         EmailAddress = Utilities.DbNullableString(row["shp_merchant_email_address"]),
-                        Password = Utilities.DbNullableString(row["shp_merchant_password"]),
                         Gender = (Gender)Convert.ToInt32(row["shp_merchant_gender"]),
                         LastName = Utilities.DbNullableString(row["shp_merchant_lastname"]),
                     }
