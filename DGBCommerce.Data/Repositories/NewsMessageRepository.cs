@@ -29,10 +29,11 @@ namespace DGBCommerce.Data.Repositories
             {
                 newsMessages.Add(new NewsMessage()
                 {
-                    Id = new Guid(row["news_id"].ToString()!),
-                    Title = Utilities.DbNullableString(row["nws_name"]),
+                    Id = new Guid(row["nws_id"].ToString()!),
+                    Title = Utilities.DbNullableString(row["nws_title"]),
                     Date = Convert.ToDateTime(row["nws_date"]),
                     Intro = Utilities.DbNullableString(row["nws_intro"]),
+                    Content = Utilities.DbNullableString(row["nws_content"])
                 });
             }
 
