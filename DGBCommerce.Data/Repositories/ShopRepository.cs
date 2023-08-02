@@ -26,7 +26,7 @@ namespace DGBCommerce.Data.Repositories
             => await GetRaw(new GetShopsParameters());
 
         public async Task<Shop> GetById(Guid id)
-        { 
+        {
             var shops = await GetRaw(new GetShopsParameters() { Id = id });
             return shops.ToList().Single();
         }
@@ -63,7 +63,8 @@ namespace DGBCommerce.Data.Repositories
                         EmailAddress = Utilities.DbNullableString(row["shp_merchant_email_address"]),
                         Gender = (Gender)Convert.ToInt32(row["shp_merchant_gender"]),
                         LastName = Utilities.DbNullableString(row["shp_merchant_lastname"]),
-                    }
+                    },
+                    SubDomain = Utilities.DbNullableString(row["shp_subdomain"])
                 });
             }
 
