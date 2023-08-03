@@ -27,24 +27,12 @@ namespace DGBCommerce.Data.Repositories
 
             foreach (DataRow row in table.Rows)
             {
-                FaqCategory faqcategory = new()
+                faqcategories.Add(new()
                 {
                     Id = new Guid(row["cat_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["cat_name"]),
                     SortOrder = Utilities.DbNullableInt(row["cat_sortorder"])
-                };
-
-                if (row["cat_parent"] != DBNull.Value)
-                {
-                    faqcategory.Parent = new FaqCategory()
-                    {
-                        Id = new Guid(row["cat_parent"].ToString()!),
-                        Name = Utilities.DbNullableString(row["cat_parent_name"]),
-                        SortOrder = Utilities.DbNullableInt(row["cat_parent_sortorder"])
-                    };
-                }
-
-                faqcategories.Add(faqcategory);
+                });
             }
 
             return faqcategories;

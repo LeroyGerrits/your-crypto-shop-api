@@ -14,6 +14,13 @@ namespace DGBCommerce.Data
             _connectionString = connectionString;
         }
 
+        public async Task<DataTable> GetCategories(GetCategoriesParameters parameters)
+            => await Get("SP_GET_Categories", new List<SqlParameter>() {
+                new SqlParameter("CAT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
+                new SqlParameter("CAT_PARENT", SqlDbType.UniqueIdentifier){Value = parameters.ParentId },
+                new SqlParameter("CAT_NAME", SqlDbType.NVarChar) {Value = parameters.Name }
+            });
+
         public async Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters)
             => await Get("SP_GET_DeliveryMethods", new List<SqlParameter>() {
                 new SqlParameter("DLM_ID", SqlDbType.UniqueIdentifier){Value = parameters.Id },
@@ -24,7 +31,6 @@ namespace DGBCommerce.Data
         public async Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters)
             => await Get("SP_GET_FaqCategories", new List<SqlParameter>() {
                 new SqlParameter("CAT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
-                new SqlParameter("CAT_PARENT", SqlDbType.UniqueIdentifier){Value = parameters.ParentId },
                 new SqlParameter("CAT_NAME", SqlDbType.NVarChar) {Value = parameters.Name }
             });
 
