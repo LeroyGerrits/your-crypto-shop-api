@@ -23,7 +23,7 @@ namespace DGBCommerce.Data.Repositories
         }
 
         public Task<IEnumerable<Category>> Get()
-            => throw new InvalidOperationException($"A complete list of '{nameof(Category)}' objects can not be retrieved.");
+            => throw new InvalidOperationException($"A complete list of '{nameof(Category)}' objects may not be retrieved.");
 
         public async Task<IEnumerable<Category>> GetByMerchantId(Guid merchantId)
             => await this.GetRaw(new GetCategoriesParameters { MerchantId = merchantId });

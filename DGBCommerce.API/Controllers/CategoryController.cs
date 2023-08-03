@@ -16,12 +16,30 @@ namespace DGGCommerce.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> Get()
+        public Task<ActionResult<IEnumerable<Category>>> Get()
+            => throw new InvalidOperationException($"A complete list of '{nameof(Category)}' objects may not be retrieved.");
+
+        [HttpGet("{merchantId}")]
+        public async Task<ActionResult<IEnumerable<Category>>> GetByMerchantId(Guid merchantId)
         {
-            IEnumerable<Category> categories = await _shopRepository.Get();
+            IEnumerable<Category> categories = await _shopRepository.GetByMerchantId(merchantId);
             return Ok(categories.ToList());
         }
-        
+
+        [HttpGet("{parentId}")]
+        public async Task<ActionResult<IEnumerable<Category>>> GetByParentId(Guid parentId)
+        {
+            IEnumerable<Category> categories = await _shopRepository.GetByParentId(parentId);
+            return Ok(categories.ToList());
+        }
+
+        [HttpGet("{shopId}")]
+        public async Task<ActionResult<IEnumerable<Category>>> GetByShopId(Guid shopId)
+        {
+            IEnumerable<Category> categories = await _shopRepository.GetByMerchantId(shopId);
+            return Ok(categories.ToList());
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> Get(Guid id)
         {

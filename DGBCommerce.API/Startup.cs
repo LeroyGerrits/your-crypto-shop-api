@@ -22,6 +22,7 @@ namespace DGBCommerce.API
             services.AddSingleton(provider => Configuration);
             services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
 
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IDeliveryMethodRepository, DeliveryMethodRepository>();
             services.AddScoped<IFaqCategoryRepository, FaqCategoryRepository>();
             services.AddScoped<IFaqRepository, FaqRepository>();
