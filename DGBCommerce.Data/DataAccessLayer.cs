@@ -17,29 +17,31 @@ namespace DGBCommerce.Data
         public async Task<DataTable> GetCategories(GetCategoriesParameters parameters)
             => await Get("SP_GET_Categories", new List<SqlParameter>() {
                 new SqlParameter("CAT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
-                new SqlParameter("CAT_PARENT", SqlDbType.UniqueIdentifier){Value = parameters.ParentId },
-                new SqlParameter("CAT_NAME", SqlDbType.NVarChar) {Value = parameters.Name }
+                new SqlParameter("CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("CAT_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = parameters.ParentId },
+                new SqlParameter("CAT_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
             });
 
         public async Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters)
             => await Get("SP_GET_DeliveryMethods", new List<SqlParameter>() {
-                new SqlParameter("DLM_ID", SqlDbType.UniqueIdentifier){Value = parameters.Id },
-                new SqlParameter("DLM_SHOP", SqlDbType.UniqueIdentifier){Value = parameters.ShopId },
-                new SqlParameter("DLM_NAME", SqlDbType.NVarChar) {Value = parameters.Name }
+                new SqlParameter("DLM_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("DLM_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("DLM_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
             });
 
         public async Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters)
             => await Get("SP_GET_FaqCategories", new List<SqlParameter>() {
-                new SqlParameter("CAT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
-                new SqlParameter("CAT_NAME", SqlDbType.NVarChar) {Value = parameters.Name }
+                new SqlParameter("CAT_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("CAT_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
             });
 
         public async Task<DataTable> GetFaqs(GetFaqsParameters parameters)
             => await Get("SP_GET_Faqs", new List<SqlParameter>() {
-                new SqlParameter("FAQ_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
-                new SqlParameter("FAQ_CATEGORY", SqlDbType.UniqueIdentifier){Value = parameters.CategoryId },
-                new SqlParameter("FAQ_TITLE", SqlDbType.NVarChar) {Value = parameters.Title },
-                new SqlParameter("FAQ_KEYWORDS", SqlDbType.NVarChar) {Value = parameters.Keywords },
+                new SqlParameter("FAQ_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("FAQ_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId },
+                new SqlParameter("FAQ_TITLE", SqlDbType.NVarChar) { Value = parameters.Title },
+                new SqlParameter("FAQ_KEYWORDS", SqlDbType.NVarChar) { Value = parameters.Keywords },
             });
 
         public async Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters)

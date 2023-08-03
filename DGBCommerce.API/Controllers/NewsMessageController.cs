@@ -8,43 +8,43 @@ namespace DGGCommerce.API.Controllers
     [Route("[controller]")]
     public class NewsMessageController : ControllerBase
     {
-        private readonly INewsMessageRepository _shopRepository;
+        private readonly INewsMessageRepository _newsMessageRepository;
 
-        public NewsMessageController(INewsMessageRepository shopRepository)
+        public NewsMessageController(INewsMessageRepository newsMessageRepository)
         {
-            _shopRepository = shopRepository;
+            _newsMessageRepository = newsMessageRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NewsMessage>>> Get()
         {
-            IEnumerable<NewsMessage> shops = await _shopRepository.Get();
-            return Ok(shops.ToList());
+            IEnumerable<NewsMessage> newsMessages = await _newsMessageRepository.Get();
+            return Ok(newsMessages.ToList());
         }
         
         [HttpGet("{id}")]
         public async Task<ActionResult<NewsMessage>> Get(Guid id)
         {
-            NewsMessage shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            NewsMessage newsMessage = await _newsMessageRepository.GetById(id);
+            if (newsMessage == null) return NotFound();
 
-            return Ok(shop);
+            return Ok(newsMessage);
         }
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] NewsMessage value)
         {
-            var result = await _shopRepository.Insert(value);
-            return CreatedAtAction(nameof(Get), new { id = value.Id });
+            var result = await _newsMessageRepository.Insert(value);
+            return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] NewsMessage value)
         {
-            NewsMessage shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            NewsMessage newsMessage = await _newsMessageRepository.GetById(id);
+            if (newsMessage == null) return NotFound();
 
-            var result = await _shopRepository.Update(value);
+            var result = await _newsMessageRepository.Update(value);
             if (result.ErrorCode > 0)
                 return NoContent();
 
@@ -54,15 +54,15 @@ namespace DGGCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<NewsMessage>> Delete(Guid id)
         {
-            NewsMessage shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            NewsMessage newsMessage = await _newsMessageRepository.GetById(id);
+            if (newsMessage == null) return NotFound();
 
-            var result = await _shopRepository.Delete(id);
+            var result = await _newsMessageRepository.Delete(id);
 
             if (result.ErrorCode > 0)
                 return NoContent();
 
-            return Ok(shop);
+            return Ok(newsMessage);
         }
     }
 }

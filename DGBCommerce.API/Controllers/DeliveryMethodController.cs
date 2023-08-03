@@ -8,61 +8,60 @@ namespace DGGCommerce.API.Controllers
     [Route("[controller]")]
     public class DeliveryMethodController : ControllerBase
     {
-        private readonly IDeliveryMethodRepository _shopRepository;
+        private readonly IDeliveryMethodRepository _deliveryMethodRepository;
 
-        public DeliveryMethodController(IDeliveryMethodRepository shopRepository)
+        public DeliveryMethodController(IDeliveryMethodRepository deliveryMethodRepository)
         {
-            _shopRepository = shopRepository;
+            _deliveryMethodRepository = deliveryMethodRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeliveryMethod>>> Get()
         {
-            IEnumerable<DeliveryMethod> shops = await _shopRepository.Get();
-            return Ok(shops.ToList());
+            IEnumerable<DeliveryMethod> deliveryMethods = await _deliveryMethodRepository.Get();
+            return Ok(deliveryMethods.ToList());
         }
-        
+
         [HttpGet("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Get(Guid id)
         {
-            DeliveryMethod shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            DeliveryMethod deliveryMethod = await _deliveryMethodRepository.GetById(id);
+            if (deliveryMethod == null) return NotFound();
 
-            return Ok(shop);
+            return Ok(deliveryMethod);
         }
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] DeliveryMethod value)
         {
-            var result = await _shopRepository.Insert(value);
-            return CreatedAtAction(nameof(Get), new { id = value.Id });
+            var result = await _deliveryMethodRepository.Insert(value);
+            return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] DeliveryMethod value)
         {
-            DeliveryMethod shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            DeliveryMethod deliveryMethod = await _deliveryMethodRepository.GetById(id);
+            if (deliveryMethod == null) return NotFound();
 
-            var result = await _shopRepository.Update(value);
+            var result = await _deliveryMethodRepository.Update(value);
             if (result.ErrorCode > 0)
                 return NoContent();
 
-            return NoContent();
+            return Ok(deliveryMethod);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Delete(Guid id)
         {
-            DeliveryMethod shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            DeliveryMethod deliveryMethod = await _deliveryMethodRepository.GetById(id);
+            if (deliveryMethod == null) return NotFound();
 
-            var result = await _shopRepository.Delete(id);
-
+            var result = await _deliveryMethodRepository.Delete(id);
             if (result.ErrorCode > 0)
                 return NoContent();
 
-            return Ok(shop);
+            return Ok(deliveryMethod);
         }
     }
 }

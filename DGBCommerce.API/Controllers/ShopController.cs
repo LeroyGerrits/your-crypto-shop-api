@@ -35,7 +35,7 @@ namespace DGGCommerce.API.Controllers
         public async Task<ActionResult> Post([FromBody] Shop value)
         {
             var result = await _shopRepository.Insert(value);
-            return CreatedAtAction(nameof(Get), new { id = value.Id });
+            return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
         [HttpPut("{id}")]
@@ -58,7 +58,6 @@ namespace DGGCommerce.API.Controllers
             if (shop == null) return NotFound();
 
             var result = await _shopRepository.Delete(id);
-
             if (result.ErrorCode > 0)
                 return NoContent();
 

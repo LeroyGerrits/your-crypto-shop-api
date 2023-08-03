@@ -8,61 +8,60 @@ namespace DGGCommerce.API.Controllers
     [Route("[controller]")]
     public class FaqController : ControllerBase
     {
-        private readonly IFaqRepository _shopRepository;
+        private readonly IFaqRepository _faqRepository;
 
-        public FaqController(IFaqRepository shopRepository)
+        public FaqController(IFaqRepository faqRepository)
         {
-            _shopRepository = shopRepository;
+            _faqRepository = faqRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Faq>>> Get()
         {
-            IEnumerable<Faq> shops = await _shopRepository.Get();
-            return Ok(shops.ToList());
+            IEnumerable<Faq> faqs = await _faqRepository.Get();
+            return Ok(faqs.ToList());
         }
-        
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Faq>> Get(Guid id)
         {
-            Faq shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            Faq faq = await _faqRepository.GetById(id);
+            if (faq == null) return NotFound();
 
-            return Ok(shop);
+            return Ok(faq);
         }
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Faq value)
         {
-            var result = await _shopRepository.Insert(value);
-            return CreatedAtAction(nameof(Get), new { id = value.Id });
+            var result = await _faqRepository.Insert(value);
+            return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Faq value)
         {
-            Faq shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            Faq faq = await _faqRepository.GetById(id);
+            if (faq == null) return NotFound();
 
-            var result = await _shopRepository.Update(value);
+            var result = await _faqRepository.Update(value);
             if (result.ErrorCode > 0)
                 return NoContent();
 
-            return NoContent();
+            return Ok(faq);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Faq>> Delete(Guid id)
         {
-            Faq shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            Faq faq = await _faqRepository.GetById(id);
+            if (faq == null) return NotFound();
 
-            var result = await _shopRepository.Delete(id);
-
+            var result = await _faqRepository.Delete(id);
             if (result.ErrorCode > 0)
                 return NoContent();
 
-            return Ok(shop);
+            return Ok(faq);
         }
     }
 }
