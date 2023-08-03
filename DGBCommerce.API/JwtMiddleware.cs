@@ -45,12 +45,12 @@ namespace DGBCommerce.API
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var merchantId = new Guid(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-                context.Items["User"] = merchantRepository.GetById(merchantId);
+                context.Items["Merchant"] = merchantRepository.GetById(merchantId);
             }
             catch
             {
                 // do nothing if jwt validation fails
-                // user is not attached to context so request won't have access to secure routes
+                // Merchant is not attached to context so request won't have access to secure routes
             }
         }
     }

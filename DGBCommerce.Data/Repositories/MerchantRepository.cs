@@ -61,8 +61,8 @@ namespace DGBCommerce.Data.Repositories
                     PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
                     Password = Utilities.DbNullableString(row["mer_password"]),
                     Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
-                    FirstName = Utilities.DbNullableString(row["mer_lastname"]),
-                    LastName = Utilities.DbNullableString(row["mer_lastname"])
+                    FirstName = Utilities.DbNullableString(row["mer_last_name"]),
+                    LastName = Utilities.DbNullableString(row["mer_last_name"])
                 });
             }
 
