@@ -18,18 +18,19 @@ namespace DGBCommerce.API
             string connectionString = Configuration.GetConnectionString("DGBCommerce") ?? throw new ArgumentException("connectionString 'DBBCommerce' not set.");
 
             services.AddCors();
-
+            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
+            
             services.AddSingleton(provider => Configuration);
             services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
 
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IDeliveryMethodRepository, DeliveryMethodRepository>();
             services.AddScoped<IFaqCategoryRepository, FaqCategoryRepository>();
             services.AddScoped<IFaqRepository, FaqRepository>();
+            services.AddScoped<IMerchantRepository, MerchantRepository>();
             services.AddScoped<INewsMessageRepository, NewsMessageRepository>();
             services.AddScoped<IShopRepository, ShopRepository>();
-
-            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
         }
 
         public void Configure(WebApplication app)
@@ -45,7 +46,7 @@ namespace DGBCommerce.API
 
             }
 
-            
+            app.UseMiddleware<JwtMiddleware>();
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();

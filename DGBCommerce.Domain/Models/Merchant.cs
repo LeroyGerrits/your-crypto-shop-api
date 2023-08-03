@@ -1,4 +1,5 @@
 ﻿using DGBCommerce.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace DGBCommerce.Domain.Models
 {
@@ -6,8 +7,8 @@ namespace DGBCommerce.Domain.Models
     {
         public Guid? Id { get; set; }
         public required string EmailAddress { get; set; }
-        public string? PasswordSalt { get; set; }
-        public string? Password { get; set; }
+        [JsonIgnore] public string? PasswordSalt { get; set; }
+        [JsonIgnore] public string? Password { get; set; }
         public required Gender Gender { get; set; }
         public string? FirstName { get; set; }
         public required string LastName { get; set; }

@@ -9,6 +9,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);
         Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters);
         Task<DataTable> GetFaqs(GetFaqsParameters parameters);
+        Task<DataTable> GetMerchants(GetMerchantsParameters parameters);
         Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);
     }
