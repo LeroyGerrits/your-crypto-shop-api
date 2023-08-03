@@ -10,7 +10,7 @@ namespace DGBCommerce.API
 {
     public interface IAuthenticationService
     {
-        Task<AuthenticationResponse?> Authenticate(AuthenticationRequest model);
+        AuthenticationResponse? Authenticate(AuthenticationRequest model);
     }
 
     public class AuthenticationService : IAuthenticationService
@@ -26,9 +26,9 @@ namespace DGBCommerce.API
             _merchantRepository = merchantRepository;
         }
 
-        public async Task<AuthenticationResponse?> Authenticate(AuthenticationRequest model)
+        public AuthenticationResponse? Authenticate(AuthenticationRequest model)
         {
-            var merchant = await _merchantRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password);
+            Merchant merchant = _merchantRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password).Result;
             if (merchant == null) return null;
             var token = GenerateJwtToken(merchant);
             return new AuthenticationResponse(merchant, token);

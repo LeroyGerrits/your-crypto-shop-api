@@ -40,7 +40,7 @@ namespace DGBCommerce.Data.Repositories
                             Id = new Guid(row["dlm_shop_merchant"].ToString()!),
                             EmailAddress = Utilities.DbNullableString(row["dlm_shop_merchant_email_address"]),
                             Gender = (Gender)Convert.ToInt32(row["dlm_shop_merchant_gender"]),
-                            LastName = Utilities.DbNullableString(row["dlm_shop_merchant_lastname"]),
+                            LastName = Utilities.DbNullableString(row["dlm_shop_merchant_last_name"]),
                         }
                     },
                     Name = Utilities.DbNullableString(row["dlm_name"]),

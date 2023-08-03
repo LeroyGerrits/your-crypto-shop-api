@@ -5,7 +5,7 @@ using DGBCommerce.Domain.Models;
 namespace DGGCommerce.API
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class AuthorizeAttribute : Attribute, IAuthorizationFilter
+    public class AuthenticationAttribute : Attribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {

@@ -15,13 +15,15 @@ namespace DGGCommerce.API.Controllers
             _shopRepository = shopRepository;
         }
 
+        [Authentication]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Shop>>> Get()
         {
             IEnumerable<Shop> shops = await _shopRepository.Get();
             return Ok(shops.ToList());
         }
-        
+
+        [Authentication]
         [HttpGet("{id}")]
         public async Task<ActionResult<Shop>> Get(Guid id)
         {
