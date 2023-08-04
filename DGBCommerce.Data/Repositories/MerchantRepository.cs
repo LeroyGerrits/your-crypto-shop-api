@@ -31,10 +31,10 @@ namespace DGBCommerce.Data.Repositories
             return merchants.ToList().Single();
         }
 
-        public async Task<Merchant> GetByEmailAddressAndPassword(string emailAddress, string password)
+        public async Task<Merchant?> GetByEmailAddressAndPassword(string emailAddress, string password)
         {
             var merchants = await GetRaw(new GetMerchantsParameters() { EmailAddress = emailAddress, Password = password });
-            return merchants.ToList().Single();
+            return merchants.ToList().SingleOrDefault();
         }
 
         public Task<MutationResult> Insert(Merchant item)

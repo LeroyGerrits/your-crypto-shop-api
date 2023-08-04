@@ -28,7 +28,7 @@ namespace DGBCommerce.API
 
         public AuthenticationResponse? Authenticate(AuthenticationRequest model)
         {
-            Merchant merchant = _merchantRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password).Result;
+            Merchant? merchant = _merchantRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password).Result;
             if (merchant == null) return null;
             var token = GenerateJwtToken(merchant);
             return new AuthenticationResponse(merchant, token);
@@ -36,7 +36,6 @@ namespace DGBCommerce.API
 
         private string GenerateJwtToken(Merchant merchant)
         {
-            // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret!);
             var tokenDescriptor = new SecurityTokenDescriptor

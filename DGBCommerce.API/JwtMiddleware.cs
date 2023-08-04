@@ -45,7 +45,8 @@ namespace DGBCommerce.API
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var merchantId = new Guid(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-                context.Items["Merchant"] = merchantRepository.GetById(merchantId);
+                var merchant = Task.Run(() => merchantRepository.GetById(merchantId)).Result;
+                context.Items["Merchant"] = merchant;
             }
             catch
             {
