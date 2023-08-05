@@ -1,8 +1,10 @@
+using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DGGCommerce.API.Controllers
+namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -15,10 +17,12 @@ namespace DGGCommerce.API.Controllers
             _shopRepository = shopRepository;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public Task<ActionResult<IEnumerable<Category>>> Get()
             => throw new InvalidOperationException($"A complete list of '{nameof(Category)}' objects may not be retrieved.");
 
+        [AllowAnonymous]
         [HttpGet("{merchantId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByMerchantId(Guid merchantId)
         {
@@ -26,6 +30,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(categories.ToList());
         }
 
+        [AllowAnonymous]
         [HttpGet("{parentId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByParentId(Guid parentId)
         {
@@ -33,6 +38,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(categories.ToList());
         }
 
+        [AllowAnonymous]
         [HttpGet("{shopId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByShopId(Guid shopId)
         {
@@ -40,6 +46,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(categories.ToList());
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> Get(Guid id)
         {
@@ -49,6 +56,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(category);
         }
 
+        [AuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Category value)
         {
@@ -56,6 +64,7 @@ namespace DGGCommerce.API.Controllers
             return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
+        [AuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Category value)
         {
@@ -69,6 +78,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(category);
         }
 
+        [AuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Category>> Delete(Guid id)
         {

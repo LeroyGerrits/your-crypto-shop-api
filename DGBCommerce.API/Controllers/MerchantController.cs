@@ -1,9 +1,12 @@
+using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.API.Controllers.Requests;
+using DGBCommerce.API.Services;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using DGBCommerce.API;
+using Microsoft.AspNetCore.Authorization;
 
-namespace DGGCommerce.API.Controllers
+namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -21,6 +24,7 @@ namespace DGGCommerce.API.Controllers
             _merchantRepository = merchantRepository;
         }
 
+        [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticationRequest model)
         {
@@ -32,22 +36,17 @@ namespace DGGCommerce.API.Controllers
             return Ok(response);
         }
 
+        [AuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Merchant>>> Get()
         {
+            //var merchant= HttpContent.
+
             IEnumerable<Merchant> merchants = await _merchantRepository.Get();
             return Ok(merchants.ToList());
         }
-        
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Merchant>> Get(Guid id)
-        {
-            Merchant merchant = await _merchantRepository.GetById(id);
-            if (merchant == null) return NotFound();
 
-            return Ok(merchant);
-        }
-
+        [AuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Merchant value)
         {
@@ -55,6 +54,7 @@ namespace DGGCommerce.API.Controllers
             return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
+        [AuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Merchant value)
         {
@@ -68,6 +68,7 @@ namespace DGGCommerce.API.Controllers
             return NoContent();
         }
 
+        [AuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Merchant>> Delete(Guid id)
         {

@@ -1,6 +1,6 @@
 ﻿using DGBCommerce.Domain.Models;
 
-namespace DGBCommerce.API
+namespace DGBCommerce.API.Controllers.Responses
 {
     public class AuthenticationResponse
     {

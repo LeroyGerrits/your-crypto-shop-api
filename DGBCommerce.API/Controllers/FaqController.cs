@@ -1,8 +1,10 @@
+using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DGGCommerce.API.Controllers
+namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -15,6 +17,7 @@ namespace DGGCommerce.API.Controllers
             _faqRepository = faqRepository;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Faq>>> Get()
         {
@@ -22,44 +25,12 @@ namespace DGGCommerce.API.Controllers
             return Ok(faqs.ToList());
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Faq>> Get(Guid id)
         {
             Faq faq = await _faqRepository.GetById(id);
             if (faq == null) return NotFound();
-
-            return Ok(faq);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] Faq value)
-        {
-            var result = await _faqRepository.Insert(value);
-            return CreatedAtAction(nameof(Get), new { id = result.Identifier });
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] Faq value)
-        {
-            Faq faq = await _faqRepository.GetById(id);
-            if (faq == null) return NotFound();
-
-            var result = await _faqRepository.Update(value);
-            if (result.ErrorCode > 0)
-                return NoContent();
-
-            return Ok(faq);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Faq>> Delete(Guid id)
-        {
-            Faq faq = await _faqRepository.GetById(id);
-            if (faq == null) return NotFound();
-
-            var result = await _faqRepository.Delete(id);
-            if (result.ErrorCode > 0)
-                return NoContent();
 
             return Ok(faq);
         }

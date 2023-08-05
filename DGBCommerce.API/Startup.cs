@@ -1,4 +1,5 @@
-﻿using DGBCommerce.Data;
+﻿using DGBCommerce.API.Services;
+using DGBCommerce.Data;
 using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain.Interfaces;
 
@@ -21,9 +22,11 @@ namespace DGBCommerce.API
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
             
             services.AddSingleton(provider => Configuration);
+            services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
-
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+            // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IDeliveryMethodRepository, DeliveryMethodRepository>();
             services.AddScoped<IFaqCategoryRepository, FaqCategoryRepository>();

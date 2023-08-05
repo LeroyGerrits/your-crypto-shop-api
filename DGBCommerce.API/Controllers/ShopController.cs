@@ -1,8 +1,9 @@
+using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DGGCommerce.API.Controllers
+namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -15,15 +16,17 @@ namespace DGGCommerce.API.Controllers
             _shopRepository = shopRepository;
         }
 
-        [Authentication]
+        [AuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Shop>>> Get()
         {
+            //var merchant= HttpContent.
+
             IEnumerable<Shop> shops = await _shopRepository.Get();
             return Ok(shops.ToList());
         }
 
-        [Authentication]
+        [AuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<Shop>> Get(Guid id)
         {
@@ -33,6 +36,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(shop);
         }
 
+        [AuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Shop value)
         {
@@ -40,6 +44,7 @@ namespace DGGCommerce.API.Controllers
             return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
+        [AuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Shop value)
         {
@@ -53,6 +58,7 @@ namespace DGGCommerce.API.Controllers
             return NoContent();
         }
 
+        [AuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Shop>> Delete(Guid id)
         {

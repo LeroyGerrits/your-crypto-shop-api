@@ -1,8 +1,10 @@
+using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DGGCommerce.API.Controllers
+namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -15,6 +17,7 @@ namespace DGGCommerce.API.Controllers
             _deliveryMethodRepository = deliveryMethodRepository;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeliveryMethod>>> Get()
         {
@@ -22,6 +25,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(deliveryMethods.ToList());
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Get(Guid id)
         {
@@ -31,6 +35,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(deliveryMethod);
         }
 
+        [AuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] DeliveryMethod value)
         {
@@ -38,6 +43,7 @@ namespace DGGCommerce.API.Controllers
             return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
+        [AuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] DeliveryMethod value)
         {
@@ -51,6 +57,7 @@ namespace DGGCommerce.API.Controllers
             return Ok(deliveryMethod);
         }
 
+        [AuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Delete(Guid id)
         {

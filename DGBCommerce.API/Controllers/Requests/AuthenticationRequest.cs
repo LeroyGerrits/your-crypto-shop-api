@@ -1,4 +1,4 @@
-﻿namespace DGBCommerce.API
+﻿namespace DGBCommerce.API.Controllers.Requests
 {
     public class AuthenticationRequest
     {
