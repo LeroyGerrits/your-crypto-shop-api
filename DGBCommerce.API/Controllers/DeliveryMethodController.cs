@@ -29,7 +29,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Get(Guid id)
         {
-            DeliveryMethod deliveryMethod = await _deliveryMethodRepository.GetById(id);
+            DeliveryMethod? deliveryMethod = await _deliveryMethodRepository.GetById(id);
             if (deliveryMethod == null) return NotFound();
 
             return Ok(deliveryMethod);
@@ -47,7 +47,7 @@ namespace DGBCommerce.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] DeliveryMethod value)
         {
-            DeliveryMethod deliveryMethod = await _deliveryMethodRepository.GetById(id);
+            DeliveryMethod? deliveryMethod = await _deliveryMethodRepository.GetById(id);
             if (deliveryMethod == null) return NotFound();
 
             var result = await _deliveryMethodRepository.Update(value);
@@ -61,7 +61,7 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Delete(Guid id)
         {
-            DeliveryMethod deliveryMethod = await _deliveryMethodRepository.GetById(id);
+            DeliveryMethod? deliveryMethod = await _deliveryMethodRepository.GetById(id);
             if (deliveryMethod == null) return NotFound();
 
             var result = await _deliveryMethodRepository.Delete(id);

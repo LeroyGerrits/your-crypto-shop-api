@@ -38,7 +38,7 @@ namespace DGBCommerce.Data.Repositories
             return faqcategories;
         }
 
-        public Task<FaqCategory> GetById(Guid id)
+        public Task<FaqCategory?> GetById(Guid id)
         {
             throw new NotImplementedException();
         }

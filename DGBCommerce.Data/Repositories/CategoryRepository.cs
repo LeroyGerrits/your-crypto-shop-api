@@ -34,10 +34,10 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<Category>> GetByShopId(Guid shopId)
             => await this.GetRaw(new GetCategoriesParameters { ShopId = shopId });
 
-        public async Task<Category> GetById(Guid id)
+        public async Task<Category?> GetById(Guid id)
         {
             var categories = await this.GetRaw(new GetCategoriesParameters() { Id = id });
-            return categories.ToList().Single();
+            return categories.ToList().SingleOrDefault();
         }
 
         public Task<IEnumerable<Category>> GetByMerchant(Guid merchantId)

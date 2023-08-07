@@ -25,10 +25,10 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<Merchant>> Get()
             => await GetRaw(new GetMerchantsParameters());
 
-        public async Task<Merchant> GetById(Guid id)
+        public async Task<Merchant?> GetById(Guid id)
         {
             var merchants = await GetRaw(new GetMerchantsParameters() { Id = id });
-            return merchants.ToList().Single();
+            return merchants.ToList().SingleOrDefault();
         }
 
         public async Task<Merchant?> GetByEmailAddressAndPassword(string emailAddress, string password)

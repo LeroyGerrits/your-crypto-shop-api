@@ -24,10 +24,10 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<Faq>> Get()
             => await GetRaw(new GetFaqsParameters());
 
-        public async Task<Faq> GetById(Guid id)
+        public async Task<Faq?> GetById(Guid id)
         {
             var faqs = await GetRaw(new GetFaqsParameters() { Id = id });
-            return faqs.ToList().Single();
+            return faqs.ToList().SingleOrDefault();
         }
 
         public Task<IEnumerable<Faq>> GetByMerchant(Guid merchantId)
