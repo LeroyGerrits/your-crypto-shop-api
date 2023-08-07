@@ -4,7 +4,6 @@ using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
-using System.Linq;
 
 namespace DGBCommerce.Data.Repositories
 {
@@ -25,10 +24,10 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<Shop>> Get()
             => await GetRaw(new GetShopsParameters());
 
-        public async Task<Shop> GetById(Guid id)
+        public async Task<Shop?> GetById(Guid id)
         {
             var shops = await GetRaw(new GetShopsParameters() { Id = id });
-            return shops.ToList().Single();
+            return shops.ToList().SingleOrDefault();
         }
 
         public Task<IEnumerable<Shop>> GetByMerchant(Guid merchantId)

@@ -41,7 +41,7 @@ namespace DGBCommerce.Data.Repositories
             return newsMessages;
         }
 
-        public Task<NewsMessage> GetById(Guid id)
+        public Task<NewsMessage?> GetById(Guid id)
         {
             throw new NotImplementedException();
         }

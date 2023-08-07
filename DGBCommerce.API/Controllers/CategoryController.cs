@@ -10,10 +10,15 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class CategoryController : ControllerBase
     {
+        private readonly ILogger<CategoryController> _logger;
         private readonly ICategoryRepository _shopRepository;
 
-        public CategoryController(ICategoryRepository shopRepository)
+        public CategoryController(
+            ILogger<CategoryController> logger,
+            ICategoryRepository shopRepository
+            )
         {
+            _logger = logger;
             _shopRepository = shopRepository;
         }
 

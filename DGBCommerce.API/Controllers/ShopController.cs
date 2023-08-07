@@ -1,6 +1,7 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DGBCommerce.API.Controllers
@@ -16,7 +17,7 @@ namespace DGBCommerce.API.Controllers
             _shopRepository = shopRepository;
         }
 
-        [AuthenticationRequired]
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Shop>>> Get()
         {
@@ -26,7 +27,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(shops.ToList());
         }
 
-        [AuthenticationRequired]
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Shop>> Get(Guid id)
         {
