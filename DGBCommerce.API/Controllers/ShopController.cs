@@ -31,7 +31,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Shop>> Get(Guid id)
         {
-            Shop shop = await _shopRepository.GetById(id);
+            Shop? shop = await _shopRepository.GetById(id);
             if (shop == null) return NotFound();
 
             return Ok(shop);
@@ -49,7 +49,7 @@ namespace DGBCommerce.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Shop value)
         {
-            Shop shop = await _shopRepository.GetById(id);
+            Shop? shop = await _shopRepository.GetById(id);
             if (shop == null) return NotFound();
 
             var result = await _shopRepository.Update(value);
@@ -63,7 +63,7 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Shop>> Delete(Guid id)
         {
-            Shop shop = await _shopRepository.GetById(id);
+            Shop? shop = await _shopRepository.GetById(id);
             if (shop == null) return NotFound();
 
             var result = await _shopRepository.Delete(id);

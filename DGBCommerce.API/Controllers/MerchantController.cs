@@ -40,8 +40,6 @@ namespace DGBCommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Merchant>>> Get()
         {
-            //var merchant= HttpContent.
-
             IEnumerable<Merchant> merchants = await _merchantRepository.Get();
             return Ok(merchants.ToList());
         }
@@ -58,7 +56,7 @@ namespace DGBCommerce.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Merchant value)
         {
-            Merchant merchant = await _merchantRepository.GetById(id);
+            Merchant? merchant = await _merchantRepository.GetById(id);
             if (merchant == null) return NotFound();
 
             var result = await _merchantRepository.Update(value);
@@ -72,7 +70,7 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Merchant>> Delete(Guid id)
         {
-            Merchant merchant = await _merchantRepository.GetById(id);
+            Merchant? merchant = await _merchantRepository.GetById(id);
             if (merchant == null) return NotFound();
 
             var result = await _merchantRepository.Delete(id);
