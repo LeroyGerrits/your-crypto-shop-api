@@ -22,6 +22,7 @@ namespace DGBCommerce.API
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
             
             services.AddSingleton(provider => Configuration);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
             services.AddScoped<IAuthenticationService, AuthenticationService>();
@@ -42,11 +43,22 @@ namespace DGBCommerce.API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                app.UseCors(options => options.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader());
+                app.UseCors(
+                    options => options
+                    .WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                );
             }
             else
             {
-
+                app.UseCors(
+                    options => options
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .WithOrigins("https://*.dgbcommerce.com")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                );
             }
 
             app.UseMiddleware<JwtMiddleware>();

@@ -1,4 +1,5 @@
 using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,14 +12,20 @@ namespace DGBCommerce.API.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ILogger<CategoryController> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils;
         private readonly ICategoryRepository _shopRepository;
 
         public CategoryController(
             ILogger<CategoryController> logger,
+            IHttpContextAccessor httpContextAccessor,
+            IJwtUtils jwtUtils,
             ICategoryRepository shopRepository
             )
         {
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            _jwtUtils = jwtUtils;
             _shopRepository = shopRepository;
         }
 
@@ -55,7 +62,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> Get(Guid id)
         {
-            Category category = await _shopRepository.GetById(id);
+            Category? category = await _shopRepository.GetById(id);
             if (category == null) return NotFound();
 
             return Ok(category);
@@ -65,7 +72,11 @@ namespace DGBCommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Category value)
         {
-            var result = await _shopRepository.Insert(value);
+            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (merchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var result = await _shopRepository.Create(value, merchantId.Value);
             return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
@@ -73,7 +84,7 @@ namespace DGBCommerce.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Category value)
         {
-            Category category = await _shopRepository.GetById(id);
+            Category? category = await _shopRepository.GetById(id);
             if (category == null) return NotFound();
 
             var result = await _shopRepository.Update(value);
@@ -87,7 +98,7 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Category>> Delete(Guid id)
         {
-            Category category = await _shopRepository.GetById(id);
+            Category? category = await _shopRepository.GetById(id);
             if (category == null) return NotFound();
 
             var result = await _shopRepository.Delete(id);

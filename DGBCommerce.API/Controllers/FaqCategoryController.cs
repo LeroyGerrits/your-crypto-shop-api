@@ -1,4 +1,3 @@
-using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +28,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FaqCategory>> Get(Guid id)
         {
-            FaqCategory faqCategory = await _faqCategoryRepository.GetById(id);
+            FaqCategory? faqCategory = await _faqCategoryRepository.GetById(id);
             if (faqCategory == null) return NotFound();
 
             return Ok(faqCategory);

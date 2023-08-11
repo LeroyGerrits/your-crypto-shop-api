@@ -15,11 +15,6 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public Task<MutationResult> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<NewsMessage>> Get()
         {
             DataTable table = await _dataAccessLayer.GetNewsMessages(new GetNewsMessagesParameters());
@@ -47,16 +42,6 @@ namespace DGBCommerce.Data.Repositories
         }
 
         public Task<IEnumerable<NewsMessage>> GetByMerchant(Guid merchantId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MutationResult> Insert(NewsMessage item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MutationResult> Update(NewsMessage item)
         {
             throw new NotImplementedException();
         }

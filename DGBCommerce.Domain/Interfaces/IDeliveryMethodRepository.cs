@@ -2,7 +2,7 @@
 
 namespace DGBCommerce.Domain.Interfaces
 {
-    public interface IDeliveryMethodRepository : IRepository<DeliveryMethod>
+    public interface IDeliveryMethodRepository : IMutableRepository<DeliveryMethod>
     {
         
     }

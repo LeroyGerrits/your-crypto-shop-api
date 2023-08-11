@@ -16,11 +16,6 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public Task<MutationResult> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<Faq>> Get()
             => await GetRaw(new GetFaqsParameters());
 
@@ -28,21 +23,6 @@ namespace DGBCommerce.Data.Repositories
         {
             var faqs = await GetRaw(new GetFaqsParameters() { Id = id });
             return faqs.ToList().SingleOrDefault();
-        }
-
-        public Task<IEnumerable<Faq>> GetByMerchant(Guid merchantId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MutationResult> Insert(Faq item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MutationResult> Update(Faq item)
-        {
-            throw new NotImplementedException();
         }
 
         private async Task<IEnumerable<Faq>> GetRaw(GetFaqsParameters parameters)

@@ -37,9 +37,10 @@ namespace DGBCommerce.Data.Repositories
             return merchants.ToList().SingleOrDefault();
         }
 
-        public Task<MutationResult> Insert(Merchant item)
+        public async Task<MutationResult> Create(Merchant item, Guid merchantId)
         {
-            throw new NotImplementedException();
+            var result = await _dataAccessLayer.CreateMerchant(item, merchantId);
+            return result;
         }
 
         public Task<MutationResult> Update(Merchant item)

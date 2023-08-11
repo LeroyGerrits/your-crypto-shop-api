@@ -35,7 +35,7 @@ namespace DGBCommerce.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<MutationResult> Insert(Shop item)
+        public Task<MutationResult> Create(Shop item, Guid merchantId)
         {
             throw new NotImplementedException();
         }

@@ -28,7 +28,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<NewsMessage>> Get(Guid id)
         {
-            NewsMessage newsMessage = await _newsMessageRepository.GetById(id);
+            NewsMessage? newsMessage = await _newsMessageRepository.GetById(id);
             if (newsMessage == null) return NotFound();
 
             return Ok(newsMessage);

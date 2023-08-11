@@ -15,11 +15,6 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public Task<MutationResult> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<FaqCategory>> Get()
         {
             DataTable table = await _dataAccessLayer.GetFaqCategories(new GetFaqCategoriesParameters());
@@ -39,21 +34,6 @@ namespace DGBCommerce.Data.Repositories
         }
 
         public Task<FaqCategory?> GetById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<FaqCategory>> GetByMerchant(Guid merchantId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MutationResult> Insert(FaqCategory item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MutationResult> Update(FaqCategory item)
         {
             throw new NotImplementedException();
         }

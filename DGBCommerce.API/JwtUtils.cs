@@ -12,6 +12,7 @@ public interface IJwtUtils
 {
     public string GenerateJwtToken(Merchant merchant);
     public Guid? ValidateJwtToken(string? token);
+    public Guid? GetMerchantId(IHttpContextAccessor httpContextAccessor);
 }
 
 public class JwtUtils : IJwtUtils
@@ -68,5 +69,12 @@ public class JwtUtils : IJwtUtils
         {
             return null;
         }
+    }
+
+    public Guid? GetMerchantId(IHttpContextAccessor httpContextAccessor)
+    {
+        var token = httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        if (token == null) return null;
+        return ValidateJwtToken(token);
     }
 }

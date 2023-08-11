@@ -7,28 +7,34 @@ namespace DGBCommerce.Domain
     public static class Utilities
     {
         public static DateTime? DBNullableDateTime(object value)
-            => value != null && DateTime.TryParse(value.ToString(), out var valueDateTime) ? valueDateTime : null;
+            => value != null && value != DBNull.Value && DateTime.TryParse(value.ToString(), out var valueDateTime) ? valueDateTime : null;
 
         public static decimal? DbNullableDecimal(object value)
-            => value != null && decimal.TryParse(value.ToString(), out var valueDecimal) ? valueDecimal : null;
-
-        public static int? DbNullableInt(object value)
-            => value != null && int.TryParse(value.ToString(), out var valueInt) ? valueInt : null;
-
-        public static string DbNullableString(object value)
-            => value != null ? value.ToString()! : string.Empty;
-
-        public static DateTime? NullableDateTime(object value)
-                => value != null && value != DBNull.Value && DateTime.TryParse(value.ToString(), out var valueDateTime) ? valueDateTime : null;
-
-        public static decimal? NullableDecimal(object value)
             => value != null && value != DBNull.Value && decimal.TryParse(value.ToString(), out var valueDecimal) ? valueDecimal : null;
 
-        public static int? NullableInt(object value)
+        public static Guid? DbNullableGuid(object value)
+            => value != null && value != DBNull.Value &&  Guid.TryParse(value.ToString(), out var valueGuid) ? valueGuid: null;
+
+        public static int? DbNullableInt(object value)
             => value != null && value != DBNull.Value && int.TryParse(value.ToString(), out var valueInt) ? valueInt : null;
 
-        public static string NullableString(object value)
+        public static string DbNullableString(object value)
             => value != null && value != DBNull.Value ? value.ToString()! : string.Empty;
+
+        public static DateTime? NullableDateTime(object value)
+                => value != null && DateTime.TryParse(value.ToString(), out var valueDateTime) ? valueDateTime : null;
+
+        public static decimal? NullableDecimal(object value)
+            => value != null && decimal.TryParse(value.ToString(), out var valueDecimal) ? valueDecimal : null;
+
+        public static Guid? NullableGuid(object value)
+            => value != null && Guid.TryParse(value.ToString(), out var valueGuid) ? valueGuid : null;
+
+        public static int? NullableInt(object value)
+            => value != null && int.TryParse(value.ToString(), out var valueInt) ? valueInt : null;
+
+        public static string NullableString(object value)
+            => value != null ? value.ToString()! : string.Empty;
 
         public static string HashStringSha256(string value)
         {

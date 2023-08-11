@@ -5,6 +5,7 @@ using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using DGBCommerce.Domain;
 
 namespace DGBCommerce.API.Controllers
 {
@@ -12,14 +13,23 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class MerchantController : ControllerBase
     {
+        private readonly ILogger<CategoryController> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils;
         private readonly IAuthenticationService _authenticationService;
         private readonly IMerchantRepository _merchantRepository;
 
         public MerchantController(
+            ILogger<CategoryController> logger,
+            IHttpContextAccessor httpContextAccessor,
+            IJwtUtils jwtUtils,
             IAuthenticationService authenticationService,
             IMerchantRepository merchantRepository
             )
         {
+            _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            _jwtUtils = jwtUtils;
             _authenticationService = authenticationService;
             _merchantRepository = merchantRepository;
         }
@@ -48,8 +58,17 @@ namespace DGBCommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Merchant value)
         {
-            var result = await _merchantRepository.Insert(value);
-            return CreatedAtAction(nameof(Get), new { id = result.Identifier });
+            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (merchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var result = await _merchantRepository.Create(value, merchantId.Value);
+
+            if(result.ErrorCode == 0)
+                return CreatedAtAction(nameof(Get), new { id = result.Identifier });
+            else
+                return BadRequest(result.Message);
+            
         }
 
         [AuthenticationRequired]
@@ -60,10 +79,10 @@ namespace DGBCommerce.API.Controllers
             if (merchant == null) return NotFound();
 
             var result = await _merchantRepository.Update(value);
-            if (result.ErrorCode > 0)
-                return NoContent();
-
-            return NoContent();
+            if (result.ErrorCode == 0)
+                return Ok(value);
+            else
+                return BadRequest(result.Message);
         }
 
         [AuthenticationRequired]
@@ -74,10 +93,10 @@ namespace DGBCommerce.API.Controllers
             if (merchant == null) return NotFound();
 
             var result = await _merchantRepository.Delete(id);
-            if (result.ErrorCode > 0)
-                return NoContent();
-
-            return Ok(merchant);
+            if (result.ErrorCode == 0)
+                return Ok();
+            else
+                return BadRequest(result.Message);
         }
     }
 }

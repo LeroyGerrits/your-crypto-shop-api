@@ -1,4 +1,5 @@
 using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,10 +11,20 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class ShopController : ControllerBase
     {
+        private readonly ILogger<CategoryController> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils;
         private readonly IShopRepository _shopRepository;
 
-        public ShopController(IShopRepository shopRepository)
+        public ShopController(
+            ILogger<CategoryController> logger,
+            IHttpContextAccessor httpContextAccessor,
+            IJwtUtils jwtUtils,
+            IShopRepository shopRepository)
         {
+            _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            _jwtUtils = jwtUtils;
             _shopRepository = shopRepository;
         }
 
@@ -21,8 +32,6 @@ namespace DGBCommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Shop>>> Get()
         {
-            //var merchant= HttpContent.
-
             IEnumerable<Shop> shops = await _shopRepository.Get();
             return Ok(shops.ToList());
         }
@@ -41,8 +50,15 @@ namespace DGBCommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Shop value)
         {
-            var result = await _shopRepository.Insert(value);
-            return CreatedAtAction(nameof(Get), new { id = result.Identifier });
+            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (merchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var result = await _shopRepository.Create(value, merchantId.Value);
+            if (result.ErrorCode == 0)
+                return CreatedAtAction(nameof(Get), new { id = result.Identifier });
+            else
+                return BadRequest(result.Message);
         }
 
         [AuthenticationRequired]
@@ -53,10 +69,10 @@ namespace DGBCommerce.API.Controllers
             if (shop == null) return NotFound();
 
             var result = await _shopRepository.Update(value);
-            if (result.ErrorCode > 0)
-                return NoContent();
-
-            return NoContent();
+            if (result.ErrorCode == 0)
+                return Ok(value);
+            else
+                return BadRequest(result.Message);
         }
 
         [AuthenticationRequired]
@@ -67,10 +83,10 @@ namespace DGBCommerce.API.Controllers
             if (shop == null) return NotFound();
 
             var result = await _shopRepository.Delete(id);
-            if (result.ErrorCode > 0)
-                return NoContent();
-
-            return Ok(shop);
+            if (result.ErrorCode == 0)
+                return Ok(shop);
+            else
+                return BadRequest(result.Message);
         }
     }
 }

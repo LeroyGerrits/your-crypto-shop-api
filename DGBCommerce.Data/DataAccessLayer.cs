@@ -2,6 +2,8 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using DGBCommerce.Domain.Parameters;
+using DGBCommerce.Domain;
+using DGBCommerce.Domain.Models;
 
 namespace DGBCommerce.Data
 {
@@ -13,6 +15,26 @@ namespace DGBCommerce.Data
         {
             _connectionString = connectionString;
         }
+
+        public async Task<MutationResult> CreateDeliveryMethod(DeliveryMethod deliveryMethod, Guid merchantId)
+            => await NonQuery("SP_CREATE_DeliveryMethod", new List<SqlParameter>() {
+                new SqlParameter("DLM_SHOP", SqlDbType.UniqueIdentifier) { Value = deliveryMethod.Shop.Id },
+                new SqlParameter("DLM_NAME", SqlDbType.NVarChar, 255) { Value = deliveryMethod.Name },
+                new SqlParameter("DLM_COSTS", SqlDbType.Decimal) { Value = deliveryMethod.Costs }
+            }, merchantId);
+
+        public async Task<MutationResult> CreateMerchant(Merchant merchant, Guid merchantId)
+            => await NonQuery("SP_CREATE_Merchant", new List<SqlParameter>() {
+                new SqlParameter("MER_FIRST_NAME", SqlDbType.UniqueIdentifier) { Value = merchant.FirstName },
+                new SqlParameter("MER_LAST_NAME", SqlDbType.UniqueIdentifier) { Value = merchant.LastName }
+            }, merchantId);
+
+        public async Task<MutationResult> CreateShop(Shop shop, Guid merchantId)
+            => await NonQuery("SP_CREATE_Merchant", new List<SqlParameter>() {
+                new SqlParameter("SHP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = shop.Merchant.Id },
+                new SqlParameter("SHP_NAME", SqlDbType.NVarChar) { Value = shop.Name },
+                new SqlParameter("SHP_SUBDOMAIN", SqlDbType.VarChar) { Value = shop.SubDomain }
+            }, merchantId);
 
         public async Task<DataTable> GetCategories(GetCategoriesParameters parameters)
             => await Get("SP_GET_Categories", new List<SqlParameter>() {
@@ -83,6 +105,44 @@ namespace DGBCommerce.Data
             }
 
             return table;
+        }
+
+        private async Task<MutationResult> NonQuery(string storedProcedure, List<SqlParameter> parameters, Guid merchantId)
+        {
+            MutationResult result = new();
+
+            using (SqlConnection connection = new(_connectionString))
+            {
+                using SqlCommand command = new(storedProcedure, connection) { CommandType = CommandType.StoredProcedure };
+                command.Parameters.Add(new SqlParameter("@MUT_ID", SqlDbType.UniqueIdentifier) { Value = merchantId });
+                command.Parameters.Add(new SqlParameter("@OUT_ERROR", SqlDbType.Int) { Direction = ParameterDirection.Output });
+                command.Parameters.Add(new SqlParameter("@OUT_IDENTITY", SqlDbType.UniqueIdentifier) { Direction = ParameterDirection.Output });
+                command.Parameters.Add(new SqlParameter("@OUT_MESSAGE", SqlDbType.VarChar, 255) { Direction = ParameterDirection.Output });
+
+                foreach (var parameter in parameters)
+                    command.Parameters.Add(parameter);
+
+                connection.Open();
+
+                try
+                {
+                    await command.ExecuteNonQueryAsync();
+                    result.ErrorCode = int.TryParse(command.Parameters["@OUT_ERROR"].Value.ToString(), out var outErrorCode) ? outErrorCode : 0;
+                    result.Identifier = Guid.TryParse(command.Parameters["@OUT_IDENTITY"].Value.ToString(), out var outIdentity) ? outIdentity : Guid.Empty;
+                    result.Message = command.Parameters["@OUT_MESSAGE"].Value.ToString();
+                }
+                catch
+                {
+
+                    throw;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            return result;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DGBCommerce.Domain.Interfaces
 {
-    public interface IShopRepository : IRepository<Shop>
+    public interface IShopRepository : IMutableRepository<Shop>
     {
         Task<IEnumerable<Shop>> GetByMerchant(Guid merchantId);
     }

@@ -62,10 +62,8 @@ namespace DGBCommerce.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<MutationResult> Insert(DeliveryMethod item)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<MutationResult> Create(DeliveryMethod item, Guid merchantId)
+            => _dataAccessLayer.CreateDeliveryMethod(item, merchantId);
 
         public Task<MutationResult> Update(DeliveryMethod item)
         {
