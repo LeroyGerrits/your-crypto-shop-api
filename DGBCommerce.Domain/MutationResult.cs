@@ -2,7 +2,7 @@
 
 namespace DGBCommerce.Domain
 {
-    public class MutationResult
+    public partial class MutationResult
     {
         public Guid Identifier { get; set; }
         public int ErrorCode { get; set; }
@@ -14,10 +14,13 @@ namespace DGBCommerce.Domain
             {
                 return ErrorCode switch
                 {
-                    2627 => new Regex(@"'(\w+)'").Matches(Message!)[0].Value,
+                    2627 => RegexUniqueConstraintViolation().Matches(Message!)[0].Value.Trim('\''),
                     _ => !string.IsNullOrWhiteSpace(Message) ? Message : string.Empty,
                 };
             }
         }
+
+        [GeneratedRegex("\'.*?\'")]
+        private static partial Regex RegexUniqueConstraintViolation();
     }
 }

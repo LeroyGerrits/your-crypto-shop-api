@@ -17,43 +17,32 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public Task<MutationResult> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> Get()
-            => throw new InvalidOperationException($"A complete list of '{nameof(Category)}' objects may not be retrieved.");
-
-        public async Task<IEnumerable<Category>> GetByMerchantId(Guid merchantId)
-            => await this.GetRaw(new GetCategoriesParameters { MerchantId = merchantId });
-
-        public async Task<IEnumerable<Category>> GetByParentId(Guid parentId)
-            => await this.GetRaw(new GetCategoriesParameters { ParentId = parentId });
-
-        public async Task<IEnumerable<Category>> GetByShopId(Guid shopId)
-            => await this.GetRaw(new GetCategoriesParameters { ShopId = shopId });
-
         public async Task<Category?> GetById(Guid id)
         {
             var categories = await this.GetRaw(new GetCategoriesParameters() { Id = id });
             return categories.ToList().SingleOrDefault();
         }
 
-        public Task<IEnumerable<Category>> GetByMerchant(Guid merchantId)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<Category>> Get()
+            => await this.GetRaw(new GetCategoriesParameters());
 
-        public Task<MutationResult> Create(Category item, Guid merchantId)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<Category>> GetByMerchantId(Guid merchantId)
+            => await this.GetRaw(new GetCategoriesParameters() { MerchantId = merchantId });
 
-        public Task<MutationResult> Update(Category item)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<Category>> GetByParentId(Guid parentId)
+            => await this.GetRaw(new GetCategoriesParameters() { ParentId = parentId });
+
+        public async Task<IEnumerable<Category>> GetByShopId(Guid shopId)
+            => await this.GetRaw(new GetCategoriesParameters() { ShopId = shopId });
+
+        public Task<MutationResult> Create(Category item, Guid mutationId)
+            => _dataAccessLayer.CreateCategory(item, mutationId);
+
+        public Task<MutationResult> Update(Category item, Guid mutationId)
+            => _dataAccessLayer.UpdateCategory(item, mutationId);
+
+        public Task<MutationResult> Delete(Guid id, Guid mutationId)
+            => _dataAccessLayer.DeleteCategory(id, mutationId);
 
         private async Task<IEnumerable<Category>> GetRaw(GetCategoriesParameters parameters)
         {

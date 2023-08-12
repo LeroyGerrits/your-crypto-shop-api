@@ -4,8 +4,8 @@ namespace DGBCommerce.Domain.Interfaces
 {
     public interface IMutableRepository<T> : IRepository<T>
     {
-        Task<MutationResult> Create(T item, Guid merchantId);
-        Task<MutationResult> Update(T item);
-        Task<MutationResult> Delete(Guid id);
+        Task<MutationResult> Create(T item, Guid mutationId);
+        Task<MutationResult> Update(T item, Guid mutationId);
+        Task<MutationResult> Delete(Guid id, Guid mutationId);
     }
 }

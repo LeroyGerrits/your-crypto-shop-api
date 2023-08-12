@@ -16,59 +16,29 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public Task<MutationResult> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<DeliveryMethod>> Get()
-        {
-            DataTable table = await _dataAccessLayer.GetDeliveryMethods(new GetDeliveryMethodsParameters());
-            List<DeliveryMethod> faqcategories = new();
-
-            foreach (DataRow row in table.Rows)
-            {
-                faqcategories.Add(new()
-                {
-                    Id = new Guid(row["dlm_id"].ToString()!),
-                    Shop = new Shop()
-                    {
-                        Id = new Guid(row["dlm_shop"].ToString()!),
-                        Name = Utilities.DbNullableString(row["dlm_shop_name"]),
-                        Merchant = new Merchant()
-                        {
-                            Id = new Guid(row["dlm_shop_merchant"].ToString()!),
-                            EmailAddress = Utilities.DbNullableString(row["dlm_shop_merchant_email_address"]),
-                            Gender = (Gender)Convert.ToInt32(row["dlm_shop_merchant_gender"]),
-                            LastName = Utilities.DbNullableString(row["dlm_shop_merchant_last_name"]),
-                        }
-                    },
-                    Name = Utilities.DbNullableString(row["dlm_name"]),
-                    Costs = Utilities.DbNullableDecimal(row["dlm_costs"])
-                });
-            }
-
-            return faqcategories;
-        }
-
         public async Task<DeliveryMethod?> GetById(Guid id)
         {
             var deliveryMethods = await GetRaw(new GetDeliveryMethodsParameters() { Id = id });
             return deliveryMethods.ToList().SingleOrDefault();
         }
 
-        public Task<IEnumerable<DeliveryMethod>> GetByMerchant(Guid merchantId)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<DeliveryMethod>> Get()
+            => await GetRaw(new GetDeliveryMethodsParameters());
 
-        public Task<MutationResult> Create(DeliveryMethod item, Guid merchantId)
-            => _dataAccessLayer.CreateDeliveryMethod(item, merchantId);
+        public async Task<IEnumerable<DeliveryMethod>> GetByMerchantId(Guid merchantId)
+            => await GetRaw(new GetDeliveryMethodsParameters() { MerchantId = merchantId });
 
-        public Task<MutationResult> Update(DeliveryMethod item)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<DeliveryMethod>> GetByShopId(Guid shopId)
+            => await GetRaw(new GetDeliveryMethodsParameters() { ShopId = shopId });
+
+        public Task<MutationResult> Create(DeliveryMethod item, Guid mutationId)
+            => _dataAccessLayer.CreateDeliveryMethod(item, mutationId);
+
+        public Task<MutationResult> Update(DeliveryMethod item, Guid mutationId)
+            => _dataAccessLayer.UpdateDeliveryMethod(item, mutationId);
+
+        public Task<MutationResult> Delete(Guid id, Guid mutationId)
+            => _dataAccessLayer.DeleteDeliveryMethod(id, mutationId);
 
         private async Task<IEnumerable<DeliveryMethod>> GetRaw(GetDeliveryMethodsParameters parameters)
         {

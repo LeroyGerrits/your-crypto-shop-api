@@ -14,7 +14,7 @@ namespace DGBCommerce.API.Controllers
         private readonly ILogger<CategoryController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
-        private readonly ICategoryRepository _shopRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
         public CategoryController(
             ILogger<CategoryController> logger,
@@ -26,7 +26,7 @@ namespace DGBCommerce.API.Controllers
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
-            _shopRepository = shopRepository;
+            _categoryRepository = shopRepository;
         }
 
         [AllowAnonymous]
@@ -38,7 +38,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{merchantId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByMerchantId(Guid merchantId)
         {
-            IEnumerable<Category> categories = await _shopRepository.GetByMerchantId(merchantId);
+            IEnumerable<Category> categories = await _categoryRepository.GetByMerchantId(merchantId);
             return Ok(categories.ToList());
         }
 
@@ -46,7 +46,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{parentId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByParentId(Guid parentId)
         {
-            IEnumerable<Category> categories = await _shopRepository.GetByParentId(parentId);
+            IEnumerable<Category> categories = await _categoryRepository.GetByParentId(parentId);
             return Ok(categories.ToList());
         }
 
@@ -54,7 +54,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{shopId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByShopId(Guid shopId)
         {
-            IEnumerable<Category> categories = await _shopRepository.GetByMerchantId(shopId);
+            IEnumerable<Category> categories = await _categoryRepository.GetByMerchantId(shopId);
             return Ok(categories.ToList());
         }
 
@@ -62,7 +62,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> Get(Guid id)
         {
-            Category? category = await _shopRepository.GetById(id);
+            Category? category = await _categoryRepository.GetById(id);
             if (category == null) return NotFound();
 
             return Ok(category);
@@ -76,7 +76,7 @@ namespace DGBCommerce.API.Controllers
             if (merchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var result = await _shopRepository.Create(value, merchantId.Value);
+            var result = await _categoryRepository.Create(value, merchantId.Value);
             return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
@@ -84,10 +84,14 @@ namespace DGBCommerce.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Category value)
         {
-            Category? category = await _shopRepository.GetById(id);
+            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (merchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var category = await _categoryRepository.GetById(id);
             if (category == null) return NotFound();
 
-            var result = await _shopRepository.Update(value);
+            var result = await _categoryRepository.Update(value, merchantId.Value);
             if (result.ErrorCode > 0)
                 return NoContent();
 
@@ -98,10 +102,14 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Category>> Delete(Guid id)
         {
-            Category? category = await _shopRepository.GetById(id);
+            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (merchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var category = await _categoryRepository.GetById(id);
             if (category == null) return NotFound();
 
-            var result = await _shopRepository.Delete(id);
+            var result = await _categoryRepository.Delete(id, merchantId.Value);
             if (result.ErrorCode > 0)
                 return NoContent();
 
