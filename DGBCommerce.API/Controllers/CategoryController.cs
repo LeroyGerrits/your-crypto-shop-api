@@ -72,11 +72,11 @@ namespace DGBCommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Category value)
         {
-            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (merchantId == null)
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var result = await _categoryRepository.Create(value, merchantId.Value);
+            var result = await _categoryRepository.Create(value, authenticatedMerchantId.Value);
             return CreatedAtAction(nameof(Get), new { id = result.Identifier });
         }
 
@@ -84,14 +84,14 @@ namespace DGBCommerce.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Category value)
         {
-            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (merchantId == null)
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
             var category = await _categoryRepository.GetById(id);
             if (category == null) return NotFound();
 
-            var result = await _categoryRepository.Update(value, merchantId.Value);
+            var result = await _categoryRepository.Update(value, authenticatedMerchantId.Value);
             if (result.ErrorCode > 0)
                 return NoContent();
 
@@ -102,14 +102,14 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Category>> Delete(Guid id)
         {
-            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (merchantId == null)
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
             var category = await _categoryRepository.GetById(id);
             if (category == null) return NotFound();
 
-            var result = await _categoryRepository.Delete(id, merchantId.Value);
+            var result = await _categoryRepository.Delete(id, authenticatedMerchantId.Value);
             if (result.ErrorCode > 0)
                 return NoContent();
 

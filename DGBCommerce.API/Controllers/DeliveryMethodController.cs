@@ -50,11 +50,11 @@ namespace DGBCommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] DeliveryMethod value)
         {
-            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (merchantId == null)
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var result = await _deliveryMethodRepository.Create(value, merchantId.Value);
+            var result = await _deliveryMethodRepository.Create(value, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
@@ -62,14 +62,14 @@ namespace DGBCommerce.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] DeliveryMethod value)
         {
-            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (merchantId == null)
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
             var deliveryMethod = await _deliveryMethodRepository.GetById(id);
             if (deliveryMethod == null) return NotFound();
 
-            var result = await _deliveryMethodRepository.Update(value, merchantId.Value);
+            var result = await _deliveryMethodRepository.Update(value, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
@@ -77,14 +77,14 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Delete(Guid id)
         {
-            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (merchantId == null)
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
             var deliveryMethod = await _deliveryMethodRepository.GetById(id);
             if (deliveryMethod == null) return NotFound();
 
-            var result = await _deliveryMethodRepository.Delete(id, merchantId.Value);
+            var result = await _deliveryMethodRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
         }
     }

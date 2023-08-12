@@ -63,6 +63,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@DLM_ID", SqlDbType.UniqueIdentifier) { Value = deliveryMethodId }
             }, mutationId);
+
+        public async Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Shop", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier) { Value = shopId }
+            }, mutationId);
         #endregion
 
         #region Get
@@ -150,6 +156,23 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DLM_SHOP", SqlDbType.UniqueIdentifier) { Value = deliveryMethod.Shop.Id },
                 new SqlParameter("@DLM_NAME", SqlDbType.NVarChar, 255) { Value = deliveryMethod.Name },
                 new SqlParameter("@DLM_COSTS", SqlDbType.Decimal) { Value = deliveryMethod.Costs }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
+                new SqlParameter("@MER_FIRST_NAME", SqlDbType.NVarChar, 255) { Value = merchant.FirstName },
+                new SqlParameter("@MER_LAST_NAME", SqlDbType.NVarChar, 255) { Value = merchant.LastName }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateShop(Shop shop, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Shop", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier) { Value = shop.Id },
+                new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = shop.Merchant.Id },
+                new SqlParameter("@SHP_NAME", SqlDbType.NVarChar, 255) { Value = shop.Name },
+                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar, 100) { Value = shop.SubDomain }
             }, mutationId);
         #endregion
 

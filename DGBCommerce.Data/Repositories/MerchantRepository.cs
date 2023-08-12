@@ -17,11 +17,6 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public Task<MutationResult> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<Merchant>> Get()
             => await GetRaw(new GetMerchantsParameters());
 
@@ -37,16 +32,14 @@ namespace DGBCommerce.Data.Repositories
             return merchants.ToList().SingleOrDefault();
         }
 
-        public async Task<MutationResult> Create(Merchant item, Guid merchantId)
-        {
-            var result = await _dataAccessLayer.CreateMerchant(item, merchantId);
-            return result;
-        }
+        public Task<MutationResult> Create(Merchant item, Guid mutationId)
+            => _dataAccessLayer.CreateMerchant(item, mutationId);
 
-        public Task<MutationResult> Update(Merchant item)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<MutationResult> Update(Merchant item, Guid mutationId)
+            => _dataAccessLayer.UpdateMerchant(item, mutationId);
+
+        public Task<MutationResult> Delete(Guid id, Guid mutationId)
+            => throw new NotImplementedException();
 
         private async Task<IEnumerable<Merchant>> GetRaw(GetMerchantsParameters parameters)
         {

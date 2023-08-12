@@ -50,43 +50,42 @@ namespace DGBCommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Shop value)
         {
-            var merchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (merchantId == null)
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var result = await _shopRepository.Create(value, merchantId.Value);
-            if (result.ErrorCode == 0)
-                return CreatedAtAction(nameof(Get), new { id = result.Identifier });
-            else
-                return BadRequest(result.Message);
+            var result = await _shopRepository.Create(value, authenticatedMerchantId.Value);
+            return Ok(result);
         }
 
         [AuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Shop value)
         {
-            Shop? shop = await _shopRepository.GetById(id);
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var shop = await _shopRepository.GetById(id);
             if (shop == null) return NotFound();
 
-            var result = await _shopRepository.Update(value);
-            if (result.ErrorCode == 0)
-                return Ok(value);
-            else
-                return BadRequest(result.Message);
+            var result = await _shopRepository.Update(value, authenticatedMerchantId.Value);
+            return Ok(result);
         }
 
         [AuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Shop>> Delete(Guid id)
         {
-            Shop? shop = await _shopRepository.GetById(id);
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var shop = await _shopRepository.GetById(id);
             if (shop == null) return NotFound();
 
-            var result = await _shopRepository.Delete(id);
-            if (result.ErrorCode == 0)
-                return Ok(shop);
-            else
-                return BadRequest(result.Message);
+            var result = await _shopRepository.Delete(id, authenticatedMerchantId.Value);
+            return Ok(result);
         }
     }
 }

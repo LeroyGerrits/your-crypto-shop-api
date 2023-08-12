@@ -13,6 +13,7 @@ namespace DGBCommerce.Domain.Interfaces
 
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteDeliveryMethod(Guid deliveryMethodId, Guid mutationId);
+        Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
 
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);
@@ -26,5 +27,7 @@ namespace DGBCommerce.Domain.Interfaces
 
         Task<MutationResult> UpdateCategory(Category category, Guid mutationId);
         Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
+        Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId);
+        Task<MutationResult> UpdateShop(Shop shop, Guid mutationId);
     }
 }

@@ -16,13 +16,11 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public Task<MutationResult> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<Shop>> Get()
             => await GetRaw(new GetShopsParameters());
+
+        public async Task<IEnumerable<Shop>> GetByMerchantId(Guid merchantId)
+            => await GetRaw(new GetShopsParameters() { MerchantId = merchantId });
 
         public async Task<Shop?> GetById(Guid id)
         {
@@ -30,20 +28,14 @@ namespace DGBCommerce.Data.Repositories
             return shops.ToList().SingleOrDefault();
         }
 
-        public Task<IEnumerable<Shop>> GetByMerchant(Guid merchantId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<MutationResult> Create(Shop item, Guid mutationId)
+            => _dataAccessLayer.CreateShop(item, mutationId);
 
-        public Task<MutationResult> Create(Shop item, Guid merchantId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<MutationResult> Update(Shop item, Guid mutationId)
+            => _dataAccessLayer.UpdateShop(item, mutationId);
 
-        public Task<MutationResult> Update(Shop item)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<MutationResult> Delete(Guid id, Guid mutationId)
+            => _dataAccessLayer.DeleteShop(id, mutationId);
 
         private async Task<IEnumerable<Shop>> GetRaw(GetShopsParameters parameters)
         {
