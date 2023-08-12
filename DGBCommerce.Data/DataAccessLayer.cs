@@ -35,6 +35,14 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DLM_COSTS", SqlDbType.Decimal) { Value = deliveryMethod.Costs }
             }, mutationId);
 
+        public async Task<MutationResult> CreateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId)
+            => await NonQuery("SP_MUTATE_DigiByteWallet", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.Merchant.Id },
+                new SqlParameter("@DBW_NAME", SqlDbType.NVarChar, 255) { Value = digiByteWallet.Name },
+                new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar, 100) { Value = digiByteWallet.Address }
+            }, mutationId);
+
         public async Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId)
             => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -64,6 +72,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DLM_ID", SqlDbType.UniqueIdentifier) { Value = deliveryMethodId }
             }, mutationId);
 
+        public async Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_DigiByteWallet", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = digiByteWalletId }
+            }, mutationId);
+
         public async Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId)
             => await NonQuery("SP_MUTATE_Shop", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
@@ -86,6 +100,14 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DLM_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
                 new SqlParameter("@DLM_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
                 new SqlParameter("@DLM_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
+            });
+
+        public async Task<DataTable> GetDigiByteWallets(GetDigiByteWalletsParameters parameters)
+            => await Get("SP_GET_DigiByteWallets", new List<SqlParameter>() {
+                new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("@DBW_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
+                new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar) { Value = parameters.Address }
             });
 
         public async Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters)
@@ -156,6 +178,15 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DLM_SHOP", SqlDbType.UniqueIdentifier) { Value = deliveryMethod.Shop.Id },
                 new SqlParameter("@DLM_NAME", SqlDbType.NVarChar, 255) { Value = deliveryMethod.Name },
                 new SqlParameter("@DLM_COSTS", SqlDbType.Decimal) { Value = deliveryMethod.Costs }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId)
+            => await NonQuery("SP_MUTATE_DigiByteWallet", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.Id },
+                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.Merchant.Id },
+                new SqlParameter("@DBW_NAME", SqlDbType.NVarChar, 255) { Value = digiByteWallet.Name },
+                new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar, 100) { Value = digiByteWallet.Address }
             }, mutationId);
 
         public async Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId)
