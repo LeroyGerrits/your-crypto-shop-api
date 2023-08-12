@@ -20,7 +20,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NewsMessage>>> Get()
         {
-            IEnumerable<NewsMessage> newsMessages = await _newsMessageRepository.Get();
+            var newsMessages = await _newsMessageRepository.Get();
             return Ok(newsMessages.ToList());
         }
 
@@ -28,7 +28,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<NewsMessage>> Get(Guid id)
         {
-            NewsMessage? newsMessage = await _newsMessageRepository.GetById(id);
+            var newsMessage = await _newsMessageRepository.GetById(id);
             if (newsMessage == null) return NotFound();
 
             return Ok(newsMessage);

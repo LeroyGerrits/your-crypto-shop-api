@@ -1,5 +1,4 @@
 using DGBCommerce.API.Controllers.Attributes;
-using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,18 +10,15 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class ShopController : ControllerBase
     {
-        private readonly ILogger<CategoryController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
         private readonly IShopRepository _shopRepository;
 
         public ShopController(
-            ILogger<CategoryController> logger,
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
             IShopRepository shopRepository)
         {
-            _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _shopRepository = shopRepository;
@@ -32,7 +28,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Shop>>> Get()
         {
-            IEnumerable<Shop> shops = await _shopRepository.Get();
+            var shops = await _shopRepository.Get();
             return Ok(shops.ToList());
         }
 
@@ -40,7 +36,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Shop>> Get(Guid id)
         {
-            Shop? shop = await _shopRepository.GetById(id);
+            var shop = await _shopRepository.GetById(id);
             if (shop == null) return NotFound();
 
             return Ok(shop);

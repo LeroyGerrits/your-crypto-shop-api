@@ -20,7 +20,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FaqCategory>>> Get()
         {
-            IEnumerable<FaqCategory> faqCategories = await _faqCategoryRepository.Get();
+            var faqCategories = await _faqCategoryRepository.Get();
             return Ok(faqCategories.ToList());
         }
 
@@ -28,7 +28,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FaqCategory>> Get(Guid id)
         {
-            FaqCategory? faqCategory = await _faqCategoryRepository.GetById(id);
+            var faqCategory = await _faqCategoryRepository.GetById(id);
             if (faqCategory == null) return NotFound();
 
             return Ok(faqCategory);

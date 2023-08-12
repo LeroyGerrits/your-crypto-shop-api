@@ -5,7 +5,6 @@ using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using DGBCommerce.Domain;
 
 namespace DGBCommerce.API.Controllers
 {
@@ -13,21 +12,18 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class MerchantController : ControllerBase
     {
-        private readonly ILogger<CategoryController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
         private readonly IAuthenticationService _authenticationService;
         private readonly IMerchantRepository _merchantRepository;
 
         public MerchantController(
-            ILogger<CategoryController> logger,
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
             IAuthenticationService authenticationService,
             IMerchantRepository merchantRepository
             )
         {
-            _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _authenticationService = authenticationService;
@@ -50,7 +46,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Merchant>>> Get()
         {
-            IEnumerable<Merchant> merchants = await _merchantRepository.Get();
+            var merchants = await _merchantRepository.Get();
             return Ok(merchants.ToList());
         }
 

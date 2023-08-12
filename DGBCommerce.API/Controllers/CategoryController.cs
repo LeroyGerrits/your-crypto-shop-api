@@ -1,5 +1,4 @@
 using DGBCommerce.API.Controllers.Attributes;
-using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,19 +10,16 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class CategoryController : ControllerBase
     {
-        private readonly ILogger<CategoryController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
         private readonly ICategoryRepository _categoryRepository;
 
         public CategoryController(
-            ILogger<CategoryController> logger,
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
             ICategoryRepository shopRepository
             )
         {
-            _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _categoryRepository = shopRepository;
@@ -38,7 +34,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{merchantId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByMerchantId(Guid merchantId)
         {
-            IEnumerable<Category> categories = await _categoryRepository.GetByMerchantId(merchantId);
+            var categories = await _categoryRepository.GetByMerchantId(merchantId);
             return Ok(categories.ToList());
         }
 
@@ -46,7 +42,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{parentId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByParentId(Guid parentId)
         {
-            IEnumerable<Category> categories = await _categoryRepository.GetByParentId(parentId);
+            var categories = await _categoryRepository.GetByParentId(parentId);
             return Ok(categories.ToList());
         }
 
@@ -54,7 +50,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{shopId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetByShopId(Guid shopId)
         {
-            IEnumerable<Category> categories = await _categoryRepository.GetByMerchantId(shopId);
+            var categories = await _categoryRepository.GetByMerchantId(shopId);
             return Ok(categories.ToList());
         }
 
@@ -62,7 +58,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> Get(Guid id)
         {
-            Category? category = await _categoryRepository.GetById(id);
+            var category = await _categoryRepository.GetById(id);
             if (category == null) return NotFound();
 
             return Ok(category);

@@ -1,5 +1,4 @@
 using DGBCommerce.API.Controllers.Attributes;
-using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,18 +10,15 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class DeliveryMethodController : ControllerBase
     {
-        private readonly ILogger<CategoryController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
         private readonly IDeliveryMethodRepository _deliveryMethodRepository;
 
         public DeliveryMethodController(
-            ILogger<CategoryController> logger,
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
             IDeliveryMethodRepository deliveryMethodRepository)
         {
-            _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _deliveryMethodRepository = deliveryMethodRepository;
@@ -32,7 +28,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeliveryMethod>>> Get()
         {
-            IEnumerable<DeliveryMethod> deliveryMethods = await _deliveryMethodRepository.Get();
+            var deliveryMethods = await _deliveryMethodRepository.Get();
             return Ok(deliveryMethods.ToList());
         }
 
@@ -40,7 +36,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Get(Guid id)
         {
-            DeliveryMethod? deliveryMethod = await _deliveryMethodRepository.GetById(id);
+            var deliveryMethod = await _deliveryMethodRepository.GetById(id);
             if (deliveryMethod == null) return NotFound();
 
             return Ok(deliveryMethod);
