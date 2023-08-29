@@ -35,6 +35,7 @@ namespace DGBCommerce.API
             services.AddScoped<IFaqCategoryRepository, FaqCategoryRepository>();
             services.AddScoped<IFaqRepository, FaqRepository>();
             services.AddScoped<IMerchantRepository, MerchantRepository>();
+            services.AddScoped<IMerchantPasswordResetLinkRepository, MerchantPasswordResetLinkRepository>();
             services.AddScoped<INewsMessageRepository, NewsMessageRepository>();
             services.AddScoped<IShopRepository, ShopRepository>();
         }

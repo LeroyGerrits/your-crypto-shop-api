@@ -10,6 +10,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
         Task<MutationResult> CreateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId);
+        Task<MutationResult> CreateMerchantPasswordResetLink(MerchantPasswordResetLink merchantPasswordResetLink);
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
 
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
@@ -23,11 +24,12 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetDigiByteWallets(GetDigiByteWalletsParameters parameters);
         Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters);
         Task<DataTable> GetFaqs(GetFaqsParameters parameters);
-        Task<DataTable> GetMerchantForForgotPassword(GetMerchantForForgotPasswordParameters parameters);
-        Task<DataTable> GetMerchantForLogin(GetMerchantForLoginParameters parameters);
+        Task<DataTable> GetMerchantByEmailAddress(string emailAddress);
+        Task<DataTable> GetMerchantByEmailAddressAndPassword(string emailAddress, string password);
         Task<DataTable> GetMerchants(GetMerchantsParameters parameters);
         Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);
+        Task<DataTable> GetShopBySubDomain(string subDomain);
 
         Task<MutationResult> UpdateCategory(Category category, Guid mutationId);
         Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);

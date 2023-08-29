@@ -26,11 +26,11 @@ namespace DGBCommerce.Data.Repositories
             return merchants.ToList().SingleOrDefault();
         }
 
+        public async Task<Merchant?> GetByEmailAddress(string emailAddress)
+            => await GetRawByEmailAddress(emailAddress);
+
         public async Task<Merchant?> GetByEmailAddressAndPassword(string emailAddress, string password)
-        {
-            var merchants = await GetRaw(new GetMerchantsParameters() { EmailAddress = emailAddress, Password = password });
-            return merchants.ToList().SingleOrDefault();
-        }
+            => await GetRawByEmailAddressAndPassword(emailAddress, password);
 
         public Task<MutationResult> Create(Merchant item, Guid mutationId)
             => _dataAccessLayer.CreateMerchant(item, mutationId);
@@ -55,12 +55,52 @@ namespace DGBCommerce.Data.Repositories
                     PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
                     Password = Utilities.DbNullableString(row["mer_password"]),
                     Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
-                    FirstName = Utilities.DbNullableString(row["mer_last_name"]),
+                    FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                     LastName = Utilities.DbNullableString(row["mer_last_name"])
                 });
             }
 
             return merchants;
+        }
+
+        private async Task<Merchant?> GetRawByEmailAddress(string emailAddress)
+        {
+            DataTable table = await _dataAccessLayer.GetMerchantByEmailAddress(emailAddress);
+
+            if (table.Rows.Count != 1)
+                return null;
+
+            DataRow row = table.Rows[0];
+            return new Merchant()
+            {
+                Id = new Guid(row["mer_id"].ToString()!),
+                EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
+                PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
+                Password = Utilities.DbNullableString(row["mer_password"]),
+                Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
+                FirstName = Utilities.DbNullableString(row["mer_first_name"]),
+                LastName = Utilities.DbNullableString(row["mer_last_name"])
+            };
+        }
+
+        private async Task<Merchant?> GetRawByEmailAddressAndPassword(string emailAddress, string password)
+        {
+            DataTable table = await _dataAccessLayer.GetMerchantByEmailAddressAndPassword(emailAddress, password);
+
+            if (table.Rows.Count != 1)
+                return null;
+
+            DataRow row = table.Rows[0];
+            return new Merchant()
+            {
+                Id = new Guid(row["mer_id"].ToString()!),
+                EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
+                PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
+                Password = Utilities.DbNullableString(row["mer_password"]),
+                Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
+                FirstName = Utilities.DbNullableString(row["mer_first_name"]),
+                LastName = Utilities.DbNullableString(row["mer_last_name"])
+            };
         }
     }
 }

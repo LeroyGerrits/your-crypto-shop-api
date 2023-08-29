@@ -50,6 +50,14 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_LAST_NAME", SqlDbType.UniqueIdentifier) { Value = merchant.LastName }
             }, mutationId);
 
+        public async Task<MutationResult> CreateMerchantPasswordResetLink(MerchantPasswordResetLink merchantPasswordResetLink)
+            => await NonQuery("SP_MUTATE_MerchantPasswordResetLink", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@PRL_MERCHANT", SqlDbType.UniqueIdentifier) { Value = merchantPasswordResetLink.Merchant.Id },
+                new SqlParameter("@PRL_IP_ADDRESS", SqlDbType.VarChar) { Value = merchantPasswordResetLink.IpAddress },
+                new SqlParameter("@PRL_KEY", SqlDbType.VarChar) { Value = merchantPasswordResetLink.Key }
+            }, Guid.Empty);
+
         public async Task<MutationResult> CreateShop(Shop shop, Guid mutationId)
             => await NonQuery("SP_MUTATE_Shop", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -139,15 +147,15 @@ namespace DGBCommerce.Data
                 new SqlParameter("@NWS_DATE_UNTIL", SqlDbType.DateTime) { Value = parameters.DateUntil }
             });
 
-        public async Task<DataTable> GetMerchantForForgotPassword(GetMerchantForForgotPasswordParameters parameters)
-            => await Get("SP_GET_MerchantForForgotPassword", new List<SqlParameter>() {
-                new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = parameters.EmailAddress }
+        public async Task<DataTable> GetMerchantByEmailAddress(string emailAddress)
+            => await Get("SP_GET_Merchant_ByEmailAddress", new List<SqlParameter>() {
+                new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress }
             });
 
-        public async Task<DataTable> GetMerchantForLogin(GetMerchantForLoginParameters parameters)
-            => await Get("SP_GET_MerchantForLogin", new List<SqlParameter>() {
-                new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = parameters.EmailAddress },
-                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar) { Value = parameters.Password },
+        public async Task<DataTable> GetMerchantByEmailAddressAndPassword(string emailAddress, string password)
+            => await Get("SP_GET_Merchant_ByEmailAddressAndPassword", new List<SqlParameter>() {
+                new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress },
+                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar) { Value = password },
             });
 
         public async Task<DataTable> GetMerchants(GetMerchantsParameters parameters)
@@ -164,6 +172,11 @@ namespace DGBCommerce.Data
                 new SqlParameter("SHP_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
                 new SqlParameter("SHP_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
                 new SqlParameter("SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = parameters.SubDomain }
+            });
+
+        public async Task<DataTable> GetShopBySubDomain(string subDomain)
+            => await Get("SP_GET_Shop_BySubDomain", new List<SqlParameter>() {
+                new SqlParameter("SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = subDomain }
             });
         #endregion
 
