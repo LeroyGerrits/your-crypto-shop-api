@@ -4,7 +4,6 @@ using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
-using System.Linq;
 
 namespace DGBCommerce.Data.Repositories
 {

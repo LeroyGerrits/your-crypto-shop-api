@@ -18,6 +18,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
 
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
+        Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters);
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);
         Task<DataTable> GetDigiByteWallets(GetDigiByteWalletsParameters parameters);
         Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters);

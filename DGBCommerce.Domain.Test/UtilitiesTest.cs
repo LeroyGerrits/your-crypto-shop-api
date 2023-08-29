@@ -12,7 +12,7 @@ namespace DGBCommerce.Domain.Test
         }
 
         [Fact]
-        public void Generate_salt_should_return_a_32_bit_hash()
+        public void Generate_salt_should_return_a_32_character_long_hash()
         {
             object valueHash = Utilities.GenerateSalt();
             Assert.NotNull(valueHash);

@@ -95,6 +95,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CAT_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
             });
 
+        public async Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters)
+            => await Get("SP_GET_Currencies", new List<SqlParameter>() {
+                new SqlParameter("@CUR_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
+                new SqlParameter("@CUR_SYMBOL", SqlDbType.NChar) { Value = parameters.Symbol },
+                new SqlParameter("@CUR_NAME", SqlDbType.VarChar) { Value = parameters.Name }
+            });
+
         public async Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters)
             => await Get("SP_GET_DeliveryMethods", new List<SqlParameter>() {
                 new SqlParameter("@DLM_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
