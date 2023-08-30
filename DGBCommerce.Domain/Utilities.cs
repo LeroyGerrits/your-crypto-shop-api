@@ -47,6 +47,17 @@ namespace DGBCommerce.Domain
             return builder.ToString();
         }
 
+        public static string GenerateRandomString(int length)
+        {
+            string allowed = "123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ";
+            char[] randomChars = new char[length];
+
+            for (int i = 0; i < length; i++)
+                randomChars[i] = allowed[RandomNumberGenerator.GetInt32(0, allowed.Length)];
+
+            return new string(randomChars);
+        }
+
         public static string GenerateSalt()
         {
             byte[] salt = new byte[128 / 8];

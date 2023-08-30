@@ -26,6 +26,7 @@ namespace DGBCommerce.API
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IMailService, MailService>();
 
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();

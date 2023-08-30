@@ -20,6 +20,9 @@ namespace DGBCommerce.Domain
             }
         }
 
+        public bool Success
+            => this.ErrorCode == 0;
+
         [GeneratedRegex("\'.*?\'")]
         private static partial Regex RegexUniqueConstraintViolation();
     }

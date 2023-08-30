@@ -56,7 +56,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRL_MERCHANT", SqlDbType.UniqueIdentifier) { Value = merchantPasswordResetLink.Merchant.Id },
                 new SqlParameter("@PRL_IP_ADDRESS", SqlDbType.VarChar) { Value = merchantPasswordResetLink.IpAddress },
                 new SqlParameter("@PRL_KEY", SqlDbType.VarChar) { Value = merchantPasswordResetLink.Key }
-            }, Guid.Empty);
+            });
 
         public async Task<MutationResult> CreateShop(Shop shop, Guid mutationId)
             => await NonQuery("SP_MUTATE_Shop", new List<SqlParameter>() {
@@ -158,6 +158,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar) { Value = password },
             });
 
+        public async Task<DataTable> GetMerchantPasswordResetLinkByIdAndKey(Guid id, string key)
+            => await Get("SP_GET_Merchant_ByEmailAddressAndPassword", new List<SqlParameter>() {
+                new SqlParameter("@PRL_ID", SqlDbType.VarChar) { Value = id },
+                new SqlParameter("@PRL_KEY", SqlDbType.VarChar) { Value = key },
+            });
+
         public async Task<DataTable> GetMerchants(GetMerchantsParameters parameters)
             => await Get("SP_GET_Merchants", new List<SqlParameter>() {
                 new SqlParameter("MER_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
@@ -244,14 +250,21 @@ namespace DGBCommerce.Data
             return table;
         }
 
-        private async Task<MutationResult> NonQuery(string storedProcedure, List<SqlParameter> parameters, Guid mutationId)
+
+        private async Task<MutationResult> NonQuery(string storedProcedure, List<SqlParameter> parameters)
+            => await NonQuery(storedProcedure, parameters, null);
+
+        private async Task<MutationResult> NonQuery(string storedProcedure, List<SqlParameter> parameters, Guid? mutationId)
         {
             MutationResult result = new();
 
             using (SqlConnection connection = new(_connectionString))
             {
                 using SqlCommand command = new(storedProcedure, connection) { CommandType = CommandType.StoredProcedure };
-                command.Parameters.Add(new SqlParameter("@MUT_ID", SqlDbType.UniqueIdentifier) { Value = mutationId });
+
+                if (mutationId.HasValue)
+                    command.Parameters.Add(new SqlParameter("@MUT_ID", SqlDbType.UniqueIdentifier) { Value = mutationId });
+
                 command.Parameters.Add(new SqlParameter("@OUT_ERROR", SqlDbType.Int) { Direction = ParameterDirection.Output });
                 command.Parameters.Add(new SqlParameter("@OUT_IDENTITY", SqlDbType.UniqueIdentifier) { Direction = ParameterDirection.Output });
                 command.Parameters.Add(new SqlParameter("@OUT_MESSAGE", SqlDbType.VarChar, 255) { Direction = ParameterDirection.Output });

@@ -6,6 +6,8 @@ using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DGBCommerce.Domain;
+using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace DGBCommerce.API.Controllers
 {
@@ -13,23 +15,29 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class MerchantController : ControllerBase
     {
+        private readonly AppSettings _appSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
         private readonly IAuthenticationService _authenticationService;
+        private readonly IMailService _mailService;
         private readonly IMerchantRepository _merchantRepository;
         private readonly IMerchantPasswordResetLinkRepository _merchantPasswordResetLinkRepository;
 
         public MerchantController(
+            IOptions<AppSettings> appSettings,
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
             IAuthenticationService authenticationService,
+            IMailService mailService,
             IMerchantRepository merchantRepository,
             IMerchantPasswordResetLinkRepository merchantPasswordResetLinkRepository
             )
         {
+            _appSettings = appSettings.Value;
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _authenticationService = authenticationService;
+            _mailService = mailService;
             _merchantRepository = merchantRepository;
             _merchantPasswordResetLinkRepository = merchantPasswordResetLinkRepository;
         }
@@ -107,12 +115,29 @@ namespace DGBCommerce.API.Controllers
                 {
                     Merchant = merchant,
                     Date = DateTime.UtcNow,
-                    IpAddress = _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress.ToString(),
-                    Key = Utilities.GenerateSalt()
+                    IpAddress = _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString(),
+                    Key = Utilities.GenerateRandomString(50)
                 };
 
                 var result = await _merchantPasswordResetLinkRepository.Create(passwordResetLink, Guid.Empty);
-                return Ok("boem");
+                if (result.Success)
+                {
+                    if (string.IsNullOrWhiteSpace(_appSettings.UrlDgbCommerceWebsite))
+                    {   
+                        // TO-DO: Log error
+                        return Ok();
+                    }
+
+                    string passwordResetLinkUrl = $"{_appSettings.UrlDgbCommerceWebsite}/ResetPassword/{result.Identifier}/{passwordResetLink.Key}";
+
+                    StringBuilder sbMail = new();
+                    sbMail.Append($"<p>Dear {merchant.Salutation},</p>");
+                    sbMail.Append($"<p>A new password for your account was requested. If this was you, click on the following link to proceed setting a new password:</p>");
+                    sbMail.Append($"<p><a href=\"{passwordResetLinkUrl}\">{passwordResetLinkUrl}</a></p>");
+                    sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
+                    sbMail.Append($"<p>DGB Commerce</p>");
+                    _mailService.SendMail(merchant.EmailAddress, "DGB Commerce password reset", sbMail.ToString());
+                }                
             }
 
             return Ok();

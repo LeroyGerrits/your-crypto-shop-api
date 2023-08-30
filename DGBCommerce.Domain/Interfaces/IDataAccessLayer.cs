@@ -26,6 +26,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetFaqs(GetFaqsParameters parameters);
         Task<DataTable> GetMerchantByEmailAddress(string emailAddress);
         Task<DataTable> GetMerchantByEmailAddressAndPassword(string emailAddress, string password);
+        Task<DataTable> GetMerchantPasswordResetLinkByIdAndKey(Guid id, string key);
         Task<DataTable> GetMerchants(GetMerchantsParameters parameters);
         Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);

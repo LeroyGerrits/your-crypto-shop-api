@@ -24,7 +24,7 @@ public class JwtUtils : IJwtUtils
         _appSettings = appSettings.Value;
 
         if (string.IsNullOrEmpty(_appSettings.Secret))
-            throw new Exception("JWT secret not configured");
+            throw new Exception("JWT secret not configured.");
     }
 
     public string GenerateJwtToken(Merchant merchant)
