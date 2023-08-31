@@ -1,7 +1,10 @@
 ﻿using DGBCommerce.Domain.Models;
 using Microsoft.Extensions.Options;
-using System.Net.Mail;
-using System.Net;
+
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit.Text;
+using MimeKit;
 
 namespace DGBCommerce.API.Services
 {
@@ -40,26 +43,19 @@ namespace DGBCommerce.API.Services
 
         public void SendMail(List<string> recipients, string subject, string body)
         {
-            SmtpClient smtpClient = new()
-            {
-                Credentials = new NetworkCredential(_mailSettings.Username, _mailSettings.Password),
-                EnableSsl = true,
-                Host = _mailSettings.SmtpServer!,
-                Port = _mailSettings.Port!.Value                
-            };
-
-            MailMessage mailMessage = new()
-            {
-                From = new MailAddress(_mailSettings.SenderEmailAddress!),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true,
-            };
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress(_mailSettings.SenderName, _mailSettings.SenderEmailAddress));            
+            email.Subject = subject;
+            email.Body = new TextPart(TextFormat.Html) { Text = body };
 
             foreach (string recipient in recipients)
-                mailMessage.To.Add(recipient);
+                email.To.Add(MailboxAddress.Parse(recipient));
 
-            smtpClient.Send(mailMessage);
+            using var smtp = new SmtpClient();
+            smtp.Connect(_mailSettings.SmtpServer, _mailSettings.Port!.Value, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_mailSettings.Username, _mailSettings.Password);
+            smtp.Send(email);
+            smtp.Disconnect(true);
         }
     }
 }
