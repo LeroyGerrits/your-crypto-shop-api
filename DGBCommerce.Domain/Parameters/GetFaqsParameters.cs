@@ -1,6 +1,6 @@
 ﻿namespace DGBCommerce.Domain.Parameters
 {
-    public class GetFaqsParameters
+    public class GetFaqsParameters : GetParameters
     {
         public Guid? Id { get; set; }
         public Guid? CategoryId { get; set; }

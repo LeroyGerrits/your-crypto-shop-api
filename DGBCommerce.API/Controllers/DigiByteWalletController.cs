@@ -1,6 +1,7 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,20 +25,33 @@ namespace DGBCommerce.API.Controllers
             _deliveryMethodRepository = deliveryMethodRepository;
         }
 
-        [AllowAnonymous]
+        [AuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DigiByteWallet>>> Get()
+        public async Task<ActionResult<IEnumerable<DigiByteWallet>>> Get(string? name, string? address)
         {
-            var deliveryMethods = await _deliveryMethodRepository.Get();
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var deliveryMethods = await _deliveryMethodRepository.Get(new GetDigiByteWalletsParameters() { 
+                MerchantId = authenticatedMerchantId.Value, 
+                Name = name, Address = 
+                address 
+            });
             return Ok(deliveryMethods.ToList());
         }
 
-        [AllowAnonymous]
+        [AuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<DigiByteWallet>> Get(Guid id)
         {
-            var deliveryMethod = await _deliveryMethodRepository.GetById(id);
-            if (deliveryMethod == null) return NotFound();
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
+            if (deliveryMethod == null)
+                return NotFound();
 
             return Ok(deliveryMethod);
         }
@@ -62,8 +76,9 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _deliveryMethodRepository.GetById(id);
-            if (deliveryMethod == null) return NotFound();
+            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
+            if (deliveryMethod == null)
+                return NotFound();
 
             var result = await _deliveryMethodRepository.Update(value, authenticatedMerchantId.Value);
             return Ok(result);
@@ -77,8 +92,9 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _deliveryMethodRepository.GetById(id);
-            if (deliveryMethod == null) return NotFound();
+            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
+            if (deliveryMethod == null)
+                return NotFound();
 
             var result = await _deliveryMethodRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);

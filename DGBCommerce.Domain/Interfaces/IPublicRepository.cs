@@ -1,8 +1,8 @@
 ﻿namespace DGBCommerce.Domain.Interfaces
 {
-    public interface IRepository<T, U>
+    public interface IPublicRepository<T, U>
     {
         Task<IEnumerable<T>> Get(U parameters);
-        Task<T?> GetById(Guid merchantId, Guid id);
+        Task<T?> GetById(Guid id);
     }
 }

@@ -139,6 +139,15 @@ namespace DGBCommerce.Data
                 new SqlParameter("@FAQ_KEYWORDS", SqlDbType.NVarChar) { Value = parameters.Keywords },
             });
 
+        public async Task<DataTable> GetFinancialStatementTransactions(GetFinancialStatementTransactionsParameters parameters)
+            => await Get("SP_GET_FinancialStatementTransactions", new List<SqlParameter>() {
+                new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@TRX_TYPE", SqlDbType.TinyInt) { Value = parameters.Type },
+                new SqlParameter("@TRX_CURRENCY", SqlDbType.UniqueIdentifier) { Value = parameters.CurrencyId },
+                new SqlParameter("@TRX_RECURRANCE", SqlDbType.TinyInt) { Value = parameters.Recurrance },
+                new SqlParameter("@TRX_DESCRIPTION", SqlDbType.NVarChar) { Value = parameters.Description },
+            });
+
         public async Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters)
             => await Get("SP_GET_NewsMessages", new List<SqlParameter>() {
                 new SqlParameter("@NWS_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },

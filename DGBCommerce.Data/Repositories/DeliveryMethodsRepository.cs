@@ -16,20 +16,14 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public async Task<DeliveryMethod?> GetById(Guid id)
+        public async Task<IEnumerable<DeliveryMethod>> Get(GetDeliveryMethodsParameters parameters)
+            => await GetRaw(parameters);
+
+        public async Task<DeliveryMethod?> GetById(Guid merchantId, Guid id)
         {
-            var deliveryMethods = await GetRaw(new GetDeliveryMethodsParameters() { Id = id });
+            var deliveryMethods = await GetRaw(new GetDeliveryMethodsParameters() { MerchantId = merchantId, Id = id });
             return deliveryMethods.ToList().SingleOrDefault();
         }
-
-        public async Task<IEnumerable<DeliveryMethod>> Get()
-            => await GetRaw(new GetDeliveryMethodsParameters());
-
-        public async Task<IEnumerable<DeliveryMethod>> GetByMerchantId(Guid merchantId)
-            => await GetRaw(new GetDeliveryMethodsParameters() { MerchantId = merchantId });
-
-        public async Task<IEnumerable<DeliveryMethod>> GetByShopId(Guid shopId)
-            => await GetRaw(new GetDeliveryMethodsParameters() { ShopId = shopId });
 
         public Task<MutationResult> Create(DeliveryMethod item, Guid mutationId)
             => _dataAccessLayer.CreateDeliveryMethod(item, mutationId);

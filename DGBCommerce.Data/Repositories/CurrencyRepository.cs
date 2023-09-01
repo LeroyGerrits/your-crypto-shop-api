@@ -15,8 +15,8 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public async Task<IEnumerable<Currency>> Get()
-            => await GetRaw(new GetCurrenciesParameters());
+        public async Task<IEnumerable<Currency>> Get(GetCurrenciesParameters parameters)
+            => await GetRaw(parameters);
 
         public async Task<Currency?> GetById(Guid id)
         {

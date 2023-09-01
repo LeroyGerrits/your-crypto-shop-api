@@ -1,5 +1,6 @@
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,9 +19,13 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Faq>>> Get()
+        public async Task<ActionResult<IEnumerable<Faq>>> Get(string? title, string? keywords)
         {
-            var faqs = await _faqRepository.Get();
+            var faqs = await _faqRepository.Get(new GetFaqsParameters()
+            {
+                Title = title,
+                Keywords = keywords
+            });
             return Ok(faqs.ToList());
         }
 
@@ -29,7 +34,8 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<Faq>> Get(Guid id)
         {
             var faq = await _faqRepository.GetById(id);
-            if (faq == null) return NotFound();
+            if (faq == null) 
+                return NotFound();
 
             return Ok(faq);
         }

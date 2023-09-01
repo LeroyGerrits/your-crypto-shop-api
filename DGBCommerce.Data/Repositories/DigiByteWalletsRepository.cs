@@ -16,17 +16,14 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public async Task<DigiByteWallet?> GetById(Guid id)
+        public async Task<IEnumerable<DigiByteWallet>> Get(GetDigiByteWalletsParameters parameters)
+            => await GetRaw(parameters);
+
+        public async Task<DigiByteWallet?> GetById(Guid merchantId, Guid id)
         {
-            var deliveryMethods = await GetRaw(new GetDigiByteWalletsParameters() { Id = id });
+            var deliveryMethods = await GetRaw(new GetDigiByteWalletsParameters() { MerchantId = merchantId, Id = id });
             return deliveryMethods.ToList().SingleOrDefault();
         }
-
-        public async Task<IEnumerable<DigiByteWallet>> Get()
-            => await GetRaw(new GetDigiByteWalletsParameters());
-
-        public async Task<IEnumerable<DigiByteWallet>> GetByMerchantId(Guid merchantId)
-            => await GetRaw(new GetDigiByteWalletsParameters() { MerchantId = merchantId });
 
         public Task<MutationResult> Create(DigiByteWallet item, Guid mutationId)
             => _dataAccessLayer.CreateDigiByteWallet(item, mutationId);
@@ -46,14 +43,14 @@ namespace DGBCommerce.Data.Repositories
             {
                 deliveryMethods.Add(new()
                 {
-                    Id = new Guid(row["dbw_id"].ToString()!),                    
-                        Merchant = new Merchant()
-                        {
-                            Id = new Guid(row["dbw_merchant"].ToString()!),
-                            EmailAddress = Utilities.DbNullableString(row["dbw_merchant_email_address"]),
-                            Gender = (Gender)Convert.ToInt32(row["dbw_merchant_gender"]),
-                            LastName = Utilities.DbNullableString(row["dbw_merchant_last_name"]),
-                        },
+                    Id = new Guid(row["dbw_id"].ToString()!),
+                    Merchant = new Merchant()
+                    {
+                        Id = new Guid(row["dbw_merchant"].ToString()!),
+                        EmailAddress = Utilities.DbNullableString(row["dbw_merchant_email_address"]),
+                        Gender = (Gender)Convert.ToInt32(row["dbw_merchant_gender"]),
+                        LastName = Utilities.DbNullableString(row["dbw_merchant_last_name"]),
+                    },
 
                     Name = Utilities.DbNullableString(row["dbw_name"]),
                     Address = Utilities.DbNullableString(row["dbw_address"])

@@ -15,9 +15,18 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public async Task<IEnumerable<NewsMessage>> Get()
+        public async Task<IEnumerable<NewsMessage>> Get(GetNewsMessagesParameters parameters)
+            => await GetRaw(parameters);
+
+        public async Task<NewsMessage?> GetById(Guid id)
         {
-            DataTable table = await _dataAccessLayer.GetNewsMessages(new GetNewsMessagesParameters());
+            var newsMessages = await GetRaw(new GetNewsMessagesParameters() { Id = id });
+            return newsMessages.ToList().SingleOrDefault();
+        }
+
+        private async Task<IEnumerable<NewsMessage>> GetRaw(GetNewsMessagesParameters parameters)
+        {
+            DataTable table = await _dataAccessLayer.GetNewsMessages(parameters);
             List<NewsMessage> newsMessages = new();
 
             foreach (DataRow row in table.Rows)
@@ -27,23 +36,13 @@ namespace DGBCommerce.Data.Repositories
                     Id = new Guid(row["nws_id"].ToString()!),
                     Date = Convert.ToDateTime(row["nws_date"]),
                     ThumbnailUrl = Utilities.DbNullableString(row["nws_thumbnail_url"]),
-                    Title = Utilities.DbNullableString(row["nws_title"]),                    
+                    Title = Utilities.DbNullableString(row["nws_title"]),
                     Intro = Utilities.DbNullableString(row["nws_intro"]),
-                    Content = Utilities.DbNullableString(row["nws_content"])                    
+                    Content = Utilities.DbNullableString(row["nws_content"])
                 });
             }
 
             return newsMessages;
-        }
-
-        public Task<NewsMessage?> GetById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<NewsMessage>> GetByMerchant(Guid merchantId)
-        {
-            throw new NotImplementedException();
         }
     }
 }

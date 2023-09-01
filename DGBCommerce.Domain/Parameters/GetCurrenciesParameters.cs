@@ -1,6 +1,6 @@
 ﻿namespace DGBCommerce.Domain.Parameters
 {
-    public class GetCurrenciesParameters
+    public class GetCurrenciesParameters : GetParameters
     {
         public Guid? Id { get; set; }
         public string? Symbol { get; set; }

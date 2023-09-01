@@ -24,6 +24,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetDigiByteWallets(GetDigiByteWalletsParameters parameters);
         Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters);
         Task<DataTable> GetFaqs(GetFaqsParameters parameters);
+        Task<DataTable> GetFinancialStatementTransactions(GetFinancialStatementTransactionsParameters parameters);
         Task<DataTable> GetMerchantByEmailAddress(string emailAddress);
         Task<DataTable> GetMerchantByEmailAddressAndPassword(string emailAddress, string password);
         Task<DataTable> GetMerchantPasswordResetLinkByIdAndKey(Guid id, string key);

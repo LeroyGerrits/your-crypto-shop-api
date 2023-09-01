@@ -1,5 +1,6 @@
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,9 +19,11 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FaqCategory>>> Get()
+        public async Task<ActionResult<IEnumerable<FaqCategory>>> Get(string? name)
         {
-            var faqCategories = await _faqCategoryRepository.Get();
+            var faqCategories = await _faqCategoryRepository.Get(new GetFaqCategoriesParameters() { 
+                Name = name 
+            });
             return Ok(faqCategories.ToList());
         }
 
@@ -29,7 +32,8 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<FaqCategory>> Get(Guid id)
         {
             var faqCategory = await _faqCategoryRepository.GetById(id);
-            if (faqCategory == null) return NotFound();
+            if (faqCategory == null) 
+                return NotFound();
 
             return Ok(faqCategory);
         }

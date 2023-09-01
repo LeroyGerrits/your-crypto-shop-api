@@ -1,9 +1,7 @@
 ﻿using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Parameters;
 
 namespace DGBCommerce.Domain.Interfaces
 {
-    public interface IDigiByteWalletRepository : IMutableRepository<DigiByteWallet>
-    {
-        Task<IEnumerable<DigiByteWallet>> GetByMerchantId(Guid merchantId);
-    }
+    public interface IDigiByteWalletRepository : IMutableRepository<DigiByteWallet, GetDigiByteWalletsParameters> { }
 }

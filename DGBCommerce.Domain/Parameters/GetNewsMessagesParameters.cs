@@ -1,6 +1,6 @@
 ﻿namespace DGBCommerce.Domain.Parameters
 {
-    public class GetNewsMessagesParameters
+    public class GetNewsMessagesParameters : GetParameters
     {
         public Guid? Id { get; set; }
         public string? Title { get; set; }

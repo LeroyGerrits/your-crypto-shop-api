@@ -16,15 +16,12 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public async Task<IEnumerable<Shop>> Get()
-            => await GetRaw(new GetShopsParameters());
+        public async Task<IEnumerable<Shop>> Get(GetShopsParameters parameters)
+            => await GetRaw(parameters);
 
-        public async Task<IEnumerable<Shop>> GetByMerchantId(Guid merchantId)
-            => await GetRaw(new GetShopsParameters() { MerchantId = merchantId });
-
-        public async Task<Shop?> GetById(Guid id)
+        public async Task<Shop?> GetById(Guid merchantId, Guid id)
         {
-            var shops = await GetRaw(new GetShopsParameters() { Id = id });
+            var shops = await GetRaw(new GetShopsParameters() { MerchantId = merchantId, Id = id });
             return shops.ToList().SingleOrDefault();
         }
 

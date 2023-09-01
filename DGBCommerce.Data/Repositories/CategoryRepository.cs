@@ -16,23 +16,14 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public async Task<Category?> GetById(Guid id)
+        public async Task<IEnumerable<Category>> Get(GetCategoriesParameters parameters)
+            => await this.GetRaw(parameters);
+
+        public async Task<Category?> GetById(Guid merchantId, Guid id)
         {
-            var categories = await this.GetRaw(new GetCategoriesParameters() { Id = id });
+            var categories = await this.GetRaw(new GetCategoriesParameters() { MerchantId = merchantId, Id = id });
             return categories.ToList().SingleOrDefault();
         }
-
-        public async Task<IEnumerable<Category>> Get()
-            => await this.GetRaw(new GetCategoriesParameters());
-
-        public async Task<IEnumerable<Category>> GetByMerchantId(Guid merchantId)
-            => await this.GetRaw(new GetCategoriesParameters() { MerchantId = merchantId });
-
-        public async Task<IEnumerable<Category>> GetByParentId(Guid parentId)
-            => await this.GetRaw(new GetCategoriesParameters() { ParentId = parentId });
-
-        public async Task<IEnumerable<Category>> GetByShopId(Guid shopId)
-            => await this.GetRaw(new GetCategoriesParameters() { ShopId = shopId });
 
         public Task<MutationResult> Create(Category item, Guid mutationId)
             => _dataAccessLayer.CreateCategory(item, mutationId);

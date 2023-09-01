@@ -15,10 +15,10 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public Task<MerchantPasswordResetLink?> GetById(Guid id)
+        public Task<MerchantPasswordResetLink?> GetById(Guid merchantId, Guid id)
             => throw new InvalidOperationException();
 
-        public Task<IEnumerable<MerchantPasswordResetLink>> Get()
+        public Task<IEnumerable<MerchantPasswordResetLink>> Get(object parameters)
             => throw new InvalidOperationException();
 
         public async Task<MerchantPasswordResetLink?> GetByIdAndKey(Guid id, string key)

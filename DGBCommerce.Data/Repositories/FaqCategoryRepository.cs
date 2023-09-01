@@ -15,9 +15,18 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public async Task<IEnumerable<FaqCategory>> Get()
+        public async Task<IEnumerable<FaqCategory>> Get(GetFaqCategoriesParameters parameters)
+            => await GetRaw(parameters);
+
+        public async Task<FaqCategory?> GetById(Guid id)
         {
-            DataTable table = await _dataAccessLayer.GetFaqCategories(new GetFaqCategoriesParameters());
+            var faqCategories = await GetRaw(new GetFaqCategoriesParameters() { Id = id });
+            return faqCategories.ToList().SingleOrDefault();
+        }
+
+        private async Task<IEnumerable<FaqCategory>> GetRaw(GetFaqCategoriesParameters parameters)
+        {
+            DataTable table = await _dataAccessLayer.GetFaqCategories(parameters);
             List<FaqCategory> faqcategories = new();
 
             foreach (DataRow row in table.Rows)
@@ -31,11 +40,6 @@ namespace DGBCommerce.Data.Repositories
             }
 
             return faqcategories;
-        }
-
-        public Task<FaqCategory?> GetById(Guid id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

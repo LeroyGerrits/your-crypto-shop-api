@@ -1,6 +1,6 @@
 ﻿namespace DGBCommerce.Domain.Parameters
 {
-    public class GetMerchantsParameters
+    public class GetMerchantsParameters : GetParameters
     {
         public Guid? Id { get; set; }        
         public string? EmailAddress { get; set; }

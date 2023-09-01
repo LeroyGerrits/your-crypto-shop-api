@@ -1,5 +1,4 @@
 ﻿using DGBCommerce.Domain;
-using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
@@ -16,8 +15,8 @@ namespace DGBCommerce.Data.Repositories
             _dataAccessLayer = dataAccessLayer;
         }
 
-        public async Task<IEnumerable<Faq>> Get()
-            => await GetRaw(new GetFaqsParameters());
+        public async Task<IEnumerable<Faq>> Get(GetFaqsParameters parameters)
+            => await GetRaw(parameters);
 
         public async Task<Faq?> GetById(Guid id)
         {

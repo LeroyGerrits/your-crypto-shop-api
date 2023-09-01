@@ -16,9 +16,9 @@ namespace DGBCommerce.Domain.Models
         public string Salutation
             => this.Gender switch
             {
-                Gender.Male => "Mr." + (!string.IsNullOrWhiteSpace(this.FirstName) ? " " + this.FirstName : string.Empty) + " " + this.LastName,
-                Gender.Female => "Ms. " + (!string.IsNullOrWhiteSpace(this.FirstName) ? " " + this.FirstName : string.Empty) + " " + this.LastName,
-                _ => "Mr./Ms. " + (!string.IsNullOrWhiteSpace(this.FirstName) ? " " + this.FirstName : string.Empty) + " " + this.LastName,
+                Gender.Male => (!string.IsNullOrWhiteSpace(this.FirstName) ? this.FirstName : "Mr.") + " " + this.LastName,
+                Gender.Female => (!string.IsNullOrWhiteSpace(this.FirstName) ? this.FirstName : "Ms.") + " " + this.LastName,
+                _ => (!string.IsNullOrWhiteSpace(this.FirstName) ? this.FirstName : "Mr./Ms.") + " " + this.LastName,
             };
     }
 }

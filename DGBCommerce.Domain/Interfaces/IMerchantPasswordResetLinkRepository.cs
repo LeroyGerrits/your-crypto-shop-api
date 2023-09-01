@@ -2,8 +2,5 @@
 
 namespace DGBCommerce.Domain.Interfaces
 {
-    public interface IMerchantPasswordResetLinkRepository : IMutableRepository<MerchantPasswordResetLink>
-    {
-        
-    }
+    public interface IMerchantPasswordResetLinkRepository : IMutableRepository<MerchantPasswordResetLink, object> { }
 }

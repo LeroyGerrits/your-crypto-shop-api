@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using DGBCommerce.Domain;
 using System.Text;
 using Microsoft.Extensions.Options;
+using DGBCommerce.Domain.Parameters;
+using DGBCommerce.Data.Repositories;
 
 namespace DGBCommerce.API.Controllers
 {
@@ -43,11 +45,18 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AuthenticationRequired]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Merchant>>> Get()
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Merchant>> Get(Guid id)
         {
-            var merchants = await _merchantRepository.Get();
-            return Ok(merchants.ToList());
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var merchant = await _merchantRepository.GetById(authenticatedMerchantId.Value, id);
+            if (merchant == null)
+                return NotFound();
+
+            return Ok(merchant);
         }
 
         [AuthenticationRequired]
@@ -70,8 +79,9 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var merchant = await _merchantRepository.GetById(id);
-            if (merchant == null) return NotFound();
+            var merchant = await _merchantRepository.GetById(authenticatedMerchantId.Value, id);
+            if (merchant == null) 
+                return NotFound();
 
             var result = await _merchantRepository.Update(value, authenticatedMerchantId.Value);
             return Ok(result);
@@ -85,8 +95,9 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var merchant = await _merchantRepository.GetById(id);
-            if (merchant == null) return NotFound();
+            var merchant = await _merchantRepository.GetById(authenticatedMerchantId.Value, id);
+            if (merchant == null) 
+                return NotFound();
 
             var result = await _merchantRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
@@ -109,35 +120,35 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult> ForgotPassword([FromBody] string emailAddress)
         {
             var merchant = await _merchantRepository.GetByEmailAddress(emailAddress);
-            if (merchant != null)
+            if (merchant == null)
+                return Ok();
+
+            MerchantPasswordResetLink passwordResetLink = new()
             {
-                MerchantPasswordResetLink passwordResetLink = new()
+                Merchant = merchant,
+                Date = DateTime.UtcNow,
+                IpAddress = _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString(),
+                Key = Utilities.GenerateRandomString(50)
+            };
+
+            var result = await _merchantPasswordResetLinkRepository.Create(passwordResetLink, Guid.Empty);
+            if (result.Success)
+            {
+                if (string.IsNullOrWhiteSpace(_appSettings.UrlDgbCommerceWebsite))
                 {
-                    Merchant = merchant,
-                    Date = DateTime.UtcNow,
-                    IpAddress = _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString(),
-                    Key = Utilities.GenerateRandomString(50)
-                };
+                    // TO-DO: Log error
+                    return Ok();
+                }
 
-                var result = await _merchantPasswordResetLinkRepository.Create(passwordResetLink, Guid.Empty);
-                if (result.Success)
-                {
-                    if (string.IsNullOrWhiteSpace(_appSettings.UrlDgbCommerceWebsite))
-                    {   
-                        // TO-DO: Log error
-                        return Ok();
-                    }
+                string passwordResetUrl = $"{_appSettings.UrlDgbCommerceWebsite}/reset-password/{result.Identifier}/{passwordResetLink.Key}";
 
-                    string passwordResetLinkUrl = $"{_appSettings.UrlDgbCommerceWebsite}/ResetPassword/{result.Identifier}/{passwordResetLink.Key}";
-
-                    StringBuilder sbMail = new();
-                    sbMail.Append($"<p>Dear {merchant.Salutation},</p>");
-                    sbMail.Append($"<p>A new password for your account was requested. If this was you, click on the following link to proceed setting a new password:</p>");
-                    sbMail.Append($"<p><a href=\"{passwordResetLinkUrl}\">{passwordResetLinkUrl}</a></p>");
-                    sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
-                    sbMail.Append($"<p>DGB Commerce</p>");
-                    _mailService.SendMail(merchant.EmailAddress, "DGB Commerce password reset", sbMail.ToString());
-                }                
+                StringBuilder sbMail = new();
+                sbMail.Append($"<p>Hi {merchant.Salutation},</p>");
+                sbMail.Append($"<p>A new password for your account was requested. If this was you, click on the following link to proceed setting a new password:</p>");
+                sbMail.Append($"<p><a href=\"{passwordResetUrl}\">{passwordResetUrl}</a></p>");
+                sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
+                sbMail.Append($"<p>DGB Commerce</p>");
+                _mailService.SendMail(merchant.EmailAddress, "DGB Commerce password reset", sbMail.ToString());
             }
 
             return Ok();

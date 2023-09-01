@@ -2,6 +2,7 @@
 using DGBCommerce.Data;
 using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain.Interfaces;
+using Microsoft.OpenApi.Models;
 
 namespace DGBCommerce.API
 {
@@ -35,6 +36,7 @@ namespace DGBCommerce.API
             services.AddScoped<IDigiByteWalletRepository, DigiByteWalletRepository>();
             services.AddScoped<IFaqCategoryRepository, FaqCategoryRepository>();
             services.AddScoped<IFaqRepository, FaqRepository>();
+            services.AddScoped<IFinancialStatementTransactionRepository, FinancialStatementTransactionRepository>();
             services.AddScoped<IMerchantRepository, MerchantRepository>();
             services.AddScoped<IMerchantPasswordResetLinkRepository, MerchantPasswordResetLinkRepository>();
             services.AddScoped<INewsMessageRepository, NewsMessageRepository>();

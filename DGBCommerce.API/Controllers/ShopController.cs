@@ -1,6 +1,7 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,20 +25,34 @@ namespace DGBCommerce.API.Controllers
             _shopRepository = shopRepository;
         }
 
-        [AllowAnonymous]
+        [AuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Shop>>> Get()
+        public async Task<ActionResult<IEnumerable<Shop>>> Get(string? name, string? subDomain)
         {
-            var shops = await _shopRepository.Get();
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var shops = await _shopRepository.Get(new GetShopsParameters()
+            {
+                MerchantId = authenticatedMerchantId.Value,
+                Name = name,
+                SubDomain = subDomain
+            });
             return Ok(shops.ToList());
         }
 
-        [AllowAnonymous]
+        [AuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<Shop>> Get(Guid id)
         {
-            var shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var shop = await _shopRepository.GetById(authenticatedMerchantId.Value, id);
+            if (shop == null) 
+                return NotFound();
 
             return Ok(shop);
         }
@@ -62,8 +77,9 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            var shop = await _shopRepository.GetById(authenticatedMerchantId.Value, id);
+            if (shop == null)
+                return NotFound();
 
             var result = await _shopRepository.Update(value, authenticatedMerchantId.Value);
             return Ok(result);
@@ -77,8 +93,9 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var shop = await _shopRepository.GetById(id);
-            if (shop == null) return NotFound();
+            var shop = await _shopRepository.GetById(authenticatedMerchantId.Value, id);
+            if (shop == null)
+                return NotFound();
 
             var result = await _shopRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
