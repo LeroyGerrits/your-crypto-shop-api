@@ -3,6 +3,7 @@ using DGBCommerce.Data;
 using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain.Interfaces;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 namespace DGBCommerce.API
 {
@@ -20,8 +21,12 @@ namespace DGBCommerce.API
             string connectionString = Configuration.GetConnectionString("DGBCommerce") ?? throw new ArgumentException("connectionString 'DBBCommerce' not set.");
 
             services.AddCors();
-            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
-            
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
             services.AddSingleton(provider => Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IJwtUtils, JwtUtils>();
