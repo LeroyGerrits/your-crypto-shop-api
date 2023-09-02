@@ -142,6 +142,8 @@ namespace DGBCommerce.Data
         public async Task<DataTable> GetFinancialStatementTransactions(GetFinancialStatementTransactionsParameters parameters)
             => await Get("SP_GET_FinancialStatementTransactions", new List<SqlParameter>() {
                 new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@TRX_DATE_FROM", SqlDbType.Date) { Value = parameters.DateFrom },
+                new SqlParameter("@TRX_DATE_UNTIL", SqlDbType.Date) { Value = parameters.DateUntil },
                 new SqlParameter("@TRX_TYPE", SqlDbType.TinyInt) { Value = parameters.Type },
                 new SqlParameter("@TRX_CURRENCY", SqlDbType.UniqueIdentifier) { Value = parameters.CurrencyId },
                 new SqlParameter("@TRX_RECURRANCE", SqlDbType.TinyInt) { Value = parameters.Recurrance },

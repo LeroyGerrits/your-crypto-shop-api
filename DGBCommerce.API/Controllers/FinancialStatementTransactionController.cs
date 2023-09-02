@@ -20,11 +20,13 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FinancialStatementTransaction>>> Get(FinancialStatementTransactionType? type, Guid? currencyId, Recurrance? recurrance, string? description)
+        public async Task<ActionResult<IEnumerable<FinancialStatementTransaction>>> Get(FinancialStatementTransactionType? type, DateTime? dateFrom, DateTime? dateUntil, Guid? currencyId, Recurrance? recurrance, string? description)
         {
             var financialStatementTransactions = await _financialStatementTransactionRepository.Get(new GetFinancialStatementTransactionsParameters()
             {
                 Type = type,
+                DateFrom = dateFrom,
+                DateUntil = dateUntil,
                 CurrencyId = currencyId,
                 Recurrance = recurrance,
                 Description = description
