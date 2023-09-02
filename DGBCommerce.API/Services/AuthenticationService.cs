@@ -12,18 +12,23 @@ namespace DGBCommerce.API.Services
 
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMerchantRepository _merchantRepository;
         private readonly IJwtUtils _jwtUtils;
 
-        public AuthenticationService(IMerchantRepository merchantRepository, IJwtUtils jwtUtils)
+        public AuthenticationService(
+            IHttpContextAccessor httpContextAccessor,
+            IMerchantRepository merchantRepository, 
+            IJwtUtils jwtUtils)
         {
+            _httpContextAccessor = httpContextAccessor;
             _merchantRepository = merchantRepository;
             _jwtUtils = jwtUtils;
         }
 
         public AuthenticationResponse? Authenticate(AuthenticationRequest model)
         {
-            Merchant? merchant = _merchantRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password).Result;
+            Merchant? merchant = _merchantRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password, _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString()).Result;
             if (merchant == null) return null;
             var token = _jwtUtils.GenerateJwtToken(merchant);
             return new AuthenticationResponse(merchant, token);

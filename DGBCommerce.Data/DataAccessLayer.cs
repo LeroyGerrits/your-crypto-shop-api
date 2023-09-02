@@ -163,10 +163,11 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress }
             });
 
-        public async Task<DataTable> GetMerchantByEmailAddressAndPassword(string emailAddress, string password)
+        public async Task<DataTable> GetMerchantByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress)
             => await Get("SP_GET_Merchant_ByEmailAddressAndPassword", new List<SqlParameter>() {
                 new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress },
                 new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar) { Value = password },
+                new SqlParameter("@MER_IP_ADDRESS", SqlDbType.VarChar) { Value = ipAddress }
             });
 
         public async Task<DataTable> GetMerchantPasswordResetLinkByIdAndKey(Guid id, string key)

@@ -28,8 +28,8 @@ namespace DGBCommerce.Data.Repositories
         public async Task<Merchant?> GetByEmailAddress(string emailAddress)
             => await GetRawByEmailAddress(emailAddress);
 
-        public async Task<Merchant?> GetByEmailAddressAndPassword(string emailAddress, string password)
-            => await GetRawByEmailAddressAndPassword(emailAddress, password);
+        public async Task<Merchant?> GetByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress)
+            => await GetRawByEmailAddressAndPassword(emailAddress, password, ipAddress);
 
         public Task<MutationResult> Create(Merchant item, Guid mutationId)
             => _dataAccessLayer.CreateMerchant(item, mutationId);
@@ -55,7 +55,11 @@ namespace DGBCommerce.Data.Repositories
                     Password = Utilities.DbNullableString(row["mer_password"]),
                     Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                     FirstName = Utilities.DbNullableString(row["mer_first_name"]),
-                    LastName = Utilities.DbNullableString(row["mer_last_name"])
+                    LastName = Utilities.DbNullableString(row["mer_last_name"]),
+                    LastLogin = Utilities.DBNullableDateTime(row["mer_last_login"]),
+                    LastIpAddress = Utilities.DbNullableString(row["mer_last_ip_address"]),
+                    SecondLastLogin = Utilities.DBNullableDateTime(row["mer_second_last_login"]),
+                    SecondLastIpAddress = Utilities.DbNullableString(row["mer_second_last_ip_address"])
                 });
             }
 
@@ -82,9 +86,9 @@ namespace DGBCommerce.Data.Repositories
             };
         }
 
-        private async Task<Merchant?> GetRawByEmailAddressAndPassword(string emailAddress, string password)
+        private async Task<Merchant?> GetRawByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress)
         {
-            DataTable table = await _dataAccessLayer.GetMerchantByEmailAddressAndPassword(emailAddress, password);
+            DataTable table = await _dataAccessLayer.GetMerchantByEmailAddressAndPassword(emailAddress, password, ipAddress);
 
             if (table.Rows.Count != 1)
                 return null;
