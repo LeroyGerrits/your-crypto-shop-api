@@ -51,8 +51,6 @@ namespace DGBCommerce.Data.Repositories
                 {
                     Id = new Guid(row["mer_id"].ToString()!),
                     EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
-                    PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
-                    Password = Utilities.DbNullableString(row["mer_password"]),
                     Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                     FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                     LastName = Utilities.DbNullableString(row["mer_last_name"]),
@@ -78,8 +76,6 @@ namespace DGBCommerce.Data.Repositories
             {
                 Id = new Guid(row["mer_id"].ToString()!),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
-                PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
-                Password = Utilities.DbNullableString(row["mer_password"]),
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                 FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                 LastName = Utilities.DbNullableString(row["mer_last_name"])
@@ -98,11 +94,13 @@ namespace DGBCommerce.Data.Repositories
             {
                 Id = new Guid(row["mer_id"].ToString()!),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
-                PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
-                Password = Utilities.DbNullableString(row["mer_password"]),
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                 FirstName = Utilities.DbNullableString(row["mer_first_name"]),
-                LastName = Utilities.DbNullableString(row["mer_last_name"])
+                LastName = Utilities.DbNullableString(row["mer_last_name"]),
+                LastLogin = Utilities.DBNullableDateTime(row["mer_last_login"]),
+                LastIpAddress = Utilities.DbNullableString(row["mer_last_ip_address"]),
+                SecondLastLogin = Utilities.DBNullableDateTime(row["mer_second_last_login"]),
+                SecondLastIpAddress = Utilities.DbNullableString(row["mer_second_last_ip_address"])
             };
         }
     }

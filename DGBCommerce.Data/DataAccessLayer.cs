@@ -262,7 +262,6 @@ namespace DGBCommerce.Data
             return table;
         }
 
-
         private async Task<MutationResult> NonQuery(string storedProcedure, List<SqlParameter> parameters)
             => await NonQuery(storedProcedure, parameters, null);
 
