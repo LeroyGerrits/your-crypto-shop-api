@@ -52,7 +52,8 @@ namespace DGBCommerce.Data.Repositories
                         Gender = (Gender)Convert.ToInt32(row["shp_merchant_gender"]),
                         LastName = Utilities.DbNullableString(row["shp_merchant_last_name"]),
                     },
-                    SubDomain = Utilities.DbNullableString(row["shp_subdomain"])
+                    SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
+                    Featured = Convert.ToBoolean(row["shp_featured"])
                 });
             }
 
