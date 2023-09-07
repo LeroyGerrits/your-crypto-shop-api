@@ -1,4 +1,5 @@
 using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
@@ -83,7 +84,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var result = await _categoryRepository.Create(value, authenticatedMerchantId.Value);
-            return CreatedAtAction(nameof(Get), new { id = result.Identifier });
+            return Ok(result);
         }
 
         [AuthenticationRequired]
@@ -99,10 +100,7 @@ namespace DGBCommerce.API.Controllers
                 return NotFound();
 
             var result = await _categoryRepository.Update(value, authenticatedMerchantId.Value);
-            if (result.ErrorCode > 0)
-                return Ok(result.Message);
-
-            return Ok(category);
+            return Ok(result);
         }
 
         [AuthenticationRequired]
@@ -118,10 +116,7 @@ namespace DGBCommerce.API.Controllers
                 return NotFound();
 
             var result = await _categoryRepository.Delete(id, authenticatedMerchantId.Value);
-            if (result.ErrorCode > 0)
-                return Ok(result.Message);
-
-            return Ok(category);
+            return Ok(result);
         }
     }
 }
