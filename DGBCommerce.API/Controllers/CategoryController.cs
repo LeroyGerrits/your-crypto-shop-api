@@ -40,7 +40,23 @@ namespace DGBCommerce.API.Controllers
                 ParentId = parentId,
                 Name = name
             });
-            return Ok(categories.ToList());
+
+            Dictionary<Guid, List<Category>> dictCategoriesPerParent = new();
+            foreach (Category category in categories)
+            {
+                Guid dictionaryKey = category.Parent != null ? category.Parent.Id!.Value : Guid.Empty;
+
+                if (dictCategoriesPerParent.ContainsKey(dictionaryKey))
+                    dictCategoriesPerParent[dictionaryKey].Add(category);
+                else
+                    dictCategoriesPerParent.Add(dictionaryKey, new List<Category> { category });
+            }
+
+            foreach (Category category in categories)
+                if (dictCategoriesPerParent.ContainsKey(category.Id!.Value))
+                    category.Children = dictCategoriesPerParent[category.Id!.Value];
+
+            return Ok(categories.Where(c => c.Parent == null).ToList());
         }
 
         [AuthenticationRequired]
@@ -52,7 +68,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var category = await _categoryRepository.GetById(authenticatedMerchantId.Value, id);
-            if (category == null) 
+            if (category == null)
                 return NotFound();
 
             return Ok(category);
@@ -79,7 +95,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var category = await _categoryRepository.GetById(authenticatedMerchantId.Value, id);
-            if (category == null) 
+            if (category == null)
                 return NotFound();
 
             var result = await _categoryRepository.Update(value, authenticatedMerchantId.Value);
@@ -98,7 +114,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var category = await _categoryRepository.GetById(authenticatedMerchantId.Value, id);
-            if (category == null) 
+            if (category == null)
                 return NotFound();
 
             var result = await _categoryRepository.Delete(id, authenticatedMerchantId.Value);
