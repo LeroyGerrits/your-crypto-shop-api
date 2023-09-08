@@ -202,10 +202,11 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> UpdateCategory(Category category, Guid mutationId)
             => await NonQuery("SP_MUTATE_Category", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
-                new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = category.SortOrder },
+                new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = category.Id },
                 new SqlParameter("@CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = category.Shop.Id },
                 new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = category.Parent?.Id },
                 new SqlParameter("@CAT_NAME", SqlDbType.NVarChar, 255) { Value = category.Name },
+                new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = category.Visible },
                 new SqlParameter("@CAT_SORTORDER", SqlDbType.Int) { Value = category.SortOrder }
             }, mutationId);
 

@@ -58,6 +58,7 @@ namespace DGBCommerce.Data.Repositories
                         Name = Utilities.DbNullableString(row["cat_shop_name"]),
                     },
                     Name = Utilities.DbNullableString(row["cat_name"]),
+                    Visible = Convert.ToBoolean(row["cat_visible"]),
                     SortOrder = Utilities.DbNullableInt(row["cat_sortorder"])
                 };
 
@@ -67,7 +68,8 @@ namespace DGBCommerce.Data.Repositories
                     {
                         Id = new Guid(row["cat_parent"].ToString()!),
                         Shop = category.Shop,
-                        Name = Utilities.DbNullableString(row["cat_parent_name"])
+                        Name = Utilities.DbNullableString(row["cat_parent_name"]),
+                        Visible = Convert.ToBoolean(row["cat_parent_visible"])
                     };
                 }
 
