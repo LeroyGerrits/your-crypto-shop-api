@@ -24,7 +24,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = category.Shop.Id },
                 new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = category.Parent?.Id },
                 new SqlParameter("@CAT_NAME", SqlDbType.NVarChar, 255) { Value = category.Name },
-                new SqlParameter("@CAT_SORTORDER", SqlDbType.Int) { Value = category.SortOrder }
+                new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = category.Visible }
             }, mutationId);
 
         public async Task<MutationResult> CreateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId)
@@ -206,8 +206,28 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = category.Shop.Id },
                 new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = category.Parent?.Id },
                 new SqlParameter("@CAT_NAME", SqlDbType.NVarChar, 255) { Value = category.Name },
-                new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = category.Visible },
-                new SqlParameter("@CAT_SORTORDER", SqlDbType.Int) { Value = category.SortOrder }
+                new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = category.Visible }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateCategoryChangeParent(Guid categoryId, Guid parentId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Category", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
+                new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = categoryId },
+                new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = parentId }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateCategoryMoveDown(Guid categoryId, Guid? parentId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Category", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 22 },
+                new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = categoryId },
+                new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = parentId }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateCategoryMoveUp(Guid categoryId, Guid? parentId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Category", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 23 },
+                new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = categoryId },
+                new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = parentId }
             }, mutationId);
 
         public async Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId)

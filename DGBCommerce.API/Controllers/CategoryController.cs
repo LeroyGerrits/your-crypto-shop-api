@@ -104,6 +104,54 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AuthenticationRequired]
+        [HttpPut("{id}/Down")]
+        public async Task<ActionResult> MoveDown(Guid id)
+        {
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var category = await _categoryRepository.GetById(authenticatedMerchantId.Value, id);
+            if (category == null)
+                return NotFound();
+
+            var result = await _categoryRepository.MoveDown(id, category.Parent?.Id, authenticatedMerchantId.Value);
+            return Ok(result);
+        }
+
+        [AuthenticationRequired]
+        [HttpPut("{id}/Up")]
+        public async Task<ActionResult> MoveUp(Guid id)
+        {
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var category = await _categoryRepository.GetById(authenticatedMerchantId.Value, id);
+            if (category == null)
+                return NotFound();
+
+            var result = await _categoryRepository.MoveUp(id, category.Parent?.Id, authenticatedMerchantId.Value);
+            return Ok(result);
+        }
+
+        [AuthenticationRequired]
+        [HttpPut("{id}/ChangeParent/{parentId}")]
+        public async Task<ActionResult> ChangeParent(Guid id, Guid parentId)
+        {
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var category = await _categoryRepository.GetById(authenticatedMerchantId.Value, id);
+            if (category == null)
+                return NotFound();
+
+            var result = await _categoryRepository.ChangeParent(id, parentId, authenticatedMerchantId.Value);
+            return Ok(result);
+        }
+
+        [AuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Category>> Delete(Guid id)
         {

@@ -31,6 +31,15 @@ namespace DGBCommerce.Data.Repositories
         public Task<MutationResult> Update(Category item, Guid mutationId)
             => _dataAccessLayer.UpdateCategory(item, mutationId);
 
+        public Task<MutationResult> MoveUp(Guid id, Guid? parentId, Guid mutationId)
+            => _dataAccessLayer.UpdateCategoryMoveUp(id, parentId, mutationId);
+
+        public Task<MutationResult> MoveDown(Guid id, Guid? parentId, Guid mutationId)
+            => _dataAccessLayer.UpdateCategoryMoveDown(id, parentId, mutationId);
+
+        public Task<MutationResult> ChangeParent(Guid id, Guid parentId, Guid mutationId)
+            => _dataAccessLayer.UpdateCategoryChangeParent(id, parentId, mutationId);
+
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
             => _dataAccessLayer.DeleteCategory(id, mutationId);
 
