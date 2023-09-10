@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
 namespace DGBCommerce.Domain

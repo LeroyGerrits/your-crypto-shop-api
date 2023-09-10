@@ -1,5 +1,5 @@
 using DGBCommerce.API.Controllers.Attributes;
-using DGBCommerce.Data.Repositories;
+using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
@@ -146,6 +146,14 @@ namespace DGBCommerce.API.Controllers
             var category = await _categoryRepository.GetById(authenticatedMerchantId.Value, id);
             if (category == null)
                 return NotFound();
+
+            // Check if category was not moved to one of its child categories
+            var categories = await _categoryRepository.Get(new GetCategoriesParameters() { MerchantId = authenticatedMerchantId.Value });
+            Dictionary<Guid, Category> dictCategories = categories.ToDictionary(cat => cat.Id!.Value);
+            Category newParentCategory = dictCategories[parentId];
+
+            if (newParentCategory.IsAChildOfCategory(category, ref dictCategories))
+                return Ok(new MutationResult() { ErrorCode = -1, Message = "A new parent can not be a child of the selected category." });
 
             var result = await _categoryRepository.ChangeParent(id, parentId, authenticatedMerchantId.Value);
             return Ok(result);
