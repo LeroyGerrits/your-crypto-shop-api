@@ -3,7 +3,7 @@
     public class ProductPhoto
     {
         public Guid? Id { get; set; }
-        public required Product Product { get; set; }
+        public required Guid ProductId { get; set; }
         public required string File { get; set; }
         public required string Extension { get; set; }
         public required int FileSize { get; set; }

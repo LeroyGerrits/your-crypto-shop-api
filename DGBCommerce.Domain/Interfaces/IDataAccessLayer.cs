@@ -11,11 +11,17 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId);
         Task<MutationResult> CreateMerchantPasswordResetLink(MerchantPasswordResetLink merchantPasswordResetLink);
+        Task<MutationResult> CreateProduct(Product product, Guid mutationId);
+        Task<MutationResult> CreateProductCategory(ProductCategory productCategory, Guid mutationId);
+        Task<MutationResult> CreateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
 
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteDeliveryMethod(Guid deliveryMethodId, Guid mutationId);
         Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId);
+        Task<MutationResult> DeleteProduct(Guid productId, Guid mutationId);
+        Task<MutationResult> DeleteProductCategory(Guid productId, Guid categoryId, Guid mutationId);
+        Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
 
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
@@ -31,6 +37,9 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetMerchantPasswordResetLinkByIdAndKey(Guid id, string key);
         Task<DataTable> GetMerchants(GetMerchantsParameters parameters);
         Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters);
+        Task<DataTable> GetProducts(GetProductsParameters parameters);
+        Task<DataTable> GetProductCategories(GetProductCategoriesParameters parameters);
+        Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);
         Task<DataTable> GetShopBySubDomain(string subDomain);
 
@@ -41,6 +50,8 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
         Task<MutationResult> UpdateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId);
+        Task<MutationResult> UpdateProduct(Product product, Guid mutationId);
+        Task<MutationResult> UpdateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> UpdateShop(Shop shop, Guid mutationId);
     }
 }
