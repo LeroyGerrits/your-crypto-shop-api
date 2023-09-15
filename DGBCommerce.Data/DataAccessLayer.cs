@@ -103,6 +103,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CAT_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
             });
 
+        public async Task<DataTable> GetCountries(GetCountriesParameters parameters)
+            => await Get("SP_GET_Countries", new List<SqlParameter>() {
+                new SqlParameter("@CTR_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
+                new SqlParameter("@CTR_CODE", SqlDbType.Char) { Value = parameters.Code },
+                new SqlParameter("@CTR_NAME", SqlDbType.VarChar) { Value = parameters.Name }
+            });
+
         public async Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters)
             => await Get("SP_GET_Currencies", new List<SqlParameter>() {
                 new SqlParameter("@CUR_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
