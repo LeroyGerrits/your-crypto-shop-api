@@ -54,7 +54,7 @@ namespace DGBCommerce.Data.Repositories
                 {
                     Id = new Guid(row["cat_id"].ToString()!),
                     ShopId = new Guid(row["cat_shop"].ToString()!),
-                    ParentId = new Guid(row["cat_parent"].ToString()!),
+                    ParentId = Utilities.DbNullableGuid(row["cat_parent"]),
                     Name = Utilities.DbNullableString(row["cat_name"]),
                     Visible = Convert.ToBoolean(row["cat_visible"]),
                     SortOrder = Utilities.DbNullableInt(row["cat_sortorder"])
