@@ -6,15 +6,15 @@ namespace DGBCommerce.Domain
     {
         public static bool IsAChildOfCategory(this Category newParentCategory, Category categoryToCheck, ref Dictionary<Guid, Category> dictCategories)
         {
-            if (newParentCategory.Parent == null)
+            if (!newParentCategory.ParentId.HasValue)
                 return false;
 
-            if (newParentCategory.Parent.Id == categoryToCheck.Id)
+            if (newParentCategory.ParentId == categoryToCheck.Id)
                 return true;
 
-            if (dictCategories.ContainsKey(newParentCategory.Parent.Id!.Value))
+            if (dictCategories.ContainsKey(newParentCategory.ParentId.Value))
             {
-                Category newParentCategoryParent = dictCategories[newParentCategory.Parent.Id!.Value];
+                Category newParentCategoryParent = dictCategories[newParentCategory.ParentId.Value];
                 return newParentCategoryParent.IsAChildOfCategory(categoryToCheck, ref dictCategories);
             }
 

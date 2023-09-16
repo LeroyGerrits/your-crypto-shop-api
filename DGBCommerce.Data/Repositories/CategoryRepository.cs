@@ -50,39 +50,15 @@ namespace DGBCommerce.Data.Repositories
 
             foreach (DataRow row in table.Rows)
             {
-                Category category = new()
+                categories.Add(new()
                 {
                     Id = new Guid(row["cat_id"].ToString()!),
-                    Shop = new Shop()
-                    {
-                        Id = new Guid(row["cat_shop"].ToString()!),
-                        Merchant = new Merchant()
-                        {
-                            Id = new Guid(row["cat_shop_merchant"].ToString()!),
-                            EmailAddress = Utilities.DbNullableString(row["cat_shop_merchant_email_address"]),
-                            Gender = (Gender)Convert.ToInt32(row["cat_shop_merchant_gender"]),
-                            FirstName = Utilities.DbNullableString(row["cat_shop_merchant_first_name"]),
-                            LastName = Utilities.DbNullableString(row["cat_shop_merchant_last_name"]),
-                        },
-                        Name = Utilities.DbNullableString(row["cat_shop_name"]),
-                    },
+                    ShopId = new Guid(row["cat_shop"].ToString()!),
+                    ParentId = new Guid(row["cat_parent"].ToString()!),
                     Name = Utilities.DbNullableString(row["cat_name"]),
                     Visible = Convert.ToBoolean(row["cat_visible"]),
                     SortOrder = Utilities.DbNullableInt(row["cat_sortorder"])
-                };
-
-                if (row["cat_parent"] != DBNull.Value)
-                {
-                    category.Parent = new Category()
-                    {
-                        Id = new Guid(row["cat_parent"].ToString()!),
-                        Shop = category.Shop,
-                        Name = Utilities.DbNullableString(row["cat_parent_name"]),
-                        Visible = Convert.ToBoolean(row["cat_parent_visible"])
-                    };
-                }
-
-                categories.Add(category);
+                });
             }
 
             return categories;

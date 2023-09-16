@@ -21,8 +21,8 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> CreateCategory(Category category, Guid mutationId)
             => await NonQuery("SP_MUTATE_Category", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
-                new SqlParameter("@CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = category.Shop.Id },
-                new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = category.Parent?.Id },
+                new SqlParameter("@CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = category.ShopId },
+                new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = category.ParentId },
                 new SqlParameter("@CAT_NAME", SqlDbType.NVarChar, 255) { Value = category.Name },
                 new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = category.Visible }
             }, mutationId);
@@ -58,6 +58,39 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRL_KEY", SqlDbType.VarChar) { Value = merchantPasswordResetLink.Key }
             });
 
+        public async Task<MutationResult> CreateProduct(Product product, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Product", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@PRD_SHOP", SqlDbType.UniqueIdentifier) { Value = product.ShopId },
+                new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = product.Name },
+                new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = product.Description },
+                new SqlParameter("@PRD_STOCK", SqlDbType.Int) { Value = product.Stock },
+                new SqlParameter("@PRD_PRICE", SqlDbType.Decimal) { Value = product.Price },
+                new SqlParameter("@PRD_VISIBLE", SqlDbType.NVarChar) { Value = product.Visible }
+            }, mutationId);
+
+        public async Task<MutationResult> CreateProductCategory(ProductCategory productCategory, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductCategory", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productCategory.ProductId },
+                new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = productCategory.CategoryId }
+            }, mutationId);
+
+        public async Task<MutationResult> CreateProductPhoto(ProductPhoto productPhoto, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@PHT_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productPhoto.ProductId },
+                new SqlParameter("@PHT_FILE", SqlDbType.VarChar) { Value = productPhoto.File },
+                new SqlParameter("@PHT_EXTENSION", SqlDbType.Char) { Value = productPhoto.Extension },
+                new SqlParameter("@PHT_FILE_SIZE", SqlDbType.Int) { Value = productPhoto.FileSize },
+                new SqlParameter("@PHT_WIDTH", SqlDbType.Int) { Value = productPhoto.Width },
+                new SqlParameter("@PHT_HEIGHT", SqlDbType.Int) { Value = productPhoto.Height },
+                new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = productPhoto.Description },
+                new SqlParameter("@PHT_SORTORDER", SqlDbType.Int) { Value = productPhoto.SortOrder },
+                new SqlParameter("@PHT_MAIN", SqlDbType.Bit) { Value = productPhoto.Main },
+                new SqlParameter("@PHT_VISIBLE", SqlDbType.Bit) { Value = productPhoto.Visible }
+            }, mutationId);
+
         public async Task<MutationResult> CreateShop(Shop shop, Guid mutationId)
             => await NonQuery("SP_MUTATE_Shop", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -84,6 +117,25 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_DigiByteWallet", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = digiByteWalletId }
+            }, mutationId);
+
+        public async Task<MutationResult> DeleteProduct(Guid shopId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Product", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = shopId }
+            }, mutationId);
+
+        public async Task<MutationResult> DeleteProductCategory(Guid productId, Guid categoryId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductCategory", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productId },
+                new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = categoryId }
+            }, mutationId);
+
+        public async Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhotoId }
             }, mutationId);
 
         public async Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId)
@@ -185,23 +237,47 @@ namespace DGBCommerce.Data
 
         public async Task<DataTable> GetMerchants(GetMerchantsParameters parameters)
             => await Get("SP_GET_Merchants", new List<SqlParameter>() {
-                new SqlParameter("MER_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
-                new SqlParameter("MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = parameters.EmailAddress },
-                new SqlParameter("MER_PASSWORD", SqlDbType.VarChar) { Value = parameters.Password },
-                new SqlParameter("MER_FIRST_NAME", SqlDbType.NVarChar) { Value = parameters.FirstName },
-                new SqlParameter("MER_LAST_NAME", SqlDbType.NVarChar) { Value = parameters.LastName }
+                new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = parameters.EmailAddress },
+                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar) { Value = parameters.Password },
+                new SqlParameter("@MER_FIRST_NAME", SqlDbType.NVarChar) { Value = parameters.FirstName },
+                new SqlParameter("@MER_LAST_NAME", SqlDbType.NVarChar) { Value = parameters.LastName }
+            });
+
+        public async Task<DataTable> GetProducts(GetProductsParameters parameters)
+            => await Get("SP_GET_Products", new List<SqlParameter>() {
+                new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
+                new SqlParameter("@PRD_SHOP_MERCHANT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
+                new SqlParameter("@PRD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@PRD_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId },
+                new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
+            });
+
+        public async Task<DataTable> GetProductCategories(GetProductCategoriesParameters parameters)
+            => await Get("SP_GET_ProductCategories", new List<SqlParameter>() {
+                new SqlParameter("@P2C_MERCHANT", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
+                new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier){ Value = parameters.ProductId },
+                new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier){ Value = parameters.CategoryId }
+            });
+
+        public async Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters)
+            => await Get("SP_GET_ProductPhotos", new List<SqlParameter>() {
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
+                new SqlParameter("@PHT_PRODUCT_SHOP_MERCHANT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
+                new SqlParameter("@PHT_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId }
             });
 
         public async Task<DataTable> GetShops(GetShopsParameters parameters)
             => await Get("SP_GET_Shops", new List<SqlParameter>() {
-                new SqlParameter("SHP_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
-                new SqlParameter("SHP_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
-                new SqlParameter("SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = parameters.SubDomain }
+                new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
+                new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
+                new SqlParameter("@SHP_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
+                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = parameters.SubDomain }
             });
 
         public async Task<DataTable> GetShopBySubDomain(string subDomain)
             => await Get("SP_GET_Shop_BySubDomain", new List<SqlParameter>() {
-                new SqlParameter("SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = subDomain }
+                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = subDomain }
             });
         #endregion
 
@@ -210,8 +286,8 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_Category", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
                 new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = category.Id },
-                new SqlParameter("@CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = category.Shop.Id },
-                new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = category.Parent?.Id },
+                new SqlParameter("@CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = category.ShopId },
+                new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = category.ParentId },
                 new SqlParameter("@CAT_NAME", SqlDbType.NVarChar, 255) { Value = category.Name },
                 new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = category.Visible }
             }, mutationId);
@@ -261,6 +337,28 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
                 new SqlParameter("@MER_FIRST_NAME", SqlDbType.NVarChar, 255) { Value = merchant.FirstName },
                 new SqlParameter("@MER_LAST_NAME", SqlDbType.NVarChar, 255) { Value = merchant.LastName }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateProduct(Product product, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Product", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = product.Id },
+                new SqlParameter("@PRD_SHOP", SqlDbType.UniqueIdentifier) { Value = product.ShopId },
+                new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = product.Name },
+                new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = product.Description },
+                new SqlParameter("@PRD_STOCK", SqlDbType.Int) { Value = product.Stock },
+                new SqlParameter("@PRD_PRICE", SqlDbType.Decimal) { Value = product.Price },
+                new SqlParameter("@PRD_VISIBLE", SqlDbType.NVarChar) { Value = product.Visible }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateProductPhoto(ProductPhoto productPhoto, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhoto.Id },
+                new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = productPhoto.Description },
+                new SqlParameter("@PHT_SORTORDER", SqlDbType.Int) { Value = productPhoto.SortOrder },
+                new SqlParameter("@PHT_MAIN", SqlDbType.Bit) { Value = productPhoto.Main },
+                new SqlParameter("@PHT_VISIBLE", SqlDbType.Bit) { Value = productPhoto.Visible }
             }, mutationId);
 
         public async Task<MutationResult> UpdateShop(Shop shop, Guid mutationId)

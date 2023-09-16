@@ -45,7 +45,7 @@ namespace DGBCommerce.API.Controllers
             Dictionary<Guid, List<Category>> dictCategoriesPerParent = new();
             foreach (Category category in categories)
             {
-                Guid dictionaryKey = category.Parent != null ? category.Parent.Id!.Value : Guid.Empty;
+                Guid dictionaryKey = category.ParentId ?? Guid.Empty;
 
                 if (dictCategoriesPerParent.ContainsKey(dictionaryKey))
                     dictCategoriesPerParent[dictionaryKey].Add(category);
@@ -57,7 +57,7 @@ namespace DGBCommerce.API.Controllers
                 if (dictCategoriesPerParent.ContainsKey(category.Id!.Value))
                     category.Children = dictCategoriesPerParent[category.Id!.Value];
 
-            return Ok(categories.Where(c => c.Parent == null).ToList());
+            return Ok(categories.Where(c => !c.ParentId.HasValue).ToList());
         }
 
         [AuthenticationRequired]
@@ -115,7 +115,7 @@ namespace DGBCommerce.API.Controllers
             if (category == null)
                 return NotFound();
 
-            var result = await _categoryRepository.MoveDown(id, category.Parent?.Id, authenticatedMerchantId.Value);
+            var result = await _categoryRepository.MoveDown(id, category.ParentId, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
@@ -131,7 +131,7 @@ namespace DGBCommerce.API.Controllers
             if (category == null)
                 return NotFound();
 
-            var result = await _categoryRepository.MoveUp(id, category.Parent?.Id, authenticatedMerchantId.Value);
+            var result = await _categoryRepository.MoveUp(id, category.ParentId, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
