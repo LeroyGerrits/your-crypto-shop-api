@@ -94,7 +94,7 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> CreateShop(Shop shop, Guid mutationId)
             => await NonQuery("SP_MUTATE_Shop", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
-                new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = shop.Merchant.Id },
+                new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = shop.MerchantId },
                 new SqlParameter("@SHP_NAME", SqlDbType.NVarChar) { Value = shop.Name },
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar) { Value = shop.SubDomain }
             }, mutationId);
@@ -365,7 +365,7 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_Shop", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
                 new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier) { Value = shop.Id },
-                new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = shop.Merchant.Id },
+                new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = shop.MerchantId },
                 new SqlParameter("@SHP_NAME", SqlDbType.NVarChar, 255) { Value = shop.Name },
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar, 100) { Value = shop.SubDomain }
             }, mutationId);

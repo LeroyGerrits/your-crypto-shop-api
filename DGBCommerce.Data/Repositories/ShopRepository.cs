@@ -45,13 +45,7 @@ namespace DGBCommerce.Data.Repositories
                 {
                     Id = new Guid(row["shp_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["shp_name"]),
-                    Merchant = new Merchant()
-                    {
-                        Id = new Guid(row["shp_merchant"].ToString()!),
-                        EmailAddress = Utilities.DbNullableString(row["shp_merchant_email_address"]),
-                        Gender = (Gender)Convert.ToInt32(row["shp_merchant_gender"]),
-                        LastName = Utilities.DbNullableString(row["shp_merchant_last_name"]),
-                    },
+                    MerchantId = new Guid(row["shp_merchant"].ToString()!),
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
                 });
