@@ -1,15 +1,30 @@
 ﻿using DGBCommerce.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace DGBCommerce.Domain.Models
 {
     public class Customer
     {
         public Guid? Id { get; set; }
-        public required Shop Shop {get;set;}
+        public required Guid ShopId { get; set; }
         public required string EmailAddress { get; set; }
-        public required string Password { get; set; }
+        [JsonIgnore] public string? PasswordSalt { get; set; }
+        [JsonIgnore] public string? Password { get; set; }
         public required Gender Gender { get; set; }
         public string? FirstName { get; set; }
         public required string LastName { get; set; }
+        public Address? Address { get; set; }
+        public DateTime? LastLogin { get; set; }
+        public string? LastIpAddress { get; set; }
+        public DateTime? SecondLastLogin { get; set; }
+        public string? SecondLastIpAddress { get; set; }
+
+        public string Salutation
+            => this.Gender switch
+            {
+                Gender.Male => (!string.IsNullOrWhiteSpace(this.FirstName) ? this.FirstName : "Mr.") + " " + this.LastName,
+                Gender.Female => (!string.IsNullOrWhiteSpace(this.FirstName) ? this.FirstName : "Ms.") + " " + this.LastName,
+                _ => (!string.IsNullOrWhiteSpace(this.FirstName) ? this.FirstName : "Mr./Ms.") + " " + this.LastName,
+            };
     }
 }
