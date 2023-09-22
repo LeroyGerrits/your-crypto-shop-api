@@ -16,7 +16,7 @@ namespace DGBCommerce.API.Controllers.Attributes
 
             var user = (Merchant)context.HttpContext.Items["Merchant"]!;
             if (user == null)
-                context.Result = new JsonResult(new { message = "Unauthorized (XXX)" }) { StatusCode = StatusCodes.Status401Unauthorized };
+                context.Result = new JsonResult(new { message = "You are not authorized to use this endpoint" }) { StatusCode = StatusCodes.Status401Unauthorized };
         }
     }
 }

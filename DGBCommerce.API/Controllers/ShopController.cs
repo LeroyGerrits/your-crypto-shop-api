@@ -1,6 +1,7 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,18 @@ namespace DGBCommerce.API.Controllers
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _shopRepository = shopRepository;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public")]
+        public async Task<ActionResult<IEnumerable<PublicShop>>> PublicGet(string? name, string? subDomain)
+        {
+            var shops = await _shopRepository.GetPublic(new GetShopsParameters()
+            {
+                Name = name,
+                SubDomain = subDomain
+            });
+            return Ok(shops.ToList());
         }
 
         [AuthenticationRequired]

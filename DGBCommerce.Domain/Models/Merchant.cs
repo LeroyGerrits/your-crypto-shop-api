@@ -16,6 +16,7 @@ namespace DGBCommerce.Domain.Models
         public string? LastIpAddress { get; set; }
         public DateTime? SecondLastLogin { get; set; }
         public string? SecondLastIpAddress { get; set; }
+        public decimal? Score { get; set; }
 
         public string Salutation
             => this.Gender switch

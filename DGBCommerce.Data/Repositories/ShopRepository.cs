@@ -2,6 +2,7 @@
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -18,6 +19,9 @@ namespace DGBCommerce.Data.Repositories
 
         public async Task<IEnumerable<Shop>> Get(GetShopsParameters parameters)
             => await GetRaw(parameters);
+
+        public async Task<IEnumerable<PublicShop>> GetPublic(GetShopsParameters parameters)
+            => await GetRawPublic(parameters);
 
         public async Task<Shop?> GetById(Guid merchantId, Guid id)
         {
@@ -46,6 +50,38 @@ namespace DGBCommerce.Data.Repositories
                     Id = new Guid(row["shp_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["shp_name"]),
                     MerchantId = new Guid(row["shp_merchant"].ToString()!),
+                    SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
+                    Featured = Convert.ToBoolean(row["shp_featured"])
+                });
+            }
+
+            return shops;
+        }
+
+        private async Task<IEnumerable<PublicShop>> GetRawPublic(GetShopsParameters parameters)
+        {
+            DataTable table = await _dataAccessLayer.GetShops(parameters);
+            List<PublicShop> shops = new();
+
+            foreach (DataRow row in table.Rows)
+            {
+                Merchant merchant = new()
+                {
+                    Id = new Guid(row["shp_merchant"].ToString()!),
+                    EmailAddress = Utilities.DbNullableString(row["shp_merchant_email_address"]),
+                    Gender = (Gender)Convert.ToInt32(row["shp_merchant_gender"]),
+                    FirstName = Utilities.DbNullableString(row["shp_merchant_first_name"]),
+                    LastName = Utilities.DbNullableString(row["shp_merchant_last_name"]),
+                    Score = Utilities.DbNullableDecimal(row["shp_merchant_score"])
+                };
+
+                shops.Add(new PublicShop()
+                {
+                    Id = new Guid(row["shp_id"].ToString()!),
+                    Name = Utilities.DbNullableString(row["shp_name"]),
+                    MerchantId = merchant.Id.Value,
+                    MerchantSalutation = merchant.Salutation,
+                    MerchantScore = merchant.Score,
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
                 });
