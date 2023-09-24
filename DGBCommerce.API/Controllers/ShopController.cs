@@ -28,12 +28,23 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("public")]
-        public async Task<ActionResult<IEnumerable<PublicShop>>> PublicGet(string? name, string? subDomain)
+        public async Task<ActionResult<IEnumerable<PublicShop>>> GetPublic(string? name, string? subDomain)
         {
             var shops = await _shopRepository.GetPublic(new GetShopsParameters()
             {
                 Name = name,
                 SubDomain = subDomain
+            });
+            return Ok(shops.ToList());
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/featured")]
+        public async Task<ActionResult<IEnumerable<PublicShop>>> GetFeaturedPublic()
+        {
+            var shops = await _shopRepository.GetPublic(new GetShopsParameters()
+            {
+                Featured = true
             });
             return Ok(shops.ToList());
         }

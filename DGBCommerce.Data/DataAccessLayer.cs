@@ -272,7 +272,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
                 new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
                 new SqlParameter("@SHP_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
-                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = parameters.SubDomain }
+                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = parameters.SubDomain },
+                new SqlParameter("@SHP_FEATURED", SqlDbType.Bit) { Value = parameters.Featured }
             });
 
         public async Task<DataTable> GetShopBySubDomain(string subDomain)

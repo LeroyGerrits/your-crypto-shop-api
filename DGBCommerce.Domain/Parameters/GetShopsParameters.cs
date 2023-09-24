@@ -6,5 +6,6 @@
         public Guid? Id { get; set; }        
         public string? Name { get; set; }
         public string? SubDomain { get; set; }
+        public bool? Featured { get; set; }
     }
 }
