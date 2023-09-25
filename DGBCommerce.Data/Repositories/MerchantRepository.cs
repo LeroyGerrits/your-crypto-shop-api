@@ -2,6 +2,7 @@
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -22,6 +23,15 @@ namespace DGBCommerce.Data.Repositories
         public async Task<Merchant?> GetById(Guid merchantId, Guid id)
         {
             var merchants = await GetRaw(new GetMerchantsParameters() { Id = id });
+            return merchants.ToList().SingleOrDefault();
+        }
+
+        public async Task<IEnumerable<PublicMerchant>> GetPublic(GetMerchantsParameters parameters)
+            => await GetRawPublic(parameters);
+
+        public async Task<PublicMerchant?> GetByIdPublic(Guid id)
+        {
+            var merchants = await GetRawPublic(new GetMerchantsParameters() { Id = id });
             return merchants.ToList().SingleOrDefault();
         }
 
@@ -102,6 +112,26 @@ namespace DGBCommerce.Data.Repositories
                 SecondLastLogin = Utilities.DBNullableDateTime(row["mer_second_last_login"]),
                 SecondLastIpAddress = Utilities.DbNullableString(row["mer_second_last_ip_address"])
             };
+        }
+
+        private async Task<IEnumerable<PublicMerchant>> GetRawPublic(GetMerchantsParameters parameters)
+        {
+            DataTable table = await _dataAccessLayer.GetMerchants(parameters);
+            List<PublicMerchant> merchants = new();
+
+            foreach (DataRow row in table.Rows)
+            {
+                merchants.Add(new PublicMerchant()
+                {
+                    Id = new Guid(row["mer_id"].ToString()!),
+                    Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
+                    FirstName = Utilities.DbNullableString(row["mer_first_name"]),
+                    LastName = Utilities.DbNullableString(row["mer_last_name"]),
+                    Score = Utilities.DbNullableDecimal(row["mer_score"])
+                });
+            }
+
+            return merchants;
         }
     }
 }

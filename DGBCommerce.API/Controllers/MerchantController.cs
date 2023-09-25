@@ -9,7 +9,7 @@ using DGBCommerce.Domain;
 using System.Text;
 using Microsoft.Extensions.Options;
 using DGBCommerce.Domain.Parameters;
-using DGBCommerce.Data.Repositories;
+using DGBCommerce.Domain.Models.ViewModels;
 
 namespace DGBCommerce.API.Controllers
 {
@@ -42,6 +42,29 @@ namespace DGBCommerce.API.Controllers
             _mailService = mailService;
             _merchantRepository = merchantRepository;
             _merchantPasswordResetLinkRepository = merchantPasswordResetLinkRepository;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public")]
+        public async Task<ActionResult<IEnumerable<PublicMerchant>>> GetPublic(string? firstName, string? lastName)
+        {
+            var merchants = await _merchantRepository.GetPublic(new GetMerchantsParameters()
+            {
+                FirstName = firstName,
+                LastName = lastName
+            });
+            return Ok(merchants.ToList());
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/{id}")]
+        public async Task<ActionResult<PublicMerchant>> GetPublic(Guid id)
+        {
+            var merchant = await _merchantRepository.GetByIdPublic(id);
+            if (merchant == null)
+                return NotFound();
+
+            return Ok(merchant);
         }
 
         [AuthenticationRequired]
