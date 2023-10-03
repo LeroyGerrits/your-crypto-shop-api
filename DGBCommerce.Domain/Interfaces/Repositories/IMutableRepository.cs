@@ -1,6 +1,6 @@
 ﻿using DGBCommerce.Domain.Models;
 
-namespace DGBCommerce.Domain.Interfaces
+namespace DGBCommerce.Domain.Interfaces.Repositories
 {
     public interface IMutableRepository<T, U> : IRepository<T, U>
     {

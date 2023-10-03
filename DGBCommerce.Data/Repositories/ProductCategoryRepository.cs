@@ -1,5 +1,5 @@
 ﻿using DGBCommerce.Domain;
-using DGBCommerce.Domain.Interfaces;
+using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
 using System.Data;

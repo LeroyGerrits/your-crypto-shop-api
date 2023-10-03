@@ -1,4 +1,4 @@
-﻿namespace DGBCommerce.Domain.Interfaces
+﻿namespace DGBCommerce.Domain.Interfaces.Repositories
 {
     public interface IRepository<T, U>
     {

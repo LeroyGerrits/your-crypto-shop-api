@@ -1,6 +1,6 @@
 ﻿using DGBCommerce.API.Controllers.Requests;
 using DGBCommerce.API.Controllers.Responses;
-using DGBCommerce.Domain.Interfaces;
+using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 
 namespace DGBCommerce.API.Services

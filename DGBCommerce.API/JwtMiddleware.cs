@@ -1,4 +1,4 @@
-﻿using DGBCommerce.Domain.Interfaces;
+﻿using DGBCommerce.Domain.Interfaces.Repositories;
 
 namespace DGBCommerce.API
 {

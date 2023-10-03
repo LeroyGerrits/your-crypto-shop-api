@@ -2,7 +2,7 @@
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
-namespace DGBCommerce.Domain.Interfaces
+namespace DGBCommerce.Domain.Interfaces.Repositories
 {
     public interface IDataAccessLayer
     {

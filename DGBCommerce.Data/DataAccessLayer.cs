@@ -1,10 +1,10 @@
-﻿using DGBCommerce.Domain.Interfaces;
-using System.Data;
+﻿using System.Data;
 using Microsoft.Data.SqlClient;
 using DGBCommerce.Domain.Parameters;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Enums;
+using DGBCommerce.Domain.Interfaces.Repositories;
 
 namespace DGBCommerce.Data
 {

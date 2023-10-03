@@ -1,7 +1,6 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.API.Controllers.Requests;
 using DGBCommerce.API.Services;
-using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +9,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using DGBCommerce.Domain.Parameters;
 using DGBCommerce.Domain.Models.ViewModels;
+using DGBCommerce.Domain.Interfaces.Repositories;
 
 namespace DGBCommerce.API.Controllers
 {

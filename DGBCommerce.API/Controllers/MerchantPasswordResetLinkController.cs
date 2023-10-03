@@ -1,5 +1,5 @@
 using DGBCommerce.API.Controllers.Attributes;
-using DGBCommerce.Domain.Interfaces;
+using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
