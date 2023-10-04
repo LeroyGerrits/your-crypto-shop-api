@@ -47,6 +47,25 @@ namespace DGBCommerce.Data.Services
             var byteArray = jsonRpcRequest.GetBytes();
             webRequest.ContentLength = jsonRpcRequest.GetBytes().Length;
 
+            /*HttpClientHandler handler = new() { 
+                Credentials = new NetworkCredential(_rpcUsername, _rpcPassword), 
+                Proxy = null
+            };
+            HttpClient client = new(handler)
+            {
+                Timeout = new TimeSpan(30000000)
+            };
+            var webRequestX = new HttpRequestMessage(HttpMethod.Post, _daemonUrl)
+            {
+                Content = new StringContent(jsonRpcRequest.GetRaw(), Encoding.UTF8, "application/json-rpc")
+            };
+            webRequestX.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(_rpcUsername + ":" + _rpcPassword)));
+
+            var response = await client.SendAsync(webRequestX);
+            var reader = new StreamReader(response.Content.ReadAsStream());
+            var responseBody = reader.ReadToEnd();*/
+
+
             try
             {
                 using var dataStream = await webRequest.GetRequestStreamAsync();
@@ -91,7 +110,14 @@ namespace DGBCommerce.Data.Services
                                 try
                                 {
                                     var jsonRpcResponseObject = JsonConvert.DeserializeObject<JsonRpcResponse<object>>(result);
-                                    RpcInternalServerErrorException internalServerErrorException = new(jsonRpcResponseObject.Error.Message, webException)
+                                    var exceptionMessage = string.Empty;
+
+                                    if (jsonRpcResponseObject != null && jsonRpcResponseObject.Error != null)
+                                    {
+                                        exceptionMessage = jsonRpcResponseObject!.Error!.Message;
+                                    }
+
+                                    RpcInternalServerErrorException internalServerErrorException = new(exceptionMessage, webException)
                                     {
                                         RpcErrorCode = jsonRpcResponseObject.Error.Code
                                     };

@@ -17,18 +17,18 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("getcurrentblock")]
-        public async Task<ActionResult<double>> GetCurrentBlock()
+        [HttpGet("getblockcount")]
+        public async Task<ActionResult<double>> GetBlockCount()
         {
-            var currentBlock = await _rpcService.GetCurrentBlock();
+            var currentBlock = await _rpcService.GetBlockCount();
             return Ok(currentBlock);
         }
 
         [AllowAnonymous]
-        [HttpGet("gethashrate")]
-        public async Task<ActionResult<double>> GetHashrate()
+        [HttpGet("getmininginfo")]
+        public async Task<ActionResult<double>> GetMiningInfo()
         {
-            var hashRate = await _rpcService.GetHashrate();
+            var hashRate = await _rpcService.GetMiningInfo();
             return Ok(hashRate);
         }
 

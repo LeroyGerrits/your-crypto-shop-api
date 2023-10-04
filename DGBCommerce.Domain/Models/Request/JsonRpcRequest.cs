@@ -21,6 +21,11 @@ namespace DGBCommerce.Domain.Models.Request
         [JsonProperty(PropertyName = "id", Order = 2)]
         public int Id { get; set; }
 
+        public string GetRaw()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
         public byte[] GetBytes()
         {
             var json = JsonConvert.SerializeObject(this);
