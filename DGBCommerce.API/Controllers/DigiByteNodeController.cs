@@ -1,4 +1,5 @@
 using DGBCommerce.Domain.Interfaces.Services;
+using DGBCommerce.Domain.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("getblockcount")]
-        public async Task<ActionResult<double>> GetBlockCount()
+        public async Task<ActionResult<uint>> GetBlockCount()
         {
             var currentBlock = await _rpcService.GetBlockCount();
             return Ok(currentBlock);
@@ -26,7 +27,7 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("getmininginfo")]
-        public async Task<ActionResult<double>> GetMiningInfo()
+        public async Task<ActionResult<GetMiningInfoResponse>> GetMiningInfo()
         {
             var hashRate = await _rpcService.GetMiningInfo();
             return Ok(hashRate);
@@ -34,7 +35,7 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("getdifficulty")]
-        public async Task<ActionResult<double>> GetDifficulty()
+        public async Task<ActionResult<GetDifficultyResponse>> GetDifficulty()
         {
             var difficulty = await _rpcService.GetDifficulty();
             return Ok(difficulty);
