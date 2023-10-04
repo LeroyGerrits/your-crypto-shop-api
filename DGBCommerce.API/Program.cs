@@ -36,6 +36,7 @@ builder.Services.AddSwaggerGen(o =>
 });
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+builder.Services.Configure<RpcSettings>(builder.Configuration.GetSection("RpcSettings"));
 
 var startup = new Startup(builder.Configuration);
 startup.ConfigureServices(builder.Services);

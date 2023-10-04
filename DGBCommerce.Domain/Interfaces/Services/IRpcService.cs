@@ -4,8 +4,8 @@ namespace DGBCommerce.Domain.Interfaces.Services
 {
     public interface IRpcService
     {
-        Task<double> GetCurrentBlock();
-        Task<double> GetHashrate();
+        Task<uint> GetBlockCount();
         Task<GetDifficultyResponse> GetDifficulty();
+        Task<GetMiningInfoResponse> GetMiningInfo();        
     }
 }

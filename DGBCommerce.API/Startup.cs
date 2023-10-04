@@ -1,7 +1,9 @@
 ﻿using DGBCommerce.API.Services;
 using DGBCommerce.Data;
 using DGBCommerce.Data.Repositories;
+using DGBCommerce.Data.Services;
 using DGBCommerce.Domain.Interfaces.Repositories;
+using DGBCommerce.Domain.Interfaces.Services;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
@@ -18,7 +20,11 @@ namespace DGBCommerce.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = Configuration.GetConnectionString("DGBCommerce") ?? throw new ArgumentException("connectionString 'DBBCommerce' not set.");
+            string connectionString = Configuration.GetConnectionString("DGBCommerce") ?? throw new Exception("connectionString 'DBBCommerce' not set.");
+            RpcSettings rpcSettings = Configuration.GetSection("RpcSettings").Get<RpcSettings>() ?? throw new Exception("RPC settings not configured.");
+            if (rpcSettings.DaemonUrl == null) throw new Exception($"RPC {nameof(rpcSettings.DaemonUrl)} not configured.");
+            if (rpcSettings.Username == null) throw new Exception($"RPC {nameof(rpcSettings.Username)} not configured.");
+            if (rpcSettings.Password == null) throw new Exception($"RPC {nameof(rpcSettings.Password)} not configured.");
 
             services.AddCors();
             services.AddControllers().AddJsonOptions(options =>
@@ -29,11 +35,13 @@ namespace DGBCommerce.API
 
             services.AddSingleton(provider => Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<IJwtUtils, JwtUtils>();
-            services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
+            
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
+            services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IMailService, MailService>();
-
+            services.AddScoped<IRpcService, RpcService>(_ => new RpcService(rpcSettings.DaemonUrl, rpcSettings.Username, rpcSettings.Password));
+            
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICurrencyRepository, CurrencyRepository>();
