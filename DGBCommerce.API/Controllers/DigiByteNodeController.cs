@@ -29,7 +29,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("getipaddresses")]
         public ActionResult<List<string>> GetIpAddresses()
         {
-            return Dns.GetHostAddresses(Dns.GetHostName()).Select(ip => ip.ToString()).ToList();
+            return Dns.GetHostAddresses(Dns.GetHostName()).Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).Select(ip => ip.ToString()).ToList();
         }
 
         [AllowAnonymous]
