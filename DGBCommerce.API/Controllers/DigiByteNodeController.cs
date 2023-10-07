@@ -2,6 +2,7 @@ using DGBCommerce.Domain.Interfaces.Services;
 using DGBCommerce.Domain.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace DGBCommerce.API.Controllers
 {
@@ -11,8 +12,7 @@ namespace DGBCommerce.API.Controllers
     {
         private readonly IRpcService _rpcService;
         
-        public DigiByteNodeController(
-            IRpcService rpcService)
+        public DigiByteNodeController(IRpcService rpcService)
         {
             _rpcService = rpcService;
         }
@@ -23,6 +23,13 @@ namespace DGBCommerce.API.Controllers
         {
             var currentBlock = await _rpcService.GetBlockCount();
             return Ok(currentBlock);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("getipaddresses")]
+        public ActionResult<List<string>> GetIpAddresses()
+        {
+            return Dns.GetHostAddresses(Dns.GetHostName()).Select(ip => ip.ToString()).ToList();
         }
 
         [AllowAnonymous]
