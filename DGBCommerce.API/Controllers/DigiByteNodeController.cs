@@ -26,6 +26,14 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("getdifficulty")]
+        public async Task<ActionResult<GetDifficultyResponse>> GetDifficulty()
+        {
+            var difficulty = await _rpcService.GetDifficulty();
+            return Ok(difficulty);
+        }
+
+        [AllowAnonymous]
         [HttpGet("getipaddresses")]
         public ActionResult<List<string>> GetIpAddresses()
         {
@@ -41,11 +49,27 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("getdifficulty")]
-        public async Task<ActionResult<GetDifficultyResponse>> GetDifficulty()
+        [HttpGet("getnewaddress")]
+        public async Task<ActionResult<GetMiningInfoResponse>> GetNewAddress()
         {
-            var difficulty = await _rpcService.GetDifficulty();
-            return Ok(difficulty);
+            var newAddress = await _rpcService.GetNewAddress();
+            return Ok(newAddress);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("getnewaddress/{label}")]
+        public async Task<ActionResult<GetMiningInfoResponse>> GetNewAddress(string? label)
+        {
+            var newAddress = await _rpcService.GetNewAddress(label);
+            return Ok(newAddress);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("getnewaddress/{label}/{addressType}")]
+        public async Task<ActionResult<GetMiningInfoResponse>> GetNewAddress(string? label, string? addressType)
+        {
+            var newAddress = await _rpcService.GetNewAddress(label, addressType);
+            return Ok(newAddress);
         }
     }
 }

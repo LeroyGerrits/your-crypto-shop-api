@@ -6,6 +6,9 @@ namespace DGBCommerce.Domain.Interfaces.Services
     {
         Task<uint> GetBlockCount();
         Task<GetDifficultyResponse> GetDifficulty();
-        Task<GetMiningInfoResponse> GetMiningInfo();        
+        Task<GetMiningInfoResponse> GetMiningInfo();
+        Task<string> GetNewAddress();
+        Task<string> GetNewAddress(string? label);
+        Task<string> GetNewAddress(string? label, string? addressType);
     }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using DGBCommerce.Domain.Exceptions;
 using DGBCommerce.Domain.Interfaces.Services;
 using DGBCommerce.Domain.Models.Request;
@@ -34,9 +30,19 @@ namespace DGBCommerce.Data.Services
         public async Task<GetMiningInfoResponse> GetMiningInfo()
             => await Request<GetMiningInfoResponse>("getmininginfo");
 
-        private async Task<T> Request<T>(string rpcMethod, params object[] parameters)
+        public async Task<string> GetNewAddress()
+            => await Request<string>("getnewaddress");
+
+        public async Task<string> GetNewAddress(string? label)
+            => await Request<string>("getnewaddress", label);
+
+        public async Task<string> GetNewAddress(string? label, string? addressType) 
+            => await Request<string>("getnewaddress", label, addressType);
+
+        private async Task<T> Request<T>(string rpcMethod, params object?[] parameters)
         {
             var jsonRpcRequest = new JsonRpcRequest(1, rpcMethod.ToString(), parameters);
+
             var webRequest = (HttpWebRequest)WebRequest.Create(_daemonUrl);
             webRequest.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(_rpcUsername + ":" + _rpcPassword)));
             webRequest.Credentials = new NetworkCredential(_rpcUsername, _rpcPassword);
