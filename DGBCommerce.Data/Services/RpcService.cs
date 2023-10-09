@@ -36,69 +36,23 @@ namespace DGBCommerce.Data.Services
         public async Task<string> GetNewAddress(string? label)
             => await Request<string>("getnewaddress", label);
 
-        public async Task<string> GetNewAddress(string? label, string? addressType) 
+        public async Task<string> GetNewAddress(string? label, string? addressType)
             => await Request<string>("getnewaddress", label, addressType);
 
         private async Task<T> Request<T>(string rpcMethod, params object?[] parameters)
         {
-            var jsonRpcRequest = new JsonRpcRequest(1, rpcMethod.ToString(), parameters);
+            JsonRpcRequest jsonRpcRequest = new(1, rpcMethod.ToString(), parameters);
+            HttpClientHandler httpHandler = new() { Credentials = new NetworkCredential(_rpcUsername, _rpcPassword), Proxy = null };
+            HttpClient httpClient = new(httpHandler) { Timeout = new TimeSpan(30000000) };
+            HttpRequestMessage httpRequestMessage = new(HttpMethod.Post, _daemonUrl) { Content = new StringContent(jsonRpcRequest.GetRaw(), Encoding.UTF8, "application/json-rpc") };
+            httpRequestMessage.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(_rpcUsername + ":" + _rpcPassword)));
 
-            var webRequest = (HttpWebRequest)WebRequest.Create(_daemonUrl);
-            webRequest.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(_rpcUsername + ":" + _rpcPassword)));
-            webRequest.Credentials = new NetworkCredential(_rpcUsername, _rpcPassword);
-            webRequest.ContentType = "application/json-rpc";
-            webRequest.Method = "POST";
-            webRequest.Proxy = null;
-            webRequest.Timeout = 30000;
-            var byteArray = jsonRpcRequest.GetBytes();
-            webRequest.ContentLength = jsonRpcRequest.GetBytes().Length;
-
-            /*HttpClientHandler handler = new() { 
-                Credentials = new NetworkCredential(_rpcUsername, _rpcPassword), 
-                Proxy = null
-            };
-            HttpClient client = new(handler)
-            {
-                Timeout = new TimeSpan(30000000)
-            };
-            var webRequestX = new HttpRequestMessage(HttpMethod.Post, _daemonUrl)
-            {
-                Content = new StringContent(jsonRpcRequest.GetRaw(), Encoding.UTF8, "application/json-rpc")
-            };
-            webRequestX.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(_rpcUsername + ":" + _rpcPassword)));
-
-            var response = await client.SendAsync(webRequestX);
-            var reader = new StreamReader(response.Content.ReadAsStream());
-            var responseBody = reader.ReadToEnd();*/
-
+            HttpResponseMessage httpResponseMessage;
 
             try
             {
-                using var dataStream = await webRequest.GetRequestStreamAsync();
-                dataStream.Write(byteArray, 0, byteArray.Length);
-                dataStream.Dispose();
-            }
-            catch (Exception exception)
-            {
-                throw new RpcException("There was a problem sending the request to the wallet", exception);
-            }
-
-            try
-            {
-                string json;
-
-                using (WebResponse webResponse = await webRequest.GetResponseAsync())
-                {
-                    using var stream = webResponse.GetResponseStream();
-                    using var reader = new StreamReader(stream);
-                    var result = reader.ReadToEnd();
-                    reader.Dispose();
-                    json = result;
-                }
-
-                var rpcResponse = JsonConvert.DeserializeObject<JsonRpcResponse<T>>(json);
-                return rpcResponse!.Result ?? throw new RpcException("Result could not be deserialized.");
-            }
+                httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);                
+            }            
             catch (WebException webException)
             {
                 #region RPC Internal Server Error (with an Error Code)
@@ -108,10 +62,10 @@ namespace DGBCommerce.Data.Services
                     {
                         case HttpStatusCode.InternalServerError:
                             {
-                                using var stream = webResponse.GetResponseStream() ?? throw new RpcException("The RPC request was either not understood by the server or there was a problem executing the request", webException);
-                                using var reader = new StreamReader(stream);
-                                var result = reader.ReadToEnd();
-                                reader.Dispose();
+                                using Stream stream = webResponse.GetResponseStream() ?? throw new RpcException("The RPC request was either not understood by the server or there was a problem executing the request", webException);
+                                using StreamReader streamReaderException = new(stream);
+                                var result = streamReaderException.ReadToEnd();
+                                streamReaderException.Dispose();
 
                                 try
                                 {
@@ -119,14 +73,9 @@ namespace DGBCommerce.Data.Services
                                     var exceptionMessage = string.Empty;
 
                                     if (jsonRpcResponseObject != null && jsonRpcResponseObject.Error != null)
-                                    {
                                         exceptionMessage = jsonRpcResponseObject!.Error!.Message;
-                                    }
 
-                                    RpcInternalServerErrorException internalServerErrorException = new(exceptionMessage, webException)
-                                    {
-                                        RpcErrorCode = jsonRpcResponseObject.Error.Code
-                                    };
+                                    RpcInternalServerErrorException internalServerErrorException = new(exceptionMessage!, webException) { RpcErrorCode = jsonRpcResponseObject?.Error?.Code };
 
                                     throw internalServerErrorException;
                                 }
@@ -141,31 +90,34 @@ namespace DGBCommerce.Data.Services
                     }
                 }
                 #endregion
-
                 #region RPC Time-Out
-
                 if (webException.Message == "The operation has timed out")
                 {
                     throw new RpcRequestTimeoutException(webException.Message);
                 }
-
                 #endregion
 
                 throw new RpcException("An unknown web exception occured while trying to read the JSON response", webException);
+            }
+            catch (Exception exception)
+            {
+                throw new RpcException("There was a problem sending the request to the wallet", exception);
+            }
+
+            StreamReader streamReaderResponse = new(httpResponseMessage.Content.ReadAsStream());
+            string responseBody = streamReaderResponse.ReadToEnd();
+            JsonRpcResponse<T>? rpcResponse;
+
+            try
+            {
+                rpcResponse = JsonConvert.DeserializeObject<JsonRpcResponse<T>>(responseBody);
             }
             catch (JsonException jsonException)
             {
                 throw new RpcResponseDeserializationException("There was a problem deserializing the response from the wallet", jsonException);
             }
-            catch (ProtocolViolationException protocolViolationException)
-            {
-                throw new RpcException("Unable to connect to the server", protocolViolationException);
-            }
-            catch (Exception exception)
-            {
-                var queryParameters = jsonRpcRequest.Parameters.Cast<string>().Aggregate(string.Empty, (current, parameter) => current + (parameter + " "));
-                throw new Exception($"A problem was encountered while calling MakeRpcRequest() for: {jsonRpcRequest.Method} with parameters: {queryParameters}. \nException: {exception.Message}");
-            }
+
+            return rpcResponse!.Result ?? throw new RpcException("Result could not be deserialized.");
         }
     }
 }
