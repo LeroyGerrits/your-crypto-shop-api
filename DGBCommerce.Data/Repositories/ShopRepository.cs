@@ -65,10 +65,10 @@ namespace DGBCommerce.Data.Repositories
 
             foreach (DataRow row in table.Rows)
             {
-                Merchant merchant = new()
+                PublicMerchant merchant = new()
                 {
                     Id = new Guid(row["shp_merchant"].ToString()!),
-                    EmailAddress = Utilities.DbNullableString(row["shp_merchant_email_address"]),
+                    Username = Utilities.DbNullableString(row["shp_merchant_username"]),
                     Gender = (Gender)Convert.ToInt32(row["shp_merchant_gender"]),
                     FirstName = Utilities.DbNullableString(row["shp_merchant_first_name"]),
                     LastName = Utilities.DbNullableString(row["shp_merchant_last_name"]),
@@ -80,6 +80,7 @@ namespace DGBCommerce.Data.Repositories
                     Id = new Guid(row["shp_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["shp_name"]),
                     MerchantId = merchant.Id.Value,
+                    MerchantUsername = merchant.Username,
                     MerchantSalutation = merchant.Salutation,
                     MerchantScore = merchant.Score,
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),

@@ -5,6 +5,7 @@ namespace DGBCommerce.Domain.Models.ViewModels
     public class PublicMerchant
     {
         public Guid? Id { get; set; }
+        public required string Username { get; set; }
         public required Gender Gender { get; set; }
         public string? FirstName { get; set; }
         public required string LastName { get; set; }

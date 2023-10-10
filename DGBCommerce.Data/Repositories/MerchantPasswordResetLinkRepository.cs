@@ -46,8 +46,9 @@ namespace DGBCommerce.Data.Repositories
                 Id = new Guid(row["prl_id"].ToString()!),
                 Merchant = new Merchant()
                 {
-                    Id = new Guid(row["prl_merchant"].ToString()!),
+                    Id = new Guid(row["prl_merchant"].ToString()!),                    
                     EmailAddress = Utilities.DbNullableString(row["prl_merchant_email_address"]),
+                    Username = Utilities.DbNullableString(row["prl_merchant_username"]),
                     Gender = (Gender)Convert.ToInt32(row["prl_merchant_gender"]),
                     LastName = Utilities.DbNullableString(row["prl_merchant_last_name"]),
                 },

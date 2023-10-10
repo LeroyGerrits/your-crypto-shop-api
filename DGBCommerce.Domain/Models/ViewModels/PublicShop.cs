@@ -4,6 +4,7 @@
     {
         public Guid? Id { get; set; }
         public required Guid MerchantId { get; set; }
+        public required string MerchantUsername { get; set; }
         public required string MerchantSalutation { get; set; }
         public decimal? MerchantScore { get; set; }
         public required string Name { get; set; }

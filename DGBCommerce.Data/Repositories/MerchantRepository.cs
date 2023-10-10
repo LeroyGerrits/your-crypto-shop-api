@@ -61,6 +61,7 @@ namespace DGBCommerce.Data.Repositories
                 {
                     Id = new Guid(row["mer_id"].ToString()!),
                     EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
+                    Username = Utilities.DbNullableString(row["mer_username"]),
                     Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                     FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                     LastName = Utilities.DbNullableString(row["mer_last_name"]),
@@ -85,6 +86,7 @@ namespace DGBCommerce.Data.Repositories
             return new Merchant()
             {
                 Id = new Guid(row["mer_id"].ToString()!),
+                Username = Utilities.DbNullableString(row["mer_username"]),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                 FirstName = Utilities.DbNullableString(row["mer_first_name"]),
@@ -104,6 +106,7 @@ namespace DGBCommerce.Data.Repositories
             {
                 Id = new Guid(row["mer_id"].ToString()!),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
+                Username = Utilities.DbNullableString(row["mer_username"]),
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                 FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                 LastName = Utilities.DbNullableString(row["mer_last_name"]),
@@ -124,6 +127,7 @@ namespace DGBCommerce.Data.Repositories
                 merchants.Add(new PublicMerchant()
                 {
                     Id = new Guid(row["mer_id"].ToString()!),
+                    Username = Utilities.DbNullableString(row["mer_username"]),
                     Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                     FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                     LastName = Utilities.DbNullableString(row["mer_last_name"]),

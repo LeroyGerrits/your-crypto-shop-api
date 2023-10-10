@@ -239,6 +239,7 @@ namespace DGBCommerce.Data
             => await Get("SP_GET_Merchants", new List<SqlParameter>() {
                 new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
                 new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = parameters.EmailAddress },
+                new SqlParameter("@MER_USERNAME", SqlDbType.VarChar) { Value = parameters.Username },
                 new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar) { Value = parameters.Password },
                 new SqlParameter("@MER_FIRST_NAME", SqlDbType.NVarChar) { Value = parameters.FirstName },
                 new SqlParameter("@MER_LAST_NAME", SqlDbType.NVarChar) { Value = parameters.LastName }
