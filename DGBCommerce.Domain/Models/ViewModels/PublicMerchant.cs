@@ -12,7 +12,7 @@ namespace DGBCommerce.Domain.Models.ViewModels
         public decimal? Score { get; set; }
 
         public string Salutation
-            => this.Gender switch
+            => !string.IsNullOrWhiteSpace(this.Username) ? this.Username : this.Gender switch
             {
                 Gender.Male => (!string.IsNullOrWhiteSpace(this.FirstName) ? this.FirstName : "Mr.") + " " + this.LastName,
                 Gender.Female => (!string.IsNullOrWhiteSpace(this.FirstName) ? this.FirstName : "Ms.") + " " + this.LastName,
