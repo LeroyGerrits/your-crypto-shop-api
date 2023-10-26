@@ -127,10 +127,7 @@ namespace DGBCommerce.Data.Repositories
                 merchants.Add(new PublicMerchant()
                 {
                     Id = new Guid(row["mer_id"].ToString()!),
-                    Username = Utilities.DbNullableString(row["mer_username"]),
-                    Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
-                    FirstName = Utilities.DbNullableString(row["mer_first_name"]),
-                    LastName = Utilities.DbNullableString(row["mer_last_name"]),
+                    Username = Utilities.DbNullableString(row["mer_username"]),                    
                     Score = Utilities.DbNullableDecimal(row["mer_score"])
                 });
             }

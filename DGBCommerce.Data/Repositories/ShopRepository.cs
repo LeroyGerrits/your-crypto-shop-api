@@ -64,25 +64,14 @@ namespace DGBCommerce.Data.Repositories
             List<PublicShop> shops = new();
 
             foreach (DataRow row in table.Rows)
-            {
-                PublicMerchant merchant = new()
-                {
-                    Id = new Guid(row["shp_merchant"].ToString()!),
-                    Username = Utilities.DbNullableString(row["shp_merchant_username"]),
-                    Gender = (Gender)Convert.ToInt32(row["shp_merchant_gender"]),
-                    FirstName = Utilities.DbNullableString(row["shp_merchant_first_name"]),
-                    LastName = Utilities.DbNullableString(row["shp_merchant_last_name"]),
-                    Score = Utilities.DbNullableDecimal(row["shp_merchant_score"])
-                };
-
+            {                
                 shops.Add(new PublicShop()
                 {
                     Id = new Guid(row["shp_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["shp_name"]),
-                    MerchantId = merchant.Id.Value,
-                    MerchantUsername = merchant.Username,
-                    MerchantSalutation = merchant.Salutation,
-                    MerchantScore = merchant.Score,
+                    MerchantId = new Guid(row["shp_merchant"].ToString()!),
+                    MerchantUsername = Utilities.DbNullableString(row["shp_merchant_username"]),
+                    MerchantScore = Utilities.DbNullableDecimal(row["shp_merchant_score"]),
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
                 });
