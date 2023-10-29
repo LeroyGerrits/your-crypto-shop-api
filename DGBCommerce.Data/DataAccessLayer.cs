@@ -46,8 +46,13 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId)
             => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
-                new SqlParameter("@MER_FIRST_NAME", SqlDbType.UniqueIdentifier) { Value = merchant.FirstName },
-                new SqlParameter("@MER_LAST_NAME", SqlDbType.UniqueIdentifier) { Value = merchant.LastName }
+                new SqlParameter("@MER_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = merchant.EmailAddress },
+                new SqlParameter("@MER_USERNAME", SqlDbType.VarChar) { Value = merchant.Username },
+                new SqlParameter("@MER_PASSWORD_SALT", SqlDbType.VarChar) { Value = merchant.PasswordSalt },
+                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar) { Value = merchant.Password },
+                new SqlParameter("@MER_GENDER", SqlDbType.TinyInt) { Value = merchant.Gender },
+                new SqlParameter("@MER_FIRST_NAME", SqlDbType.NVarChar) { Value = merchant.FirstName },
+                new SqlParameter("@MER_LAST_NAME", SqlDbType.NVarChar) { Value = merchant.LastName }
             }, mutationId);
 
         public async Task<MutationResult> CreateMerchantPasswordResetLink(MerchantPasswordResetLink merchantPasswordResetLink)

@@ -82,15 +82,27 @@ namespace DGBCommerce.API.Controllers
             return Ok(merchant);
         }
 
-        [AuthenticationRequired]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Merchant value)
         {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (authenticatedMerchantId == null)
-                return BadRequest("Merchant not authorized.");
+            value.PasswordSalt = Utilities.GenerateSalt();
+            value.Password = "To be set";
+            var result = await _merchantRepository.Create(value, Guid.Empty);
 
-            var result = await _merchantRepository.Create(value, authenticatedMerchantId.Value);
+            if (result.Success)
+            {
+                string accountActivationUrl = $"{_appSettings.UrlDgbCommerceWebsite}/account-activate/{result.Identifier}/{value.PasswordSalt}";
+
+                StringBuilder sbMail = new();
+                sbMail.Append($"<p>Hi {value.Username},</p>");
+                sbMail.Append($"<p>Your account was registered. Before you can use your account, you will need to activate it. Click on the following link to activate:</p>");
+                sbMail.Append($"<p><a href=\"{accountActivationUrl}\">{accountActivationUrl}</a></p>");
+                sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
+                sbMail.Append($"<p>DGB Commerce</p>");
+                _mailService.SendMail(value.EmailAddress, "Activate your DGB Commerce account", sbMail.ToString());
+            }
+
             return Ok(result);
         }
 
@@ -103,7 +115,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var merchant = await _merchantRepository.GetById(authenticatedMerchantId.Value, id);
-            if (merchant == null) 
+            if (merchant == null)
                 return NotFound();
 
             var result = await _merchantRepository.Update(value, authenticatedMerchantId.Value);
@@ -119,7 +131,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var merchant = await _merchantRepository.GetById(authenticatedMerchantId.Value, id);
-            if (merchant == null) 
+            if (merchant == null)
                 return NotFound();
 
             var result = await _merchantRepository.Delete(id, authenticatedMerchantId.Value);
@@ -166,7 +178,7 @@ namespace DGBCommerce.API.Controllers
                 string passwordResetUrl = $"{_appSettings.UrlDgbCommerceWebsite}/reset-password/{result.Identifier}/{passwordResetLink.Key}";
 
                 StringBuilder sbMail = new();
-                sbMail.Append($"<p>Hi {merchant.Salutation},</p>");
+                sbMail.Append($"<p>Hi {merchant.Username},</p>");
                 sbMail.Append($"<p>A new password for your account was requested. If this was you, click on the following link to proceed setting a new password:</p>");
                 sbMail.Append($"<p><a href=\"{passwordResetUrl}\">{passwordResetUrl}</a></p>");
                 sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
