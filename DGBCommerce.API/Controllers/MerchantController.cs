@@ -87,18 +87,17 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult> Post([FromBody] Merchant value)
         {
             value.PasswordSalt = Utilities.GenerateSalt();
-            value.Password = "To be set";
+            value.Password = Utilities.GenerateRandomString(50);
             var result = await _merchantRepository.Create(value, Guid.Empty);
 
             if (result.Success)
             {
-                string accountActivationUrl = $"{_appSettings.UrlDgbCommerceWebsite}/account-activate/{result.Identifier}/{value.PasswordSalt}";
+                string accountActivationUrl = $"{_appSettings.UrlDgbCommerceWebsite}/account-activate/{result.Identifier}/{value.Password}";
 
                 StringBuilder sbMail = new();
                 sbMail.Append($"<p>Hi {value.Username},</p>");
                 sbMail.Append($"<p>Your account was registered. Before you can use your account, you will need to activate it. Click on the following link to activate:</p>");
                 sbMail.Append($"<p><a href=\"{accountActivationUrl}\">{accountActivationUrl}</a></p>");
-                sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
                 sbMail.Append($"<p>DGB Commerce</p>");
                 _mailService.SendMail(value.EmailAddress, "Activate your DGB Commerce account", sbMail.ToString());
             }
