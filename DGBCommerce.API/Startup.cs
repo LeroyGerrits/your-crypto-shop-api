@@ -2,9 +2,9 @@
 using DGBCommerce.Data;
 using DGBCommerce.Data.Repositories;
 using DGBCommerce.Data.Services;
+using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Interfaces.Services;
-using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
 namespace DGBCommerce.API

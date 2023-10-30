@@ -41,11 +41,17 @@ namespace DGBCommerce.Data.Repositories
         public async Task<Merchant?> GetByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress)
             => await GetRawByEmailAddressAndPassword(emailAddress, password, ipAddress);
 
+        public async Task<Merchant?> GetByIdAndPassword(Guid id, string password)
+            => await GetRawByIdAndPassword(id, password);
+
         public Task<MutationResult> Create(Merchant item, Guid mutationId)
             => _dataAccessLayer.CreateMerchant(item, mutationId);
 
         public Task<MutationResult> Update(Merchant item, Guid mutationId)
             => _dataAccessLayer.UpdateMerchant(item, mutationId);
+
+        public Task<MutationResult> UpdatePassword(Merchant item, string password, Guid mutationId)
+            => _dataAccessLayer.UpdateMerchantPassword(item, password, mutationId);
 
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
             => throw new NotImplementedException();
@@ -60,6 +66,7 @@ namespace DGBCommerce.Data.Repositories
                 merchants.Add(new Merchant()
                 {
                     Id = new Guid(row["mer_id"].ToString()!),
+                    Activated = Utilities.DBNullableDateTime(row["mer_activated"]),
                     EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
                     Username = Utilities.DbNullableString(row["mer_username"]),
                     Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
@@ -86,8 +93,9 @@ namespace DGBCommerce.Data.Repositories
             return new Merchant()
             {
                 Id = new Guid(row["mer_id"].ToString()!),
-                Username = Utilities.DbNullableString(row["mer_username"]),
+                Activated = Utilities.DBNullableDateTime(row["mer_activated"]),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
+                Username = Utilities.DbNullableString(row["mer_username"]),                
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                 FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                 LastName = Utilities.DbNullableString(row["mer_last_name"])
@@ -105,6 +113,7 @@ namespace DGBCommerce.Data.Repositories
             return new Merchant()
             {
                 Id = new Guid(row["mer_id"].ToString()!),
+                Activated = Utilities.DBNullableDateTime(row["mer_activated"]),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
                 Username = Utilities.DbNullableString(row["mer_username"]),
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
@@ -114,6 +123,26 @@ namespace DGBCommerce.Data.Repositories
                 LastIpAddress = Utilities.DbNullableString(row["mer_last_ip_address"]),
                 SecondLastLogin = Utilities.DBNullableDateTime(row["mer_second_last_login"]),
                 SecondLastIpAddress = Utilities.DbNullableString(row["mer_second_last_ip_address"])
+            };
+        }
+
+        private async Task<Merchant?> GetRawByIdAndPassword(Guid id, string password)
+        {
+            DataTable table = await _dataAccessLayer.GetMerchantByIdAndPassword(id, password);
+
+            if (table.Rows.Count != 1)
+                return null;
+
+            DataRow row = table.Rows[0];
+            return new Merchant()
+            {
+                Id = new Guid(row["mer_id"].ToString()!),
+                Activated = Utilities.DBNullableDateTime(row["mer_activated"]),
+                EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
+                Username = Utilities.DbNullableString(row["mer_username"]),                
+                Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
+                FirstName = Utilities.DbNullableString(row["mer_first_name"]),
+                LastName = Utilities.DbNullableString(row["mer_last_name"])
             };
         }
 

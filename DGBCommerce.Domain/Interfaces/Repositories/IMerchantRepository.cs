@@ -8,7 +8,9 @@ namespace DGBCommerce.Domain.Interfaces.Repositories
     {
         Task<Merchant?> GetByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress);
         Task<Merchant?> GetByEmailAddress(string emailAddress);
+        Task<Merchant?> GetByIdAndPassword(Guid id, string password);
         Task<PublicMerchant?> GetByIdPublic(Guid id);
         Task<IEnumerable<PublicMerchant>> GetPublic(GetMerchantsParameters parameters);
+        Task<MutationResult> UpdatePassword(Merchant item, string password, Guid mutationId);
     }
 }

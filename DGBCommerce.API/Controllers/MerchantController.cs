@@ -121,6 +121,21 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
+        [HttpPut("public/activate-account")]
+        public async Task<ActionResult> PutActivateAccountPublic(Guid merchantId, string merchantPassword, string newPassword)
+        {
+            var merchant = await _merchantRepository.GetByIdAndPassword(merchantId, merchantPassword);
+            if (merchant == null)
+                return NotFound();
+
+            if (merchant.Activated.HasValue)
+                return BadRequest("Merchant is already activated.");
+
+            var result = await _merchantRepository.UpdatePassword(merchant, newPassword, merchant.Id!.Value);
+            return Ok(result);
+        }
+
         [AuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Merchant>> Delete(Guid id)

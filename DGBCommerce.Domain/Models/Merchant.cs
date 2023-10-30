@@ -6,6 +6,7 @@ namespace DGBCommerce.Domain.Models
     public class Merchant
     {
         public Guid? Id { get; set; }
+        public DateTime? Activated { get; set; }
         public required string EmailAddress { get; set; }
         public required string Username { get; set; }
         [JsonIgnore] public string? PasswordSalt { get; set; }

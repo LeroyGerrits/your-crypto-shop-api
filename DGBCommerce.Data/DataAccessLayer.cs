@@ -4,7 +4,7 @@ using DGBCommerce.Domain.Parameters;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Enums;
-using DGBCommerce.Domain.Interfaces.Repositories;
+using DGBCommerce.Domain.Interfaces;
 
 namespace DGBCommerce.Data
 {
@@ -234,6 +234,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_IP_ADDRESS", SqlDbType.VarChar) { Value = ipAddress }
             });
 
+        public async Task<DataTable> GetMerchantByIdAndPassword(Guid id, string password)
+            => await Get("SP_GET_Merchant_ByIdAndPassword", new List<SqlParameter>() {
+                new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = id },
+                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar) { Value = password }
+            });
+
         public async Task<DataTable> GetMerchantPasswordResetLinkByIdAndKey(Guid id, string key)
             => await Get("SP_GET_Merchant_ByEmailAddressAndPassword", new List<SqlParameter>() {
                 new SqlParameter("@PRL_ID", SqlDbType.VarChar) { Value = id },
@@ -344,6 +350,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
                 new SqlParameter("@MER_FIRST_NAME", SqlDbType.NVarChar, 255) { Value = merchant.FirstName },
                 new SqlParameter("@MER_LAST_NAME", SqlDbType.NVarChar, 255) { Value = merchant.LastName }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateMerchantPassword(Merchant merchant, string password, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
+                new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
+                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar, 100) { Value = password }
             }, mutationId);
 
         public async Task<MutationResult> UpdateProduct(Product product, Guid mutationId)

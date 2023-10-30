@@ -2,7 +2,7 @@
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
-namespace DGBCommerce.Domain.Interfaces.Repositories
+namespace DGBCommerce.Domain.Interfaces
 {
     public interface IDataAccessLayer
     {
@@ -34,6 +34,7 @@ namespace DGBCommerce.Domain.Interfaces.Repositories
         Task<DataTable> GetFinancialStatementTransactions(GetFinancialStatementTransactionsParameters parameters);
         Task<DataTable> GetMerchantByEmailAddress(string emailAddress);
         Task<DataTable> GetMerchantByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress);
+        Task<DataTable> GetMerchantByIdAndPassword(Guid id, string password);
         Task<DataTable> GetMerchantPasswordResetLinkByIdAndKey(Guid id, string key);
         Task<DataTable> GetMerchants(GetMerchantsParameters parameters);
         Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters);
@@ -50,6 +51,7 @@ namespace DGBCommerce.Domain.Interfaces.Repositories
         Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
         Task<MutationResult> UpdateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId);
+        Task<MutationResult> UpdateMerchantPassword(Merchant merchant, string password, Guid mutationId);
         Task<MutationResult> UpdateProduct(Product product, Guid mutationId);
         Task<MutationResult> UpdateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> UpdateShop(Shop shop, Guid mutationId);
