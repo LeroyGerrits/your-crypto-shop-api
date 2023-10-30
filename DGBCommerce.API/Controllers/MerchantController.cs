@@ -83,6 +83,17 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("{id}/{password}")]
+        public async Task<ActionResult<Merchant>> Get(Guid id, string password)
+        {
+            var merchant = await _merchantRepository.GetByIdAndPassword(id, password);
+            if (merchant == null)
+                return NotFound();
+
+            return Ok(merchant);
+        }
+
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Merchant value)
         {
@@ -122,8 +133,8 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("public/activate-account")]
-        public async Task<ActionResult> PutActivateAccountPublic(Guid merchantId, string merchantPassword, string newPassword)
+        [HttpPut("activate-account")]
+        public async Task<ActionResult> PutActivateAccount(Guid merchantId, string merchantPassword, string newPassword)
         {
             var merchant = await _merchantRepository.GetByIdAndPassword(merchantId, merchantPassword);
             if (merchant == null)
@@ -132,7 +143,8 @@ namespace DGBCommerce.API.Controllers
             if (merchant.Activated.HasValue)
                 return BadRequest("Merchant is already activated.");
 
-            var result = await _merchantRepository.UpdatePassword(merchant, newPassword, merchant.Id!.Value);
+            var hashedNewPassword = Utilities.HashStringSha256(merchant.PasswordSalt + newPassword);
+            var result = await _merchantRepository.UpdatePassword(merchant, hashedNewPassword, merchant.Id!.Value);
             return Ok(result);
         }
 

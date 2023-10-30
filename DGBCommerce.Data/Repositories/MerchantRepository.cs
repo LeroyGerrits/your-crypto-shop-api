@@ -1,5 +1,6 @@
 ﻿using DGBCommerce.Domain;
 using DGBCommerce.Domain.Enums;
+using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Models.ViewModels;
@@ -95,7 +96,7 @@ namespace DGBCommerce.Data.Repositories
                 Id = new Guid(row["mer_id"].ToString()!),
                 Activated = Utilities.DBNullableDateTime(row["mer_activated"]),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
-                Username = Utilities.DbNullableString(row["mer_username"]),                
+                Username = Utilities.DbNullableString(row["mer_username"]),
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                 FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                 LastName = Utilities.DbNullableString(row["mer_last_name"])
@@ -139,7 +140,9 @@ namespace DGBCommerce.Data.Repositories
                 Id = new Guid(row["mer_id"].ToString()!),
                 Activated = Utilities.DBNullableDateTime(row["mer_activated"]),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
-                Username = Utilities.DbNullableString(row["mer_username"]),                
+                Username = Utilities.DbNullableString(row["mer_username"]),
+                Password = Utilities.DbNullableString(row["mer_password"]),
+                PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                 FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                 LastName = Utilities.DbNullableString(row["mer_last_name"])
@@ -156,7 +159,7 @@ namespace DGBCommerce.Data.Repositories
                 merchants.Add(new PublicMerchant()
                 {
                     Id = new Guid(row["mer_id"].ToString()!),
-                    Username = Utilities.DbNullableString(row["mer_username"]),                    
+                    Username = Utilities.DbNullableString(row["mer_username"]),
                     Score = Utilities.DbNullableDecimal(row["mer_score"])
                 });
             }
