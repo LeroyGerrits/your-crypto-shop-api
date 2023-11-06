@@ -134,16 +134,33 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpPut("activate-account")]
-        public async Task<ActionResult> PutActivateAccount(Guid merchantId, string merchantPassword, string newPassword)
+        public async Task<ActionResult> PutActivateAccount(ActivateAccountRequest model)
         {
-            var merchant = await _merchantRepository.GetByIdAndPassword(merchantId, merchantPassword);
+            var merchant = await _merchantRepository.GetByIdAndPassword(model.Id, model.CurrentPassword);
             if (merchant == null)
                 return NotFound();
 
             if (merchant.Activated.HasValue)
                 return BadRequest("Merchant is already activated.");
 
-            var hashedNewPassword = Utilities.HashStringSha256(merchant.PasswordSalt + newPassword);
+            var hashedNewPassword = Utilities.HashStringSha256(merchant.PasswordSalt + model.NewPassword);
+            var result = await _merchantRepository.UpdatePasswordAndActivate(merchant, hashedNewPassword, merchant.Id!.Value);
+            return Ok(result);
+        }
+
+        [AuthenticationRequired]
+        [HttpPut("change-password")]
+        public async Task<ActionResult> PutChangePassword(ChangePasswordRequest model)
+        {
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var merchant = await _merchantRepository.GetByIdAndPassword(authenticatedMerchantId.Value, model.CurrentPassword);
+            if (merchant == null)
+                return NotFound();
+
+            var hashedNewPassword = Utilities.HashStringSha256(merchant.PasswordSalt + model.NewPassword);
             var result = await _merchantRepository.UpdatePassword(merchant, hashedNewPassword, merchant.Id!.Value);
             return Ok(result);
         }
@@ -166,8 +183,16 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("Authenticate")]
-        public IActionResult Authenticate(AuthenticationRequest model)
+        public async Task<ActionResult> Authenticate(AuthenticateRequest model)
         {
+            // First retrieve the account by e-mail address so we can get the salt
+            var merchantByEmailAddress = await _merchantRepository.GetByEmailAddress(model.EmailAddress);
+            if(merchantByEmailAddress == null)
+                return BadRequest(new { message = "E-mail address or password is incorrect" });
+
+            // Hash the password using the salt
+            model.Password = Utilities.HashStringSha256(merchantByEmailAddress.PasswordSalt + model.Password);
+
             var response = _authenticationService.Authenticate(model);
 
             if (response == null)
@@ -180,9 +205,12 @@ namespace DGBCommerce.API.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<ActionResult> ForgotPassword([FromBody] string emailAddress)
         {
+            if (string.IsNullOrWhiteSpace(_appSettings.UrlDgbCommerceWebsite))
+                throw new Exception("DGB Commerce Website URL not configured.");
+
             var merchant = await _merchantRepository.GetByEmailAddress(emailAddress);
             if (merchant == null)
-                return Ok();
+                return Ok(); // Return OK even when using a wrong e-mail address because we want to display a generic message rather than hinting the e-mail address exists
 
             MerchantPasswordResetLink passwordResetLink = new()
             {
@@ -195,12 +223,6 @@ namespace DGBCommerce.API.Controllers
             var result = await _merchantPasswordResetLinkRepository.Create(passwordResetLink, Guid.Empty);
             if (result.Success)
             {
-                if (string.IsNullOrWhiteSpace(_appSettings.UrlDgbCommerceWebsite))
-                {
-                    // TO-DO: Log error
-                    return Ok();
-                }
-
                 string passwordResetUrl = $"{_appSettings.UrlDgbCommerceWebsite}/reset-password/{result.Identifier}/{passwordResetLink.Key}";
 
                 StringBuilder sbMail = new();

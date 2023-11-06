@@ -354,6 +354,13 @@ namespace DGBCommerce.Data
 
         public async Task<MutationResult> UpdateMerchantPassword(Merchant merchant, string password, Guid mutationId)
             => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 22 },
+                new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
+                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar, 100) { Value = password }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateMerchantPasswordAndActivate(Merchant merchant, string password, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
                 new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
                 new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar, 100) { Value = password }

@@ -7,7 +7,7 @@ namespace DGBCommerce.API.Services
 {
     public interface IAuthenticationService
     {
-        AuthenticationResponse? Authenticate(AuthenticationRequest model);
+        AuthenticationResponse? Authenticate(AuthenticateRequest model);
     }
 
     public class AuthenticationService : IAuthenticationService
@@ -26,7 +26,7 @@ namespace DGBCommerce.API.Services
             _jwtUtils = jwtUtils;
         }
 
-        public AuthenticationResponse? Authenticate(AuthenticationRequest model)
+        public AuthenticationResponse? Authenticate(AuthenticateRequest model)
         {
             Merchant? merchant = _merchantRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password, _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString()).Result;
             if (merchant == null) return null;

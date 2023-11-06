@@ -52,6 +52,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId);
         Task<MutationResult> UpdateMerchantPassword(Merchant merchant, string password, Guid mutationId);
+        Task<MutationResult> UpdateMerchantPasswordAndActivate(Merchant merchant, string password, Guid mutationId);
         Task<MutationResult> UpdateProduct(Product product, Guid mutationId);
         Task<MutationResult> UpdateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> UpdateShop(Shop shop, Guid mutationId);

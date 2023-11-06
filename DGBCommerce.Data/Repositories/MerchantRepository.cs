@@ -54,6 +54,9 @@ namespace DGBCommerce.Data.Repositories
         public Task<MutationResult> UpdatePassword(Merchant item, string password, Guid mutationId)
             => _dataAccessLayer.UpdateMerchantPassword(item, password, mutationId);
 
+        public Task<MutationResult> UpdatePasswordAndActivate(Merchant item, string password, Guid mutationId)
+            => _dataAccessLayer.UpdateMerchantPasswordAndActivate(item, password, mutationId);
+
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
             => throw new NotImplementedException();
 
@@ -97,6 +100,7 @@ namespace DGBCommerce.Data.Repositories
                 Activated = Utilities.DBNullableDateTime(row["mer_activated"]),
                 EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
                 Username = Utilities.DbNullableString(row["mer_username"]),
+                PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
                 Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                 FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                 LastName = Utilities.DbNullableString(row["mer_last_name"])
