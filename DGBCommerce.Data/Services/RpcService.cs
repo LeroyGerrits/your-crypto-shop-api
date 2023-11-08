@@ -39,6 +39,9 @@ namespace DGBCommerce.Data.Services
         public async Task<string> GetNewAddress(string? label, string? addressType)
             => await Request<string>("getnewaddress", label, addressType);
 
+        public async Task<ValidateAddressResponse> ValidateAddress(string address)
+            => await Request<ValidateAddressResponse>("validateaddress", address);
+
         private async Task<T> Request<T>(string rpcMethod, params object?[] parameters)
         {
             JsonRpcRequest jsonRpcRequest = new(1, rpcMethod.ToString(), parameters);
@@ -51,8 +54,8 @@ namespace DGBCommerce.Data.Services
 
             try
             {
-                httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);                
-            }            
+                httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+            }
             catch (WebException webException)
             {
                 #region RPC Internal Server Error (with an Error Code)
@@ -104,8 +107,10 @@ namespace DGBCommerce.Data.Services
                 throw new RpcException("There was a problem sending the request to the wallet", exception);
             }
 
-            StreamReader streamReaderResponse = new(httpResponseMessage.Content.ReadAsStream());
-            string responseBody = streamReaderResponse.ReadToEnd();
+            string responseBody;
+            using (StreamReader streamReaderResponse = new(httpResponseMessage.Content.ReadAsStream()))
+                responseBody = streamReaderResponse.ReadToEnd();
+
             JsonRpcResponse<T>? rpcResponse;
 
             try

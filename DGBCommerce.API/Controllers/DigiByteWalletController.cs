@@ -1,8 +1,8 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces.Repositories;
+using DGBCommerce.Domain.Interfaces.Services;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DGBCommerce.API.Controllers
@@ -13,16 +13,19 @@ namespace DGBCommerce.API.Controllers
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
-        private readonly IDigiByteWalletRepository _deliveryMethodRepository;
+        private readonly IDigiByteWalletRepository _digiByteWalletRepository;
+        private readonly IRpcService _rpcService;
 
         public DigiByteWalletController(
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
-            IDigiByteWalletRepository deliveryMethodRepository)
+            IDigiByteWalletRepository digiByteWalletRepository,
+            IRpcService rpcService)
         {
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
-            _deliveryMethodRepository = deliveryMethodRepository;
+            _digiByteWalletRepository = digiByteWalletRepository;
+            _rpcService = rpcService;
         }
 
         [AuthenticationRequired]
@@ -33,13 +36,13 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethods = await _deliveryMethodRepository.Get(new GetDigiByteWalletsParameters()
+            var digiByteWallets = await _digiByteWalletRepository.Get(new GetDigiByteWalletsParameters()
             {
                 MerchantId = authenticatedMerchantId.Value,
                 Name = name,
                 Address = address
             });
-            return Ok(deliveryMethods.ToList());
+            return Ok(digiByteWallets.ToList());
         }
 
         [AuthenticationRequired]
@@ -50,11 +53,11 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null)
+            var digiByteWallet = await _digiByteWalletRepository.GetById(authenticatedMerchantId.Value, id);
+            if (digiByteWallet == null)
                 return NotFound();
 
-            return Ok(deliveryMethod);
+            return Ok(digiByteWallet);
         }
 
         [AuthenticationRequired]
@@ -65,7 +68,11 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var result = await _deliveryMethodRepository.Create(value, authenticatedMerchantId.Value);
+            var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
+            if (!validateAddressResponse.IsValid)
+                return BadRequest(new { message = "The DigiByte address you supplied is not valid." });
+
+            var result = await _digiByteWalletRepository.Create(value, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
@@ -77,11 +84,15 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null)
+            var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
+            if (!validateAddressResponse.IsValid)
+                return BadRequest(new { message = "The DigiByte address you supplied is not valid." });
+
+            var digiByteWallet = await _digiByteWalletRepository.GetById(authenticatedMerchantId.Value, id);
+            if (digiByteWallet == null)
                 return NotFound();
 
-            var result = await _deliveryMethodRepository.Update(value, authenticatedMerchantId.Value);
+            var result = await _digiByteWalletRepository.Update(value, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
@@ -93,11 +104,11 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null)
+            var digiByteWallet = await _digiByteWalletRepository.GetById(authenticatedMerchantId.Value, id);
+            if (digiByteWallet == null)
                 return NotFound();
 
-            var result = await _deliveryMethodRepository.Delete(id, authenticatedMerchantId.Value);
+            var result = await _digiByteWalletRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
         }
     }
