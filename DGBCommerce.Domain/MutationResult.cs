@@ -9,16 +9,11 @@ namespace DGBCommerce.Domain
         public string? Message { get; set; }
 
         public string Constraint
-        {
-            get
+            => ErrorCode switch
             {
-                return ErrorCode switch
-                {
-                    2627 => RegexUniqueConstraintViolation().Matches(Message!)[0].Value.Trim('\''),
-                    _ => !string.IsNullOrWhiteSpace(Message) ? Message : string.Empty,
-                };
-            }
-        }
+                2627 => RegexUniqueConstraintViolation().Matches(Message!)[0].Value.Trim('\''),
+                _ => !string.IsNullOrWhiteSpace(Message) ? Message : string.Empty,
+            };
 
         public bool Success
             => this.ErrorCode == 0;

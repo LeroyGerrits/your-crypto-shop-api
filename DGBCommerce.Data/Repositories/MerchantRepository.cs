@@ -73,6 +73,7 @@ namespace DGBCommerce.Data.Repositories
                     Activated = Utilities.DBNullableDateTime(row["mer_activated"]),
                     EmailAddress = Utilities.DbNullableString(row["mer_email_address"]),
                     Username = Utilities.DbNullableString(row["mer_username"]),
+                    PasswordSalt = Utilities.DbNullableString(row["mer_password_salt"]),
                     Gender = (Gender)Convert.ToInt32(row["mer_gender"]),
                     FirstName = Utilities.DbNullableString(row["mer_first_name"]),
                     LastName = Utilities.DbNullableString(row["mer_last_name"]),

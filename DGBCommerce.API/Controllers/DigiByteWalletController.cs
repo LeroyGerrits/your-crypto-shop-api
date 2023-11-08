@@ -33,10 +33,11 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethods = await _deliveryMethodRepository.Get(new GetDigiByteWalletsParameters() { 
-                MerchantId = authenticatedMerchantId.Value, 
-                Name = name, Address = 
-                address 
+            var deliveryMethods = await _deliveryMethodRepository.Get(new GetDigiByteWalletsParameters()
+            {
+                MerchantId = authenticatedMerchantId.Value,
+                Name = name,
+                Address = address
             });
             return Ok(deliveryMethods.ToList());
         }

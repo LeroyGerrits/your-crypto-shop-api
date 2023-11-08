@@ -134,7 +134,7 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpPut("activate-account")]
-        public async Task<ActionResult> PutActivateAccount(ActivateAccountRequest model)
+        public async Task<ActionResult> ActivateAccount([FromBody] ActivateAccountRequest model)
         {
             var merchant = await _merchantRepository.GetByIdAndPassword(model.Id, model.CurrentPassword);
             if (merchant == null)
@@ -150,17 +150,28 @@ namespace DGBCommerce.API.Controllers
 
         [AuthenticationRequired]
         [HttpPut("change-password")]
-        public async Task<ActionResult> PutChangePassword(ChangePasswordRequest model)
+        public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest model)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var merchant = await _merchantRepository.GetByIdAndPassword(authenticatedMerchantId.Value, model.CurrentPassword);
-            if (merchant == null)
+            // First retrieve the merchant by ID so we can get the salt
+            var merchantById = await _merchantRepository.GetById(authenticatedMerchantId.Value, authenticatedMerchantId.Value);
+            if (merchantById == null)
                 return NotFound();
 
+            // Hash the current password using the salt
+            var hashedCurrentPassword = Utilities.HashStringSha256(merchantById.PasswordSalt + model.CurrentPassword);
+
+            // Retrieve merchant by ID and hashed password
+            var merchant = await _merchantRepository.GetByIdAndPassword(authenticatedMerchantId.Value, hashedCurrentPassword);
+            if (merchant == null)
+                return BadRequest(new { message = "Your current password is incorrect." });
+
+            // Hash the new password using the salt
             var hashedNewPassword = Utilities.HashStringSha256(merchant.PasswordSalt + model.NewPassword);
+
             var result = await _merchantRepository.UpdatePassword(merchant, hashedNewPassword, merchant.Id!.Value);
             return Ok(result);
         }
@@ -183,18 +194,17 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("Authenticate")]
-        public async Task<ActionResult> Authenticate(AuthenticateRequest model)
+        public async Task<ActionResult> Authenticate([FromBody] AuthenticateRequest model)
         {
             // First retrieve the account by e-mail address so we can get the salt
             var merchantByEmailAddress = await _merchantRepository.GetByEmailAddress(model.EmailAddress);
-            if(merchantByEmailAddress == null)
+            if (merchantByEmailAddress == null)
                 return BadRequest(new { message = "E-mail address or password is incorrect" });
 
             // Hash the password using the salt
             model.Password = Utilities.HashStringSha256(merchantByEmailAddress.PasswordSalt + model.Password);
 
             var response = _authenticationService.Authenticate(model);
-
             if (response == null)
                 return BadRequest(new { message = "E-mail address or password is incorrect" });
 
