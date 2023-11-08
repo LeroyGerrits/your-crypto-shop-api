@@ -352,18 +352,19 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_LAST_NAME", SqlDbType.NVarChar, 255) { Value = merchant.LastName }
             }, mutationId);
 
-        public async Task<MutationResult> UpdateMerchantPassword(Merchant merchant, string password, Guid mutationId)
-            => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
-                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 22 },
-                new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
-                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar, 100) { Value = password }
-            }, mutationId);
-
         public async Task<MutationResult> UpdateMerchantPasswordAndActivate(Merchant merchant, string password, Guid mutationId)
             => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
                 new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
                 new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar, 100) { Value = password }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateMerchantPasswordAndSalt(Merchant merchant, string password, string passwordSalt, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Merchant", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 22 },
+                new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
+                new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar, 100) { Value = password },
+                new SqlParameter("@MER_PASSWORD_SALT", SqlDbType.VarChar, 24) { Value = passwordSalt }
             }, mutationId);
 
         public async Task<MutationResult> UpdateProduct(Product product, Guid mutationId)

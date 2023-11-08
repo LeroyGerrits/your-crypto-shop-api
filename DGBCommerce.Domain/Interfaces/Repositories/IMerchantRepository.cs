@@ -11,7 +11,7 @@ namespace DGBCommerce.Domain.Interfaces.Repositories
         Task<Merchant?> GetByIdAndPassword(Guid id, string password);
         Task<PublicMerchant?> GetByIdPublic(Guid id);
         Task<IEnumerable<PublicMerchant>> GetPublic(GetMerchantsParameters parameters);        
-        Task<MutationResult> UpdatePassword(Merchant item, string password, Guid mutationId);
+        Task<MutationResult> UpdatePasswordAndSalt(Merchant item, string password, string passwordSalt, Guid mutationId);
         Task<MutationResult> UpdatePasswordAndActivate(Merchant item, string password, Guid mutationId);
     }
 }

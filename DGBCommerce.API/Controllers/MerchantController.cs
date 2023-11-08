@@ -134,23 +134,23 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpPut("activate-account")]
-        public async Task<ActionResult> ActivateAccount([FromBody] ActivateAccountRequest model)
+        public async Task<ActionResult> ActivateAccount([FromBody] ActivateAccountRequest request)
         {
-            var merchant = await _merchantRepository.GetByIdAndPassword(model.Id, model.CurrentPassword);
+            var merchant = await _merchantRepository.GetByIdAndPassword(request.Id, request.CurrentPassword);
             if (merchant == null)
                 return NotFound();
 
             if (merchant.Activated.HasValue)
                 return BadRequest("Merchant is already activated.");
 
-            var hashedNewPassword = Utilities.HashStringSha256(merchant.PasswordSalt + model.NewPassword);
+            var hashedNewPassword = Utilities.HashStringSha256(merchant.PasswordSalt + request.NewPassword);
             var result = await _merchantRepository.UpdatePasswordAndActivate(merchant, hashedNewPassword, merchant.Id!.Value);
             return Ok(result);
         }
 
         [AuthenticationRequired]
         [HttpPut("change-password")]
-        public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest model)
+        public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -162,17 +162,18 @@ namespace DGBCommerce.API.Controllers
                 return NotFound();
 
             // Hash the current password using the salt
-            var hashedCurrentPassword = Utilities.HashStringSha256(merchantById.PasswordSalt + model.CurrentPassword);
+            var hashedCurrentPassword = Utilities.HashStringSha256(merchantById.PasswordSalt + request.CurrentPassword);
 
             // Retrieve merchant by ID and hashed password
             var merchant = await _merchantRepository.GetByIdAndPassword(authenticatedMerchantId.Value, hashedCurrentPassword);
             if (merchant == null)
                 return BadRequest(new { message = "Your current password is incorrect." });
 
-            // Hash the new password using the salt
-            var hashedNewPassword = Utilities.HashStringSha256(merchant.PasswordSalt + model.NewPassword);
+            // Create a new salt and hash the new password with it
+            var newPasswordSalt = Utilities.GenerateSalt();
+            var hashedNewPassword = Utilities.HashStringSha256(newPasswordSalt + request.NewPassword);
 
-            var result = await _merchantRepository.UpdatePassword(merchant, hashedNewPassword, merchant.Id!.Value);
+            var result = await _merchantRepository.UpdatePasswordAndSalt(merchant, hashedNewPassword, newPasswordSalt, merchant.Id!.Value);
             return Ok(result);
         }
 
@@ -194,17 +195,17 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("Authenticate")]
-        public async Task<ActionResult> Authenticate([FromBody] AuthenticateRequest model)
+        public async Task<ActionResult> Authenticate([FromBody] AuthenticateRequest request)
         {
             // First retrieve the account by e-mail address so we can get the salt
-            var merchantByEmailAddress = await _merchantRepository.GetByEmailAddress(model.EmailAddress);
+            var merchantByEmailAddress = await _merchantRepository.GetByEmailAddress(request.EmailAddress);
             if (merchantByEmailAddress == null)
                 return BadRequest(new { message = "E-mail address or password is incorrect" });
 
             // Hash the password using the salt
-            model.Password = Utilities.HashStringSha256(merchantByEmailAddress.PasswordSalt + model.Password);
+            request.Password = Utilities.HashStringSha256(merchantByEmailAddress.PasswordSalt + request.Password);
 
-            var response = _authenticationService.Authenticate(model);
+            var response = _authenticationService.Authenticate(request);
             if (response == null)
                 return BadRequest(new { message = "E-mail address or password is incorrect" });
 

@@ -51,8 +51,8 @@ namespace DGBCommerce.Data.Repositories
         public Task<MutationResult> Update(Merchant item, Guid mutationId)
             => _dataAccessLayer.UpdateMerchant(item, mutationId);
 
-        public Task<MutationResult> UpdatePassword(Merchant item, string password, Guid mutationId)
-            => _dataAccessLayer.UpdateMerchantPassword(item, password, mutationId);
+        public Task<MutationResult> UpdatePasswordAndSalt(Merchant item, string password, string passwordSalt, Guid mutationId)
+            => _dataAccessLayer.UpdateMerchantPasswordAndSalt(item, password, passwordSalt, mutationId);
 
         public Task<MutationResult> UpdatePasswordAndActivate(Merchant item, string password, Guid mutationId)
             => _dataAccessLayer.UpdateMerchantPasswordAndActivate(item, password, mutationId);
