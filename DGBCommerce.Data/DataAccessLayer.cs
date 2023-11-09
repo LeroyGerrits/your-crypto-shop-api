@@ -178,6 +178,7 @@ namespace DGBCommerce.Data
             => await Get("SP_GET_DeliveryMethods", new List<SqlParameter>() {
                 new SqlParameter("@DLM_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
                 new SqlParameter("@DLM_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@DLM_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@DLM_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
             });
 
