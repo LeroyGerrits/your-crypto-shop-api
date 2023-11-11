@@ -1,4 +1,5 @@
 using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.Domain.Exceptions;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Interfaces.Services;
 using DGBCommerce.Domain.Models;
@@ -68,9 +69,16 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
-            if (!validateAddressResponse.IsValid)
-                return BadRequest(new { message = "The DigiByte address you supplied is not valid." });
+            try
+            {
+                var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
+                if (!validateAddressResponse.IsValid)
+                    return BadRequest(new { message = "The DigiByte address you supplied is not valid." });
+            }
+            catch (RpcException)
+            {
+                return BadRequest(new { message = "DigiByte node could not be contacted." });
+            }
 
             var result = await _digiByteWalletRepository.Create(value, authenticatedMerchantId.Value);
             return Ok(result);
@@ -84,10 +92,17 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
-            if (!validateAddressResponse.IsValid)
-                return BadRequest(new { message = "The DigiByte address you supplied is not valid." });
-
+            try
+            {
+                var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
+                if (!validateAddressResponse.IsValid)
+                    return BadRequest(new { message = "The DigiByte address you supplied is not valid." });
+            }
+            catch (RpcException)
+            {
+                return BadRequest(new { message = "DigiByte node could not be contacted." });
+            }
+            
             var digiByteWallet = await _digiByteWalletRepository.GetById(authenticatedMerchantId.Value, id);
             if (digiByteWallet == null)
                 return NotFound();
