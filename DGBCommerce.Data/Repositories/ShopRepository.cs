@@ -20,6 +20,12 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<Shop>> Get(GetShopsParameters parameters)
             => await GetRaw(parameters);
 
+        public async Task<PublicShop?> GetByIdAndSubDomainPublic(Guid? id, string subDomain)
+        {
+            var shops = await GetRawByIdAndSubDomainPublic(id, subDomain);
+            return shops.ToList().SingleOrDefault();
+        }
+
         public async Task<IEnumerable<PublicShop>> GetPublic(GetShopsParameters parameters)
             => await GetRawPublic(parameters);
 
@@ -64,7 +70,29 @@ namespace DGBCommerce.Data.Repositories
             List<PublicShop> shops = new();
 
             foreach (DataRow row in table.Rows)
-            {                
+            {
+                shops.Add(new PublicShop()
+                {
+                    Id = new Guid(row["shp_id"].ToString()!),
+                    Name = Utilities.DbNullableString(row["shp_name"]),
+                    MerchantId = new Guid(row["shp_merchant"].ToString()!),
+                    MerchantUsername = Utilities.DbNullableString(row["shp_merchant_username"]),
+                    MerchantScore = Utilities.DbNullableDecimal(row["shp_merchant_score"]),
+                    SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
+                    Featured = Convert.ToBoolean(row["shp_featured"])
+                });
+            }
+
+            return shops;
+        }
+
+        private async Task<IEnumerable<PublicShop>> GetRawByIdAndSubDomainPublic(Guid? id, string subDomain)
+        {
+            DataTable table = await _dataAccessLayer.GetShopByIdAndSubDomain(id, subDomain);
+            List<PublicShop> shops = new();
+
+            foreach (DataRow row in table.Rows)
+            {
                 shops.Add(new PublicShop()
                 {
                     Id = new Guid(row["shp_id"].ToString()!),

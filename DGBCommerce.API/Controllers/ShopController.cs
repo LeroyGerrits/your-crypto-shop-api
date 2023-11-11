@@ -1,10 +1,12 @@
 using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace DGBCommerce.API.Controllers
 {
@@ -12,15 +14,18 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class ShopController : ControllerBase
     {
+        private readonly AppSettings _appSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
         private readonly IShopRepository _shopRepository;
 
         public ShopController(
+            IOptions<AppSettings> appSettings,
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
             IShopRepository shopRepository)
         {
+            _appSettings = appSettings.Value;
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _shopRepository = shopRepository;
@@ -40,6 +45,21 @@ namespace DGBCommerce.API.Controllers
         {
             var shops = await _shopRepository.GetPublic(new GetShopsParameters() { Featured = true });
             return Ok(shops.ToList());
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/subdomain-available")]
+        public async Task<ActionResult<bool>> GetSubDomainAvailablePublic(string subDomain, string? id)
+        {
+            if (string.IsNullOrWhiteSpace(subDomain))
+                return BadRequest(new { Message = "Sub domain is required." });
+
+            if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.ToLower().Contains(subDomain.ToLower()))
+                return false;
+
+            Guid? idGuid = Utilities.NullableGuid(id ?? string.Empty);
+            var shop = await _shopRepository.GetByIdAndSubDomainPublic(idGuid, subDomain);
+            return Ok(shop == null);
         }
 
         [AuthenticationRequired]
@@ -68,7 +88,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var shop = await _shopRepository.GetById(authenticatedMerchantId.Value, id);
-            if (shop == null) 
+            if (shop == null)
                 return NotFound();
 
             return Ok(shop);

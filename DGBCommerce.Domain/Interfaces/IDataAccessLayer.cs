@@ -42,7 +42,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetProductCategories(GetProductCategoriesParameters parameters);
         Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);
-        Task<DataTable> GetShopBySubDomain(string subDomain);
+        Task<DataTable> GetShopByIdAndSubDomain(Guid? id, string subDomain);
 
         Task<MutationResult> UpdateCategory(Category category, Guid mutationId);
         Task<MutationResult> UpdateCategoryChangeParent(Guid categoryId, Guid parentId, Guid mutationId);
