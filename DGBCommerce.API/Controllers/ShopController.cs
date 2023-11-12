@@ -52,7 +52,7 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<bool>> GetSubDomainAvailablePublic(string subDomain, string? id)
         {
             if (string.IsNullOrWhiteSpace(subDomain))
-                return BadRequest(new { Message = "Sub domain is required." });
+                return BadRequest(new { message = "Sub domain is required." });
 
             if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.ToLower().Contains(subDomain.ToLower()))
                 return false;
@@ -102,6 +102,16 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
+            if (!string.IsNullOrWhiteSpace(value.SubDomain))
+            {
+                if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.ToLower().Contains(value.SubDomain.ToLower()))
+                    return BadRequest(new { message = "This subdomain is already taken." });
+
+                var merchantHasShopsWithSubDomains = await this.MerchantHasShopsWithSubDomains(authenticatedMerchantId.Value, null);
+                if (merchantHasShopsWithSubDomains)
+                    return BadRequest(new { message = "At this time, you can only claim one sub domain per account." });
+            }
+
             var result = await _shopRepository.Create(value, authenticatedMerchantId.Value);
             return Ok(result);
         }
@@ -117,6 +127,16 @@ namespace DGBCommerce.API.Controllers
             var shop = await _shopRepository.GetById(authenticatedMerchantId.Value, id);
             if (shop == null)
                 return NotFound();
+
+            if (!string.IsNullOrWhiteSpace(value.SubDomain))
+            {
+                if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.ToLower().Contains(value.SubDomain.ToLower()))
+                    return BadRequest(new { message = "This subdomain is already taken." });
+
+                var merchantHasShopsWithSubDomains = await this.MerchantHasShopsWithSubDomains(authenticatedMerchantId.Value, id);
+                if (merchantHasShopsWithSubDomains)
+                    return BadRequest(new { message = "At this time, you can only claim one sub domain per account." });
+            }
 
             var result = await _shopRepository.Update(value, authenticatedMerchantId.Value);
             return Ok(result);
@@ -136,6 +156,13 @@ namespace DGBCommerce.API.Controllers
 
             var result = await _shopRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
+        }
+
+        private async Task<bool> MerchantHasShopsWithSubDomains(Guid merchantId, Guid? shopId)
+        {
+            var shops = await _shopRepository.Get(new GetShopsParameters() { MerchantId = merchantId });
+            var shopsWithSubdomains = shops.Where(s => !string.IsNullOrWhiteSpace(s.SubDomain) && (!shopId.HasValue || (shopId.HasValue && s.Id != shopId)));
+            return shopsWithSubdomains.Any();
         }
     }
 }

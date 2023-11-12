@@ -11,6 +11,7 @@ namespace DGBCommerce.Domain
         public string Constraint
             => ErrorCode switch
             {
+                2601 => RegexUniqueConstraintViolation().Matches(Message!)[1].Value.Trim('\''),
                 2627 => RegexUniqueConstraintViolation().Matches(Message!)[0].Value.Trim('\''),
                 _ => !string.IsNullOrWhiteSpace(Message) ? Message : string.Empty,
             };
