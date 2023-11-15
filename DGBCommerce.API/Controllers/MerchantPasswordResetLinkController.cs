@@ -1,4 +1,5 @@
-using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.API.Controllers.Requests;
+using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,28 +11,21 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class MerchantPasswordResetLinkController : ControllerBase
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
+        private readonly IMerchantRepository _merchantRepository;
         private readonly IMerchantPasswordResetLinkRepository _merchantPasswordResetLinkRepository;
 
         public MerchantPasswordResetLinkController(
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
+            IMerchantRepository merchantRepository,
             IMerchantPasswordResetLinkRepository merchantPasswordResetLinkRepository)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
+            _merchantRepository = merchantRepository;
             _merchantPasswordResetLinkRepository = merchantPasswordResetLinkRepository;
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("public")]
         public async Task<ActionResult<DeliveryMethod>> Get(Guid id, string key)
         {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (authenticatedMerchantId == null)
-                return BadRequest("Merchant not authorized.");
-
             var merchantPasswordResetLink = await _merchantPasswordResetLinkRepository.GetByIdAndKey(id, key);
             if (merchantPasswordResetLink == null)
                 return NotFound();
@@ -40,42 +34,22 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] MerchantPasswordResetLink value)
+        [HttpPut("public/reset-password")]
+        public async Task<ActionResult> Put([FromBody] ResetPasswordRequest request)
         {
-            var result = await _merchantPasswordResetLinkRepository.Create(value, Guid.Empty);
-            return Ok(result);
-        }
-
-        [AuthenticationRequired]
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] MerchantPasswordResetLink value)
-        {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (authenticatedMerchantId == null)
-                return BadRequest("Merchant not authorized.");
-
-            var merchantPasswordResetLink = await _merchantPasswordResetLinkRepository.GetById(authenticatedMerchantId.Value, id);
+            var merchantPasswordResetLink = await _merchantPasswordResetLinkRepository.GetByIdAndKey(request.Id, request.Key);
             if (merchantPasswordResetLink == null)
-                return NotFound();
+                return BadRequest(new { message = "Password reset link already used or expired." });
 
-            var result = await _merchantPasswordResetLinkRepository.Update(value, authenticatedMerchantId.Value);
-            return Ok(result);
-        }
+            // Create a new salt and hash the new password with it
+            var newPasswordSalt = Utilities.GenerateSalt();
+            var hashedNewPassword = Utilities.HashStringSha256(newPasswordSalt + request.Password);
 
-        [AuthenticationRequired]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<DeliveryMethod>> Delete(Guid id)
-        {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (authenticatedMerchantId == null)
-                return BadRequest("Merchant not authorized.");
+            var result = await _merchantRepository.UpdatePasswordAndSalt(merchantPasswordResetLink.Merchant, hashedNewPassword, newPasswordSalt, merchantPasswordResetLink.Merchant.Id!.Value);
 
-            var merchantPasswordResetLink = await _merchantPasswordResetLinkRepository.GetById(authenticatedMerchantId.Value, id);
-            if (merchantPasswordResetLink == null)
-                return NotFound();
+            if (result.Success)
+                await _merchantPasswordResetLinkRepository.UpdateUsed(merchantPasswordResetLink, merchantPasswordResetLink.Merchant.Id!.Value);
 
-            var result = await _merchantPasswordResetLinkRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
         }
     }

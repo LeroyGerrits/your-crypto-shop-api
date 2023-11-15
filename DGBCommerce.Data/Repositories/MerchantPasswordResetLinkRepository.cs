@@ -31,6 +31,9 @@ namespace DGBCommerce.Data.Repositories
         public Task<MutationResult> Update(MerchantPasswordResetLink item, Guid mutationId)
             => throw new InvalidOperationException();
 
+        public Task<MutationResult> UpdateUsed(MerchantPasswordResetLink item, Guid mutationId)
+            => _dataAccessLayer.UpdateMerchantPasswordResetLinkUsed(item, mutationId);
+
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
             => throw new InvalidOperationException();
 

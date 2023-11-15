@@ -194,7 +194,7 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("Authenticate")]
+        [HttpPost("authenticate")]
         public async Task<ActionResult> Authenticate([FromBody] AuthenticateRequest request)
         {
             // First retrieve the account by e-mail address so we can get the salt
@@ -213,13 +213,13 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("ForgotPassword")]
-        public async Task<ActionResult> ForgotPassword([FromBody] string emailAddress)
+        [HttpPost("public/forgot-password")]
+        public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
             if (string.IsNullOrWhiteSpace(_appSettings.UrlDgbCommerceWebsite))
                 throw new Exception("DGB Commerce Website URL not configured.");
 
-            var merchant = await _merchantRepository.GetByEmailAddress(emailAddress);
+            var merchant = await _merchantRepository.GetByEmailAddress(request.EmailAddress);
             if (merchant == null)
                 return Ok(); // Return OK even when using a wrong e-mail address because we want to display a generic message rather than hinting the e-mail address exists
 
@@ -238,11 +238,11 @@ namespace DGBCommerce.API.Controllers
 
                 StringBuilder sbMail = new();
                 sbMail.Append($"<p>Hi {merchant.Username},</p>");
-                sbMail.Append($"<p>A new password for your account was requested. If this was you, click on the following link to proceed setting a new password:</p>");
+                sbMail.Append($"<p>A password reset for your account was requested. If this was you, click on the following link to proceed setting a new password:</p>");
                 sbMail.Append($"<p><a href=\"{passwordResetUrl}\">{passwordResetUrl}</a></p>");
                 sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
                 sbMail.Append($"<p>DGB Commerce</p>");
-                _mailService.SendMail(merchant.EmailAddress, "DGB Commerce password reset", sbMail.ToString());
+                _mailService.SendMail(merchant.EmailAddress, "Reset your DGB Commerce password", sbMail.ToString());
             }
 
             return Ok();

@@ -1,8 +1,7 @@
 ﻿namespace DGBCommerce.API.Controllers.Requests
 {
-    public class ChangePasswordRequest
+    public class ForgotPasswordRequest
     {
-        public required string CurrentPassword { get; set; }
-        public required string NewPassword { get; set; }
+        public required string EmailAddress { get; set; }
     }
 }

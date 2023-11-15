@@ -242,8 +242,8 @@ namespace DGBCommerce.Data
             });
 
         public async Task<DataTable> GetMerchantPasswordResetLinkByIdAndKey(Guid id, string key)
-            => await Get("SP_GET_Merchant_ByEmailAddressAndPassword", new List<SqlParameter>() {
-                new SqlParameter("@PRL_ID", SqlDbType.VarChar) { Value = id },
+            => await Get("SP_GET_MerchantPasswordResetLink_ByIdAndKey", new List<SqlParameter>() {
+                new SqlParameter("@PRL_ID", SqlDbType.UniqueIdentifier) { Value = id },
                 new SqlParameter("@PRL_KEY", SqlDbType.VarChar) { Value = key },
             });
 
@@ -367,6 +367,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_ID", SqlDbType.UniqueIdentifier) { Value = merchant.Id },
                 new SqlParameter("@MER_PASSWORD", SqlDbType.VarChar, 100) { Value = password },
                 new SqlParameter("@MER_PASSWORD_SALT", SqlDbType.VarChar, 24) { Value = passwordSalt }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateMerchantPasswordResetLinkUsed(MerchantPasswordResetLink merchantPasswordResetLink, Guid mutationId)
+            => await NonQuery("SP_MUTATE_MerchantPasswordResetLink", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
+                new SqlParameter("@PRL_ID", SqlDbType.UniqueIdentifier) { Value = merchantPasswordResetLink.Id }
             }, mutationId);
 
         public async Task<MutationResult> UpdateProduct(Product product, Guid mutationId)
