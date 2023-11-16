@@ -262,7 +262,7 @@ namespace DGBCommerce.Data
         public async Task<DataTable> GetProducts(GetProductsParameters parameters)
             => await Get("SP_GET_Products", new List<SqlParameter>() {
                 new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
-                new SqlParameter("@PRD_SHOP_MERCHANT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
+                new SqlParameter("@PRD_SHOP_MERCHANT", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
                 new SqlParameter("@PRD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
                 new SqlParameter("@PRD_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId },
                 new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
