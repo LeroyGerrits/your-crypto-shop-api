@@ -10,30 +10,30 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class CountryController : ControllerBase
     {
-        private readonly ICountryRepository _currencyRepository;
+        private readonly ICountryRepository _countryRepository;
 
         public CountryController(ICountryRepository currencyRepository)
         {
-            _currencyRepository = currencyRepository;
+            _countryRepository = currencyRepository;
         }
 
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Country>>> Get(string? name)
         {
-            var currencies = await _currencyRepository.Get(new GetCountriesParameters() { Name = name });
-            return Ok(currencies.ToList());
+            var countries = await _countryRepository.Get(new GetCountriesParameters() { Name = name });
+            return Ok(countries.ToList());
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Country>> GetById(Guid id)
         {
-            var currency = await _currencyRepository.GetById(id);
-            if (currency == null) 
+            var country = await _countryRepository.GetById(id);
+            if (country == null) 
                 return NotFound();
 
-            return Ok(currency);
+            return Ok(country);
         }
     }
 }

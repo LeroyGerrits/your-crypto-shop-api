@@ -41,6 +41,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetProducts(GetProductsParameters parameters);
         Task<DataTable> GetProductCategories(GetProductCategoriesParameters parameters);
         Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters);
+        Task<DataTable> GetShopCategories(GetShopCategoriesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);
         Task<DataTable> GetShopByIdAndSubDomain(Guid? id, string subDomain);
 

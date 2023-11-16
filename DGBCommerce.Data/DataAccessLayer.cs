@@ -101,7 +101,9 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
                 new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = shop.MerchantId },
                 new SqlParameter("@SHP_NAME", SqlDbType.NVarChar) { Value = shop.Name },
-                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar) { Value = shop.SubDomain }
+                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar) { Value = shop.SubDomain },
+                new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
+                new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id }
             }, mutationId);
         #endregion
 
@@ -280,12 +282,20 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PHT_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId }
             });
 
+        public async Task<DataTable> GetShopCategories(GetShopCategoriesParameters parameters)
+            => await Get("SP_GET_ShopCategories", new List<SqlParameter>() {
+                new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
+                new SqlParameter("@CAT_NAME", SqlDbType.VarChar) { Value = parameters.Name }
+            });
+
         public async Task<DataTable> GetShops(GetShopsParameters parameters)
             => await Get("SP_GET_Shops", new List<SqlParameter>() {
                 new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
                 new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
                 new SqlParameter("@SHP_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = parameters.SubDomain },
+                new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = parameters.CountryId },
+                new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId },
                 new SqlParameter("@SHP_FEATURED", SqlDbType.Bit) { Value = parameters.Featured }
             });
 
@@ -403,7 +413,9 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier) { Value = shop.Id },
                 new SqlParameter("@SHP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = shop.MerchantId },
                 new SqlParameter("@SHP_NAME", SqlDbType.NVarChar, 255) { Value = shop.Name },
-                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar, 100) { Value = shop.SubDomain }
+                new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar, 100) { Value = shop.SubDomain },
+                new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
+                new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id }
             }, mutationId);
         #endregion
 

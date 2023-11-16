@@ -55,6 +55,7 @@ namespace DGBCommerce.API
             services.AddScoped<IMerchantPasswordResetLinkRepository, MerchantPasswordResetLinkRepository>();
             services.AddScoped<INewsMessageRepository, NewsMessageRepository>();
             services.AddScoped<IShopRepository, ShopRepository>();
+            services.AddScoped<IShopCategoryRepository, ShopCategoryRepository>();
         }
 
         public void Configure(WebApplication app)

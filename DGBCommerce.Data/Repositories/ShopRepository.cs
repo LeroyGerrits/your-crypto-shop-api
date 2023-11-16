@@ -51,14 +51,35 @@ namespace DGBCommerce.Data.Repositories
 
             foreach (DataRow row in table.Rows)
             {
-                shops.Add(new Shop()
+                Shop shop = new()                
                 {
                     Id = new Guid(row["shp_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["shp_name"]),
                     MerchantId = new Guid(row["shp_merchant"].ToString()!),
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
-                });
+                };
+
+                if (row["shp_country"] !=DBNull.Value)
+                {
+                    shop.Country = new Country()
+                    {
+                        Id = Utilities.DbNullableGuid(row["shp_country"]),
+                        Code = Utilities.DbNullableString(row["shp_country_code"]),
+                        Name = Utilities.DbNullableString(row["shp_country_name"])
+                    };
+                }
+
+                if (row["shp_category"] != DBNull.Value)
+                {
+                    shop.Category = new ShopCategory()
+                    {
+                        Id = Utilities.DbNullableGuid(row["shp_category"]),
+                        Name = Utilities.DbNullableString(row["shp_category_name"])
+                    };
+                }
+
+                shops.Add(shop);
             }
 
             return shops;
@@ -79,6 +100,11 @@ namespace DGBCommerce.Data.Repositories
                     MerchantUsername = Utilities.DbNullableString(row["shp_merchant_username"]),
                     MerchantScore = Utilities.DbNullableDecimal(row["shp_merchant_score"]),
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
+                    CountryId = Utilities.DbNullableGuid(row["shp_country"]),
+                    CountryCode = Utilities.DbNullableString(row["shp_country_code"]),
+                    CountryName = Utilities.DbNullableString(row["shp_country_name"]),
+                    CategoryId = Utilities.DbNullableGuid(row["shp_category"]),
+                    CategoryName = Utilities.DbNullableString(row["shp_category_name"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
                 });
             }
@@ -101,6 +127,11 @@ namespace DGBCommerce.Data.Repositories
                     MerchantUsername = Utilities.DbNullableString(row["shp_merchant_username"]),
                     MerchantScore = Utilities.DbNullableDecimal(row["shp_merchant_score"]),
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
+                    CountryId = Utilities.DbNullableGuid(row["shp_country"]),
+                    CountryCode = Utilities.DbNullableString(row["shp_country_code"]),
+                    CountryName = Utilities.DbNullableString(row["shp_country_name"]),
+                    CategoryId = Utilities.DbNullableGuid(row["shp_category"]),
+                    CategoryName = Utilities.DbNullableString(row["shp_category_name"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
                 });
             }

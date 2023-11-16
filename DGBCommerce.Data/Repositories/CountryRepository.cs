@@ -21,18 +21,18 @@ namespace DGBCommerce.Data.Repositories
 
         public async Task<Country?> GetById(Guid id)
         {
-            var ctrrencies = await GetRaw(new GetCountriesParameters() { Id = id });
-            return ctrrencies.ToList().SingleOrDefault();
+            var countries = await GetRaw(new GetCountriesParameters() { Id = id });
+            return countries.ToList().SingleOrDefault();
         }
 
         private async Task<IEnumerable<Country>> GetRaw(GetCountriesParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetCountries(parameters);
-            List<Country> ctrrencies = new();
+            List<Country> countries = new();
 
             foreach (DataRow row in table.Rows)
             {
-                ctrrencies.Add(new()
+                countries.Add(new()
                 {
                     Id = new Guid(row["ctr_id"].ToString()!),
                     Code = Utilities.DbNullableString(row["ctr_code"]),
@@ -40,7 +40,7 @@ namespace DGBCommerce.Data.Repositories
                 });
             }
 
-            return ctrrencies;
+            return countries;
         }
     }
 }
