@@ -23,13 +23,13 @@ namespace DGBCommerce.API.Controllers
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
             ICategoryRepository categoryRepository,
-            IProductRepository deliveryMethodRepository,
+            IProductRepository productMethodRepository,
             IProduct2CategoryRepository product2CategoryRepository)
         {
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _categoryRepository = categoryRepository;
-            _productRepository = deliveryMethodRepository;
+            _productRepository = productMethodRepository;
             _product2CategoryRepository = product2CategoryRepository;
         }
 
@@ -41,14 +41,14 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethods = await _productRepository.Get(new GetProductsParameters()
+            var products = await _productRepository.Get(new GetProductsParameters()
             {
                 MerchantId = authenticatedMerchantId.Value,
                 Name = name,
                 ShopId = shopId,
                 CategoryId = categoryId
             });
-            return Ok(deliveryMethods.ToList());
+            return Ok(products.ToList());
         }
 
         [AuthenticationRequired]
@@ -59,11 +59,11 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _productRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null)
+            var product = await _productRepository.GetById(authenticatedMerchantId.Value, id);
+            if (product == null)
                 return NotFound();
 
-            return Ok(deliveryMethod);
+            return Ok(product);
         }
 
         [AuthenticationRequired]
@@ -90,8 +90,8 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _productRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null)
+            var product = await _productRepository.GetById(authenticatedMerchantId.Value, id);
+            if (product == null)
                 return NotFound();
 
             var result = await _productRepository.Update(value.Product, authenticatedMerchantId.Value);
@@ -110,8 +110,8 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _productRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null)
+            var product = await _productRepository.GetById(authenticatedMerchantId.Value, id);
+            if (product == null)
                 return NotFound();
 
             var result = await _productRepository.Delete(id, authenticatedMerchantId.Value);
