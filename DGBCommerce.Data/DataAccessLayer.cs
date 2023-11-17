@@ -74,8 +74,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_VISIBLE", SqlDbType.NVarChar) { Value = product.Visible }
             }, mutationId);
 
-        public async Task<MutationResult> CreateProductCategory(ProductCategory productCategory, Guid mutationId)
-            => await NonQuery("SP_MUTATE_ProductCategory", new List<SqlParameter>() {
+        public async Task<MutationResult> CreateProduct2Category(Product2Category productCategory, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Product2Category", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
                 new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productCategory.ProductId },
                 new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = productCategory.CategoryId }
@@ -132,8 +132,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = shopId }
             }, mutationId);
 
-        public async Task<MutationResult> DeleteProductCategory(Guid productId, Guid categoryId, Guid mutationId)
-            => await NonQuery("SP_MUTATE_ProductCategory", new List<SqlParameter>() {
+        public async Task<MutationResult> DeleteProduct2Category(Guid productId, Guid categoryId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Product2Category", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productId },
                 new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = categoryId }
@@ -268,7 +268,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
             });
 
-        public async Task<DataTable> GetProductCategories(GetProductCategoriesParameters parameters)
+        public async Task<DataTable> GetProductCategories(GetProduct2CategoriesParameters parameters)
             => await Get("SP_GET_ProductCategories", new List<SqlParameter>() {
                 new SqlParameter("@P2C_MERCHANT", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
                 new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier){ Value = parameters.ProductId },

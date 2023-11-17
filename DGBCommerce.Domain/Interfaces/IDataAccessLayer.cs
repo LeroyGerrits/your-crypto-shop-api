@@ -12,7 +12,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId);
         Task<MutationResult> CreateMerchantPasswordResetLink(MerchantPasswordResetLink merchantPasswordResetLink);
         Task<MutationResult> CreateProduct(Product product, Guid mutationId);
-        Task<MutationResult> CreateProductCategory(ProductCategory productCategory, Guid mutationId);
+        Task<MutationResult> CreateProduct2Category(Product2Category productCategory, Guid mutationId);
         Task<MutationResult> CreateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
 
@@ -20,7 +20,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteDeliveryMethod(Guid deliveryMethodId, Guid mutationId);
         Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId);
         Task<MutationResult> DeleteProduct(Guid productId, Guid mutationId);
-        Task<MutationResult> DeleteProductCategory(Guid productId, Guid categoryId, Guid mutationId);
+        Task<MutationResult> DeleteProduct2Category(Guid productId, Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
 
@@ -39,7 +39,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetMerchants(GetMerchantsParameters parameters);
         Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters);
         Task<DataTable> GetProducts(GetProductsParameters parameters);
-        Task<DataTable> GetProductCategories(GetProductCategoriesParameters parameters);
+        Task<DataTable> GetProductCategories(GetProduct2CategoriesParameters parameters);
         Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters);
         Task<DataTable> GetShopCategories(GetShopCategoriesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);
