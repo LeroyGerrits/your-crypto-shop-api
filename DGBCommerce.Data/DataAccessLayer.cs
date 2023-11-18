@@ -304,6 +304,9 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier) { Value = id },
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = subDomain }
             });
+
+        public async Task<DataTable> GetStats()
+            => await Get("SP_GET_Stats", new());
         #endregion
 
         #region Update

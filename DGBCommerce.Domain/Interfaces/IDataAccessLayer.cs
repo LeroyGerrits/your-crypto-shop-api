@@ -44,6 +44,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetShopCategories(GetShopCategoriesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);
         Task<DataTable> GetShopByIdAndSubDomain(Guid? id, string subDomain);
+        Task<DataTable> GetStats();
 
         Task<MutationResult> UpdateCategory(Category category, Guid mutationId);
         Task<MutationResult> UpdateCategoryChangeParent(Guid categoryId, Guid parentId, Guid mutationId);
