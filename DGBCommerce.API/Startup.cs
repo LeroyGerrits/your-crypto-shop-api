@@ -5,6 +5,7 @@ using DGBCommerce.Data.Services;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Interfaces.Services;
+using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 
 namespace DGBCommerce.API
@@ -88,6 +89,12 @@ namespace DGBCommerce.API
 
             app.UseMiddleware<JwtMiddleware>();
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+                RequestPath = new PathString("/Resources")
+            });
             app.UseAuthorization();
             app.MapControllers();
         }

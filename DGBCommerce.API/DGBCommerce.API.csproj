@@ -24,4 +24,8 @@
     <ProjectReference Include="..\DGBCommerce.Domain\DGBCommerce.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\ProductPhoto\" />
+  </ItemGroup>
+
 </Project>
