@@ -268,8 +268,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
             });
 
-        public async Task<DataTable> GetProductCategories(GetProduct2CategoriesParameters parameters)
-            => await Get("SP_GET_ProductCategories", new List<SqlParameter>() {
+        public async Task<DataTable> GetProduct2Categories(GetProduct2CategoriesParameters parameters)
+            => await Get("SP_GET_Product2Categories", new List<SqlParameter>() {
                 new SqlParameter("@P2C_MERCHANT", SqlDbType.UniqueIdentifier){ Value = parameters.MerchantId },
                 new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier){ Value = parameters.ProductId },
                 new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier){ Value = parameters.CategoryId }

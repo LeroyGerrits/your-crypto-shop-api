@@ -36,7 +36,7 @@ namespace DGBCommerce.Data.Repositories
 
         private async Task<IEnumerable<Product2Category>> GetRaw(GetProduct2CategoriesParameters parameters)
         {
-            DataTable table = await _dataAccessLayer.GetProductCategories(parameters);
+            DataTable table = await _dataAccessLayer.GetProduct2Categories(parameters);
             List<Product2Category> shops = new();
 
             foreach (DataRow row in table.Rows)

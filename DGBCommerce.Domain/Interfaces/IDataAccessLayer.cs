@@ -39,7 +39,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetMerchants(GetMerchantsParameters parameters);
         Task<DataTable> GetNewsMessages(GetNewsMessagesParameters parameters);
         Task<DataTable> GetProducts(GetProductsParameters parameters);
-        Task<DataTable> GetProductCategories(GetProduct2CategoriesParameters parameters);
+        Task<DataTable> GetProduct2Categories(GetProduct2CategoriesParameters parameters);
         Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters);
         Task<DataTable> GetShopCategories(GetShopCategoriesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);

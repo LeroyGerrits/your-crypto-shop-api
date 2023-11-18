@@ -1,5 +1,6 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.API.Controllers.Requests;
+using DGBCommerce.API.Controllers.Responses;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
@@ -53,7 +54,7 @@ namespace DGBCommerce.API.Controllers
 
         [AuthenticationRequired]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> Get(Guid id)
+        public async Task<ActionResult<GetProductResponse>> Get(Guid id)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -63,7 +64,10 @@ namespace DGBCommerce.API.Controllers
             if (product == null)
                 return NotFound();
 
-            return Ok(product);
+            var product2Categories = await _product2CategoryRepository.Get(new GetProduct2CategoriesParameters() { MerchantId = authenticatedMerchantId.Value, ProductId = product.Id });
+            var selectedCategoryIds = product2Categories.Select(c => c.CategoryId).ToList();
+
+            return Ok(new GetProductResponse(product, selectedCategoryIds));
         }
 
         [AuthenticationRequired]
