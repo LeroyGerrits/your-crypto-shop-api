@@ -35,6 +35,7 @@ builder.Services.AddSwaggerGen(o =>
     o.AddSecurityRequirement(securityRequirement);
 });
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.Configure<FileUploadSettings>(builder.Configuration.GetSection("FileUploadSettings"));
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.Configure<RpcSettings>(builder.Configuration.GetSection("RpcSettings"));
 
