@@ -12,7 +12,7 @@ namespace DGBCommerce.Domain
             => value != null && value != DBNull.Value && decimal.TryParse(value.ToString(), out var valueDecimal) ? valueDecimal : null;
 
         public static Guid? DbNullableGuid(object value)
-            => value != null && value != DBNull.Value &&  Guid.TryParse(value.ToString(), out var valueGuid) ? valueGuid: null;
+            => value != null && value != DBNull.Value && Guid.TryParse(value.ToString(), out var valueGuid) ? valueGuid : null;
 
         public static int? DbNullableInt(object value)
             => value != null && value != DBNull.Value && int.TryParse(value.ToString(), out var valueInt) ? valueInt : null;
@@ -64,6 +64,20 @@ namespace DGBCommerce.Domain
             rng.GetBytes(salt);
 
             return Convert.ToBase64String(salt);
+        }
+
+        public static string ReadableFileSize(int bytes)
+        {
+            if (bytes > (1024 * 1024 * 1024))
+                return (bytes / 1024 / 1024 / 1024).ToString("N2") + " GB";
+
+            if (bytes > (1024 * 1024))
+                return (bytes / 1024 / 1024).ToString("N2") + " MB";
+
+            if (bytes > 1024)
+                return (bytes / 1024).ToString("N2") + " KB";
+
+            return bytes.ToString();
         }
     }
 }
