@@ -11,8 +11,9 @@ namespace DGBCommerce.Domain
         public string Constraint
             => ErrorCode switch
             {
-                2601 => RegexUniqueConstraintViolation().Matches(Message!)[1].Value.Trim('\''),
-                2627 => RegexUniqueConstraintViolation().Matches(Message!)[0].Value.Trim('\''),
+                547 => RegexUniqueConstraintViolationQuotes().Matches(Message!)[0].Value.Trim('"'),
+                2601 => RegexUniqueConstraintViolationApostrophe().Matches(Message!)[1].Value.Trim('\''),
+                2627 => RegexUniqueConstraintViolationApostrophe().Matches(Message!)[0].Value.Trim('\''),
                 _ => !string.IsNullOrWhiteSpace(Message) ? Message : string.Empty,
             };
 
@@ -20,6 +21,9 @@ namespace DGBCommerce.Domain
             => this.ErrorCode == 0;
 
         [GeneratedRegex("\'.*?\'")]
-        private static partial Regex RegexUniqueConstraintViolation();
+        private static partial Regex RegexUniqueConstraintViolationApostrophe();
+
+        [GeneratedRegex("\".*?\"")]
+        private static partial Regex RegexUniqueConstraintViolationQuotes();
     }
 }
