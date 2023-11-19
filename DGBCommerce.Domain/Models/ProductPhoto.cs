@@ -10,8 +10,8 @@
         public required int Width { get; set; }
         public required int Height { get; set; }
         public string? Description { get; set; }
-        public required int? SortOrder { get; set; }
-        public required bool Main { get; set; }
+        public int? SortOrder { get; set; }
+        public bool? Main { get; set; }
         public required bool Visible { get; set; }
     }
 }

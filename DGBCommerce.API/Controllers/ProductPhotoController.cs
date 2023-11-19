@@ -1,8 +1,11 @@
 using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 
 namespace DGBCommerce.API.Controllers
@@ -11,15 +14,18 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class ProductPhotoController : ControllerBase
     {
+        private readonly FileUploadSettings _fileUploadSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtUtils _jwtUtils;
         private readonly IProductPhotoRepository _productPhotoRepository;
 
         public ProductPhotoController(
+            IOptions<FileUploadSettings> fileUploadSettings,
             IHttpContextAccessor httpContextAccessor,
             IJwtUtils jwtUtils,
             IProductPhotoRepository productPhotoRepository)
         {
+            _fileUploadSettings = fileUploadSettings.Value;
             _httpContextAccessor = httpContextAccessor;
             _jwtUtils = jwtUtils;
             _productPhotoRepository = productPhotoRepository;
@@ -64,42 +70,51 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            try
+            if (string.IsNullOrWhiteSpace(_fileUploadSettings.BaseFolder))
+                return BadRequest(new { message = "Base folder not configured." });
+
+            var formCollection = await Request.ReadFormAsync();
+            if (formCollection.Files.Count == 0)
+                return BadRequest(new { message = "No file uploaded." });
+
+            var file = formCollection.Files[0];
+            if (file.Length == 0)
+                return BadRequest(new { message = "Empty file uploaded." });
+
+            if (_fileUploadSettings.MaximumFileSize.HasValue && file.Length > _fileUploadSettings.MaximumFileSize)
+                return BadRequest(new { message = "File was too large. The maximum allowed file size is " + Utilities.ReadableFileSize(_fileUploadSettings.MaximumFileSize.Value) + "." });
+
+            var fileExtension = Path.GetExtension(file.FileName).Replace(".", string.Empty);
+
+            if (!string.IsNullOrWhiteSpace(_fileUploadSettings.AllowedExtensions) && !_fileUploadSettings.AllowedExtensions.ToUpper().Contains(fileExtension.ToUpper()))
+                return BadRequest(new { message = "File type " + fileExtension + " is not allowed. Only the following file types are allowed: " + _fileUploadSettings.AllowedExtensions + "." });
+
+            var folder = Path.Combine(_fileUploadSettings.BaseFolder, authenticatedMerchantId.Value.ToString());
+            folder = Path.Combine(folder, "ProductPhoto");
+
+            if (!Path.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            var newFileId = Guid.NewGuid();
+            var fullPath = Path.Combine(folder, $"{newFileId}.{fileExtension}");
+
+            using FileStream stream = new(fullPath, FileMode.Create);
+            file.CopyTo(stream);
+
+            ProductPhoto productPhotoToCreate = new()
             {
-                var formCollection = await Request.ReadFormAsync();
-                for (int i = 0; i < formCollection.Files.Count; i++)
-                {
-                    var file = formCollection.Files[i];
-                    var folder = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
-                    folder = Path.Combine(folder, "ProductPhoto");
-                    folder = Path.Combine(folder, authenticatedMerchantId.Value.ToString());
+                Id = newFileId,
+                ProductId = productId,
+                File = file.FileName.Replace("." + fileExtension, string.Empty),
+                Extension = fileExtension.ToLower(),
+                FileSize = (int)file.Length,
+                Width = 100,
+                Height = 100,
+                Visible = true
+            };
 
-                    if (file.Length > 0)
-                    {
-                        var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName!.Trim('"');
-
-                        if (!Path.Exists(folder))
-                            Directory.CreateDirectory(folder);
-
-                        var fullPath = Path.Combine(folder, fileName);
-
-                        using (var stream = new FileStream(fullPath, FileMode.Create))
-                        {
-                            file.CopyTo(stream);
-                        }
-                        
-                    }
-                }
-
-                return Ok(new { message = "boem" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex}");
-            }
-
-            //var result = await _productPhotoRepository.Create(productId, authenticatedMerchantId.Value);
-            //return Ok(result);
+            var result = await _productPhotoRepository.Create(productPhotoToCreate, authenticatedMerchantId.Value);
+            return Ok(result);
         }
 
         [AuthenticationRequired]

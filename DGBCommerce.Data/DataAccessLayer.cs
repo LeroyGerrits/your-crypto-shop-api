@@ -90,7 +90,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PHT_FILE_SIZE", SqlDbType.Int) { Value = productPhoto.FileSize },
                 new SqlParameter("@PHT_WIDTH", SqlDbType.Int) { Value = productPhoto.Width },
                 new SqlParameter("@PHT_HEIGHT", SqlDbType.Int) { Value = productPhoto.Height },
-                new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = productPhoto.Description },
+                new SqlParameter("@PHT_DESCRIPTION", SqlDbType.NVarChar) { Value = productPhoto.Description },
                 new SqlParameter("@PHT_SORTORDER", SqlDbType.Int) { Value = productPhoto.SortOrder },
                 new SqlParameter("@PHT_MAIN", SqlDbType.Bit) { Value = productPhoto.Main },
                 new SqlParameter("@PHT_VISIBLE", SqlDbType.Bit) { Value = productPhoto.Visible }
