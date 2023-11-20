@@ -58,6 +58,11 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateMerchantPasswordResetLinkUsed(MerchantPasswordResetLink merchantPasswordResetLink, Guid mutationId);
         Task<MutationResult> UpdateProduct(Product product, Guid mutationId);
         Task<MutationResult> UpdateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
+        Task<MutationResult> UpdateProductPhotoChangeDescription(Guid productPhotoId, string description, Guid mutationId);
+        Task<MutationResult> UpdateProductPhotoChangeMain(Guid productPhotoId, Guid productId, Guid mutationId);
+        Task<MutationResult> UpdateProductPhotoChangeVisible(Guid productPhotoId, bool visible, Guid mutationId);
+        Task<MutationResult> UpdateProductPhotoMoveDown(Guid productPhotoId, Guid productId, Guid mutationId);
+        Task<MutationResult> UpdateProductPhotoMoveUp(Guid productPhotoId, Guid productId, Guid mutationId);
         Task<MutationResult> UpdateShop(Shop shop, Guid mutationId);
     }
 }

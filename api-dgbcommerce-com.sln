@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.Domain", "DGBCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.Data", "DGBCommerce.Data\DGBCommerce.Data.csproj", "{1566DFFF-CA69-46F7-B63A-0C2E6E954319}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGBCommerce.Domain.Test", "DGBCommerce.Domain.Test\DGBCommerce.Domain.Test.csproj", "{906237DD-63C4-4C8D-AA78-D517860D46B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGBCommerce.Domain.Test", "DGBCommerce.Domain.Test\DGBCommerce.Domain.Test.csproj", "{906237DD-63C4-4C8D-AA78-D517860D46B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F5ED28EB-9F2C-4A99-B036-124F54AF580F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -84,6 +84,7 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> CreateProductPhoto(ProductPhoto productPhoto, Guid mutationId)
             => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhoto.Id },
                 new SqlParameter("@PHT_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productPhoto.ProductId },
                 new SqlParameter("@PHT_FILE", SqlDbType.VarChar) { Value = productPhoto.File },
                 new SqlParameter("@PHT_EXTENSION", SqlDbType.Char) { Value = productPhoto.Extension },
@@ -408,6 +409,41 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PHT_SORTORDER", SqlDbType.Int) { Value = productPhoto.SortOrder },
                 new SqlParameter("@PHT_MAIN", SqlDbType.Bit) { Value = productPhoto.Main },
                 new SqlParameter("@PHT_VISIBLE", SqlDbType.Bit) { Value = productPhoto.Visible }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateProductPhotoChangeDescription(Guid productPhotoId, string description, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhotoId },
+                new SqlParameter("@PHT_DESCRIPTION", SqlDbType.NVarChar) { Value = description }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateProductPhotoChangeMain(Guid productPhotoId, Guid productId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 22 },
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhotoId },
+                new SqlParameter("@PHT_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productId }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateProductPhotoChangeVisible(Guid productPhotoId, bool visible, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 23 },
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhotoId },
+                new SqlParameter("@PHT_VISIBLE", SqlDbType.NVarChar) { Value = visible }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateProductPhotoMoveDown(Guid productPhotoId, Guid productId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 24 },
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhotoId },
+                new SqlParameter("@PHT_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productId }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateProductPhotoMoveUp(Guid productPhotoId, Guid productId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductPhoto", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 25 },
+                new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhotoId },
+                new SqlParameter("@PHT_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productId }
             }, mutationId);
 
         public async Task<MutationResult> UpdateShop(Shop shop, Guid mutationId)

@@ -31,6 +31,21 @@ namespace DGBCommerce.Data.Repositories
         public Task<MutationResult> Update(ProductPhoto item, Guid mutationId)
             => _dataAccessLayer.UpdateProductPhoto(item, mutationId);
 
+        public Task<MutationResult> ChangeDescription(Guid id, string description, Guid mutationId)
+            => _dataAccessLayer.UpdateProductPhotoChangeDescription(id, description, mutationId);
+
+        public Task<MutationResult> ChangeMain(Guid id, Guid productId, Guid mutationId)
+            => _dataAccessLayer.UpdateProductPhotoChangeMain(id, productId, mutationId);
+
+        public Task<MutationResult> ChangeVisible(Guid id, bool visible, Guid mutationId)
+            => _dataAccessLayer.UpdateProductPhotoChangeVisible(id, visible, mutationId);
+
+        public Task<MutationResult> MoveUp(Guid id, Guid productId, Guid mutationId)
+            => _dataAccessLayer.UpdateProductPhotoMoveUp(id, productId, mutationId);
+
+        public Task<MutationResult> MoveDown(Guid id, Guid productId, Guid mutationId)
+            => _dataAccessLayer.UpdateProductPhotoMoveDown(id, productId, mutationId);
+
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
             => _dataAccessLayer.DeleteProductPhoto(id, mutationId);
 
