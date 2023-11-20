@@ -87,7 +87,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PHT_ID", SqlDbType.UniqueIdentifier) { Value = productPhoto.Id },
                 new SqlParameter("@PHT_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productPhoto.ProductId },
                 new SqlParameter("@PHT_FILE", SqlDbType.VarChar) { Value = productPhoto.File },
-                new SqlParameter("@PHT_EXTENSION", SqlDbType.Char) { Value = productPhoto.Extension },
+                new SqlParameter("@PHT_EXTENSION", SqlDbType.VarChar) { Value = productPhoto.Extension },
                 new SqlParameter("@PHT_FILE_SIZE", SqlDbType.Int) { Value = productPhoto.FileSize },
                 new SqlParameter("@PHT_WIDTH", SqlDbType.Int) { Value = productPhoto.Width },
                 new SqlParameter("@PHT_HEIGHT", SqlDbType.Int) { Value = productPhoto.Height },

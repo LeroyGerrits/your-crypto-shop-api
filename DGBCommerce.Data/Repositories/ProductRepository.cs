@@ -43,13 +43,15 @@ namespace DGBCommerce.Data.Repositories
             {
                 shops.Add(new Product()
                 {
-                    Id = new Guid(row["prd_id"].ToString()!),                    
+                    Id = new Guid(row["prd_id"].ToString()!),
                     ShopId = new Guid(row["prd_shop"].ToString()!),
                     Name = Utilities.DbNullableString(row["prd_name"]),
                     Description = Utilities.DbNullableString(row["prd_description"]),
                     Stock = Utilities.DbNullableInt(row["prd_stock"]),
                     Price = Convert.ToDecimal(row["prd_price"]),
-                    Visible = Convert.ToBoolean(row["prd_visible"])
+                    Visible = Convert.ToBoolean(row["prd_visible"]),
+                    MainPhotoId = Utilities.DbNullableGuid(row["prd_main_photo_id"]),
+                    MainPhotoExtension = Utilities.DbNullableString(row["prd_main_photo_extension"])
                 });
             }
 
