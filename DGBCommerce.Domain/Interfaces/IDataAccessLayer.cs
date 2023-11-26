@@ -28,6 +28,9 @@ namespace DGBCommerce.Domain.Interfaces
 
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
         Task<DataTable> GetCustomers(GetCustomersParameters parameters);
+        Task<DataTable> GetCustomerByEmailAddress(string emailAddress);
+        Task<DataTable> GetCustomerByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress);
+        Task<DataTable> GetCustomerByIdAndPassword(Guid id, string password);
         Task<DataTable> GetCountries(GetCountriesParameters parameters);
         Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters);
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);

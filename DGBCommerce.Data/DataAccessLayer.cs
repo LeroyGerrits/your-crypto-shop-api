@@ -205,6 +205,24 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CUS_LAST_NAME", SqlDbType.NVarChar) { Value = parameters.LastName }
             });
 
+        public async Task<DataTable> GetCustomerByEmailAddress(string emailAddress)
+           => await Get("SP_GET_Customer_ByEmailAddress", new List<SqlParameter>() {
+                new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress }
+           });
+
+        public async Task<DataTable> GetCustomerByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress)
+            => await Get("SP_GET_Customer_ByEmailAddressAndPassword", new List<SqlParameter>() {
+                new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress },
+                new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar) { Value = password },
+                new SqlParameter("@CUS_IP_ADDRESS", SqlDbType.VarChar) { Value = ipAddress }
+            });
+
+        public async Task<DataTable> GetCustomerByIdAndPassword(Guid id, string password)
+            => await Get("SP_GET_Customer_ByIdAndPassword", new List<SqlParameter>() {
+                new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = id },
+                new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar) { Value = password }
+            });
+
         public async Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters)
             => await Get("SP_GET_DeliveryMethods", new List<SqlParameter>() {
                 new SqlParameter("@DLM_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
