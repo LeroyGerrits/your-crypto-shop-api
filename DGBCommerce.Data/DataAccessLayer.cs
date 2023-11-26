@@ -27,6 +27,18 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = category.Visible }
             }, mutationId);
 
+        public async Task<MutationResult> CreateCustomer(Customer customer, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Customer", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = customer.EmailAddress },
+                new SqlParameter("@CUS_USERNAME", SqlDbType.VarChar) { Value = customer.Username },
+                new SqlParameter("@CUS_PASSWORD_SALT", SqlDbType.VarChar) { Value = customer.PasswordSalt },
+                new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar) { Value = customer.Password },
+                new SqlParameter("@CUS_GENDER", SqlDbType.TinyInt) { Value = customer.Gender },
+                new SqlParameter("@CUS_FIRST_NAME", SqlDbType.NVarChar) { Value = customer.FirstName },
+                new SqlParameter("@CUS_LAST_NAME", SqlDbType.NVarChar) { Value = customer.LastName }
+            }, mutationId);
+
         public async Task<MutationResult> CreateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId)
             => await NonQuery("SP_MUTATE_DeliveryMethod", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -115,6 +127,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = categoryId }
             }, mutationId);
 
+        public async Task<MutationResult> DeleteCustomer(Guid customerId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Customer", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = customerId }
+            }, mutationId);
+
         public async Task<MutationResult> DeleteDeliveryMethod(Guid deliveryMethodId, Guid mutationId)
             => await NonQuery("SP_MUTATE_DeliveryMethod", new List<SqlParameter>() {
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
@@ -175,6 +193,16 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CUR_ID", SqlDbType.UniqueIdentifier){ Value = parameters.Id },
                 new SqlParameter("@CUR_SYMBOL", SqlDbType.NChar) { Value = parameters.Symbol },
                 new SqlParameter("@CUR_NAME", SqlDbType.VarChar) { Value = parameters.Name }
+            });
+
+        public async Task<DataTable> GetCustomers(GetCustomersParameters parameters)
+            => await Get("SP_GET_Customers", new List<SqlParameter>() {
+                new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = parameters.EmailAddress },
+                new SqlParameter("@CUS_USERNAME", SqlDbType.VarChar) { Value = parameters.Username },
+                new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar) { Value = parameters.Password },
+                new SqlParameter("@CUS_FIRST_NAME", SqlDbType.NVarChar) { Value = parameters.FirstName },
+                new SqlParameter("@CUS_LAST_NAME", SqlDbType.NVarChar) { Value = parameters.LastName }
             });
 
         public async Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters)
@@ -340,6 +368,29 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 23 },
                 new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = categoryId },
                 new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = parentId }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateCustomer(Customer customer, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Customer", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = customer.Id },
+                new SqlParameter("@CUS_FIRST_NAME", SqlDbType.NVarChar, 255) { Value = customer.FirstName },
+                new SqlParameter("@CUS_LAST_NAME", SqlDbType.NVarChar, 255) { Value = customer.LastName }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateCustomerPasswordAndActivate(Customer customer, string password, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Customer", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
+                new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = customer.Id },
+                new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar, 100) { Value = password }
+            }, mutationId);
+
+        public async Task<MutationResult> UpdateCustomerPasswordAndSalt(Customer customer, string password, string passwordSalt, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Customer", new List<SqlParameter>() {
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 22 },
+                new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = customer.Id },
+                new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar, 100) { Value = password },
+                new SqlParameter("@CUS_PASSWORD_SALT", SqlDbType.VarChar, 24) { Value = passwordSalt }
             }, mutationId);
 
         public async Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId)

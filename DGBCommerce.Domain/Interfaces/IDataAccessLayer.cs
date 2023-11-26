@@ -7,6 +7,7 @@ namespace DGBCommerce.Domain.Interfaces
     public interface IDataAccessLayer
     {
         Task<MutationResult> CreateCategory(Category category, Guid mutationId);
+        Task<MutationResult> CreateCustomer(Customer customer, Guid mutationId);
         Task<MutationResult> CreateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
         Task<MutationResult> CreateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId);
@@ -17,6 +18,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
 
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
+        Task<MutationResult> DeleteCustomer(Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteDeliveryMethod(Guid deliveryMethodId, Guid mutationId);
         Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId);
         Task<MutationResult> DeleteProduct(Guid productId, Guid mutationId);
@@ -25,6 +27,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
 
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
+        Task<DataTable> GetCustomers(GetCustomersParameters parameters);
         Task<DataTable> GetCountries(GetCountriesParameters parameters);
         Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters);
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);
@@ -50,6 +53,9 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateCategoryChangeParent(Guid categoryId, Guid parentId, Guid mutationId);
         Task<MutationResult> UpdateCategoryMoveDown(Guid categoryId, Guid? parentId, Guid mutationId);
         Task<MutationResult> UpdateCategoryMoveUp(Guid categoryId, Guid? parentId, Guid mutationId);
+        Task<MutationResult> UpdateCustomer(Customer customer, Guid mutationId);
+        Task<MutationResult> UpdateCustomerPasswordAndActivate(Customer customer, string password, Guid mutationId);
+        Task<MutationResult> UpdateCustomerPasswordAndSalt(Customer customer, string password, string passwordSalt, Guid mutationId);
         Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
         Task<MutationResult> UpdateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId);
