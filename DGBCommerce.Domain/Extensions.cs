@@ -12,9 +12,9 @@ namespace DGBCommerce.Domain
             if (newParentCategory.ParentId == categoryToCheck.Id)
                 return true;
 
-            if (dictCategories.ContainsKey(newParentCategory.ParentId.Value))
+            if (dictCategories.TryGetValue(newParentCategory.ParentId.Value, out Category? value))
             {
-                Category newParentCategoryParent = dictCategories[newParentCategory.ParentId.Value];
+                Category newParentCategoryParent = value;
                 return newParentCategoryParent.IsAChildOfCategory(categoryToCheck, ref dictCategories);
             }
 

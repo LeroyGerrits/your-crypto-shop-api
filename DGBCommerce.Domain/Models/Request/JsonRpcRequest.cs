@@ -3,23 +3,16 @@ using Newtonsoft.Json;
 
 namespace DGBCommerce.Domain.Models.Request
 {
-    public class JsonRpcRequest
+    public class JsonRpcRequest(int id, string method, params object?[] parameters)
     {
-        public JsonRpcRequest(int id, string method, params object?[] parameters)
-        {
-            Id = id;
-            Method = method;
-            Parameters = parameters?.ToList() ?? new List<object?>();
-        }
-
         [JsonProperty(PropertyName = "method", Order = 0)]
-        public string Method { get; set; }
+        public string Method { get; set; } = method;
 
         [JsonProperty(PropertyName = "params", Order = 1)]
-        public IList<object?> Parameters { get; set; }
+        public IList<object?> Parameters { get; set; } = parameters?.ToList() ?? [];
 
         [JsonProperty(PropertyName = "id", Order = 2)]
-        public int Id { get; set; }
+        public int Id { get; set; } = id;
 
         public string GetRaw()
             => JsonConvert.SerializeObject(this);
