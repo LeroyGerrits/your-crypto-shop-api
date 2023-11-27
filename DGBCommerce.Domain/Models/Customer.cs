@@ -11,7 +11,7 @@ namespace DGBCommerce.Domain.Models
         public required string EmailAddress { get; set; }
         public required string Username { get; set; }
         [JsonIgnore] public string? PasswordSalt { get; set; }
-        [JsonIgnore] public string? Password { get; set; }
+        public string? Password { get; set; }
         public required Gender Gender { get; set; }
         public string? FirstName { get; set; }
         public required string LastName { get; set; }

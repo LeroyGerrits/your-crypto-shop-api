@@ -9,21 +9,11 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DeliveryMethodController : ControllerBase
+    public class DeliveryMethodController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IDeliveryMethodRepository deliveryMethodRepository) : ControllerBase
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
-        private readonly IDeliveryMethodRepository _deliveryMethodRepository;
-
-        public DeliveryMethodController(
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
-            IDeliveryMethodRepository deliveryMethodRepository)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
-            _deliveryMethodRepository = deliveryMethodRepository;
-        }
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly IDeliveryMethodRepository _deliveryMethodRepository = deliveryMethodRepository;
 
         [AuthenticationRequired]
         [HttpGet]
@@ -33,10 +23,11 @@ namespace DGBCommerce.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethods = await _deliveryMethodRepository.Get(new GetDeliveryMethodsParameters() { 
-                MerchantId = authenticatedMerchantId.Value, 
-                ShopId = shopId, 
-                Name = name 
+            var deliveryMethods = await _deliveryMethodRepository.Get(new GetDeliveryMethodsParameters()
+            {
+                MerchantId = authenticatedMerchantId.Value,
+                ShopId = shopId,
+                Name = name
             });
             return Ok(deliveryMethods.ToList());
         }
@@ -50,7 +41,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null) 
+            if (deliveryMethod == null)
                 return NotFound();
 
             return Ok(deliveryMethod);
@@ -77,7 +68,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null) 
+            if (deliveryMethod == null)
                 return NotFound();
 
             var result = await _deliveryMethodRepository.Update(value, authenticatedMerchantId.Value);
@@ -93,7 +84,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
-            if (deliveryMethod == null) 
+            if (deliveryMethod == null)
                 return NotFound();
 
             var result = await _deliveryMethodRepository.Delete(id, authenticatedMerchantId.Value);

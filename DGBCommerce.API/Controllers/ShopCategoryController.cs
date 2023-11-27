@@ -8,14 +8,9 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ShopCategoryController : ControllerBase
+    public class ShopCategoryController(IShopCategoryRepository currencyRepository) : ControllerBase
     {
-        private readonly IShopCategoryRepository _shopCategoryRepository;
-
-        public ShopCategoryController(IShopCategoryRepository currencyRepository)
-        {
-            _shopCategoryRepository = currencyRepository;
-        }
+        private readonly IShopCategoryRepository _shopCategoryRepository = currencyRepository;
 
         [AllowAnonymous]
         [HttpGet]
@@ -30,7 +25,7 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<ShopCategory>> GetById(Guid id)
         {
             var shopCategory = await _shopCategoryRepository.GetById(id);
-            if (shopCategory == null) 
+            if (shopCategory == null)
                 return NotFound();
 
             return Ok(shopCategory);

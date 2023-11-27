@@ -8,14 +8,9 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DigiByteNodeController : ControllerBase
+    public class DigiByteNodeController(IRpcService rpcService) : ControllerBase
     {
-        private readonly IRpcService _rpcService;
-        
-        public DigiByteNodeController(IRpcService rpcService)
-        {
-            _rpcService = rpcService;
-        }
+        private readonly IRpcService _rpcService = rpcService;
 
         [AllowAnonymous]
         [HttpGet("getblockcount")]

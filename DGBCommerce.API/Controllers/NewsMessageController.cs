@@ -8,14 +8,9 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class NewsMessageController : ControllerBase
+    public class NewsMessageController(INewsMessageRepository newsMessageRepository) : ControllerBase
     {
-        private readonly INewsMessageRepository _newsMessageRepository;
-
-        public NewsMessageController(INewsMessageRepository newsMessageRepository)
-        {
-            _newsMessageRepository = newsMessageRepository;
-        }
+        private readonly INewsMessageRepository _newsMessageRepository = newsMessageRepository;
 
         [AllowAnonymous]
         [HttpGet]
@@ -35,7 +30,7 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<NewsMessage>> Get(Guid id)
         {
             var newsMessage = await _newsMessageRepository.GetById(id);
-            if (newsMessage == null) 
+            if (newsMessage == null)
                 return NotFound();
 
             return Ok(newsMessage);

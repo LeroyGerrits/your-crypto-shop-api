@@ -8,22 +8,15 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class FaqCategoryController : ControllerBase
+    public class FaqCategoryController(IFaqCategoryRepository faqCategoryRepository) : ControllerBase
     {
-        private readonly IFaqCategoryRepository _faqCategoryRepository;
-
-        public FaqCategoryController(IFaqCategoryRepository faqCategoryRepository)
-        {
-            _faqCategoryRepository = faqCategoryRepository;
-        }
+        private readonly IFaqCategoryRepository _faqCategoryRepository = faqCategoryRepository;
 
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FaqCategory>>> Get(string? name)
         {
-            var faqCategories = await _faqCategoryRepository.Get(new GetFaqCategoriesParameters() { 
-                Name = name 
-            });
+            var faqCategories = await _faqCategoryRepository.Get(new GetFaqCategoriesParameters() { Name = name });
             return Ok(faqCategories.ToList());
         }
 
@@ -32,7 +25,7 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<FaqCategory>> Get(Guid id)
         {
             var faqCategory = await _faqCategoryRepository.GetById(id);
-            if (faqCategory == null) 
+            if (faqCategory == null)
                 return NotFound();
 
             return Ok(faqCategory);

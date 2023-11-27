@@ -15,34 +15,15 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MerchantController : ControllerBase
+    public class MerchantController(IOptions<AppSettings> appSettings, IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IAuthenticationService authenticationService, IMailService mailService, IMerchantRepository merchantRepository, IMerchantPasswordResetLinkRepository merchantPasswordResetLinkRepository) : ControllerBase
     {
-        private readonly AppSettings _appSettings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
-        private readonly IAuthenticationService _authenticationService;
-        private readonly IMailService _mailService;
-        private readonly IMerchantRepository _merchantRepository;
-        private readonly IMerchantPasswordResetLinkRepository _merchantPasswordResetLinkRepository;
-
-        public MerchantController(
-            IOptions<AppSettings> appSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
-            IAuthenticationService authenticationService,
-            IMailService mailService,
-            IMerchantRepository merchantRepository,
-            IMerchantPasswordResetLinkRepository merchantPasswordResetLinkRepository
-            )
-        {
-            _appSettings = appSettings.Value;
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
-            _authenticationService = authenticationService;
-            _mailService = mailService;
-            _merchantRepository = merchantRepository;
-            _merchantPasswordResetLinkRepository = merchantPasswordResetLinkRepository;
-        }
+        private readonly AppSettings _appSettings = appSettings.Value;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly IAuthenticationService _authenticationService = authenticationService;
+        private readonly IMailService _mailService = mailService;
+        private readonly IMerchantRepository _merchantRepository = merchantRepository;
+        private readonly IMerchantPasswordResetLinkRepository _merchantPasswordResetLinkRepository = merchantPasswordResetLinkRepository;
 
         [AllowAnonymous]
         [HttpGet("public")]

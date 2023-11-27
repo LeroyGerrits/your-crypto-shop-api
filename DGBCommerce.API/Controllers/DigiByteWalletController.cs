@@ -10,24 +10,12 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DigiByteWalletController : ControllerBase
+    public class DigiByteWalletController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IDigiByteWalletRepository digiByteWalletRepository, IRpcService rpcService) : ControllerBase
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
-        private readonly IDigiByteWalletRepository _digiByteWalletRepository;
-        private readonly IRpcService _rpcService;
-
-        public DigiByteWalletController(
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
-            IDigiByteWalletRepository digiByteWalletRepository,
-            IRpcService rpcService)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
-            _digiByteWalletRepository = digiByteWalletRepository;
-            _rpcService = rpcService;
-        }
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly IDigiByteWalletRepository _digiByteWalletRepository = digiByteWalletRepository;
+        private readonly IRpcService _rpcService = rpcService;
 
         [AuthenticationRequired]
         [HttpGet]
@@ -102,7 +90,7 @@ namespace DGBCommerce.API.Controllers
             {
                 return BadRequest(new { message = "DigiByte node could not be contacted." });
             }
-            
+
             var digiByteWallet = await _digiByteWalletRepository.GetById(authenticatedMerchantId.Value, id);
             if (digiByteWallet == null)
                 return NotFound();

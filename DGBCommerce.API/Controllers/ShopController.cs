@@ -12,24 +12,12 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ShopController : ControllerBase
+    public class ShopController(IOptions<AppSettings> appSettings, IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IShopRepository shopRepository) : ControllerBase
     {
-        private readonly AppSettings _appSettings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
-        private readonly IShopRepository _shopRepository;
-
-        public ShopController(
-            IOptions<AppSettings> appSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
-            IShopRepository shopRepository)
-        {
-            _appSettings = appSettings.Value;
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
-            _shopRepository = shopRepository;
-        }
+        private readonly AppSettings _appSettings = appSettings.Value;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly IShopRepository _shopRepository = shopRepository;
 
         [AllowAnonymous]
         [HttpGet("public")]
@@ -60,7 +48,7 @@ namespace DGBCommerce.API.Controllers
             if (string.IsNullOrWhiteSpace(subDomain))
                 return BadRequest(new { message = "Sub domain is required." });
 
-            if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.ToLower().Contains(subDomain.ToLower()))
+            if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.Contains(subDomain, StringComparison.CurrentCultureIgnoreCase))
                 return false;
 
             Guid? idGuid = Utilities.NullableGuid(id ?? string.Empty);
@@ -112,7 +100,7 @@ namespace DGBCommerce.API.Controllers
 
             if (!string.IsNullOrWhiteSpace(value.SubDomain))
             {
-                if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.ToLower().Contains(value.SubDomain.ToLower()))
+                if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.Contains(value.SubDomain, StringComparison.CurrentCultureIgnoreCase))
                     return BadRequest(new { message = "This subdomain is already taken." });
 
                 var merchantHasShopsWithSubDomains = await this.MerchantHasShopsWithSubDomains(authenticatedMerchantId.Value, null);
@@ -138,7 +126,7 @@ namespace DGBCommerce.API.Controllers
 
             if (!string.IsNullOrWhiteSpace(value.SubDomain))
             {
-                if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.ToLower().Contains(value.SubDomain.ToLower()))
+                if (!string.IsNullOrWhiteSpace(_appSettings.ReservedSubDomains) && _appSettings.ReservedSubDomains.Contains(value.SubDomain, StringComparison.CurrentCultureIgnoreCase))
                     return BadRequest(new { message = "This subdomain is already taken." });
 
                 var merchantHasShopsWithSubDomains = await this.MerchantHasShopsWithSubDomains(authenticatedMerchantId.Value, id);

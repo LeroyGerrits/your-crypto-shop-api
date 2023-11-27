@@ -9,22 +9,11 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CategoryController : ControllerBase
+    public class CategoryController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, ICategoryRepository shopRepository) : ControllerBase
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
-        private readonly ICategoryRepository _categoryRepository;
-
-        public CategoryController(
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
-            ICategoryRepository shopRepository
-            )
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
-            _categoryRepository = shopRepository;
-        }
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly ICategoryRepository _categoryRepository = shopRepository;
 
         [AuthenticationRequired]
         [HttpGet]
@@ -42,20 +31,20 @@ namespace DGBCommerce.API.Controllers
                 Name = name
             });
 
-            Dictionary<Guid, List<Category>> dictCategoriesPerParent = new();
+            Dictionary<Guid, List<Category>> dictCategoriesPerParent = [];
             foreach (Category category in categories)
             {
                 Guid dictionaryKey = category.ParentId ?? Guid.Empty;
 
-                if (dictCategoriesPerParent.ContainsKey(dictionaryKey))
-                    dictCategoriesPerParent[dictionaryKey].Add(category);
+                if (dictCategoriesPerParent.TryGetValue(dictionaryKey, out List<Category>? value))
+                    value.Add(category);
                 else
-                    dictCategoriesPerParent.Add(dictionaryKey, new List<Category> { category });
+                    dictCategoriesPerParent.Add(dictionaryKey, [category]);
             }
 
             foreach (Category category in categories)
-                if (dictCategoriesPerParent.ContainsKey(category.Id!.Value))
-                    category.Children = dictCategoriesPerParent[category.Id!.Value];
+                if (dictCategoriesPerParent.TryGetValue(category.Id!.Value, out List<Category>? value))
+                    category.Children = value;
 
             return Ok(categories.Where(c => !c.ParentId.HasValue).ToList());
         }

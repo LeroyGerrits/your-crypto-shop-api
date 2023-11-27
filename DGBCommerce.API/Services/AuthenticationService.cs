@@ -10,21 +10,11 @@ namespace DGBCommerce.API.Services
         AuthenticationResponse? Authenticate(AuthenticateRequest model);
     }
 
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService(IHttpContextAccessor httpContextAccessor, IMerchantRepository merchantRepository, IJwtUtils jwtUtils) : IAuthenticationService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMerchantRepository _merchantRepository;
-        private readonly IJwtUtils _jwtUtils;
-
-        public AuthenticationService(
-            IHttpContextAccessor httpContextAccessor,
-            IMerchantRepository merchantRepository, 
-            IJwtUtils jwtUtils)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _merchantRepository = merchantRepository;
-            _jwtUtils = jwtUtils;
-        }
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IMerchantRepository _merchantRepository = merchantRepository;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
 
         public AuthenticationResponse? Authenticate(AuthenticateRequest model)
         {

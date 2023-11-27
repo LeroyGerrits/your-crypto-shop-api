@@ -12,27 +12,13 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, ICategoryRepository categoryRepository, IProductRepository productMethodRepository, IProduct2CategoryRepository product2CategoryRepository) : ControllerBase
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
-        private readonly ICategoryRepository _categoryRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IProduct2CategoryRepository _product2CategoryRepository;
-
-        public ProductController(
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
-            ICategoryRepository categoryRepository,
-            IProductRepository productMethodRepository,
-            IProduct2CategoryRepository product2CategoryRepository)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
-            _categoryRepository = categoryRepository;
-            _productRepository = productMethodRepository;
-            _product2CategoryRepository = product2CategoryRepository;
-        }
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly ICategoryRepository _categoryRepository = categoryRepository;
+        private readonly IProductRepository _productRepository = productMethodRepository;
+        private readonly IProduct2CategoryRepository _product2CategoryRepository = product2CategoryRepository;
 
         [AuthenticationRequired]
         [HttpGet]
@@ -129,7 +115,7 @@ namespace DGBCommerce.API.Controllers
                 string[] splitCheckedCategoriesString = checkedCategoriesString.Split(',');
                 if (splitCheckedCategoriesString.Length > 0)
                 {
-                    List<Guid> checkedCategoryIds = new();
+                    List<Guid> checkedCategoryIds = [];
 
                     foreach (string checkedCategoryIdString in splitCheckedCategoriesString)
                     {

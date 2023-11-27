@@ -9,14 +9,9 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class FinancialStatementTransactionController : ControllerBase
+    public class FinancialStatementTransactionController(IFinancialStatementTransactionRepository financialStatementTransactionRepository) : ControllerBase
     {
-        private readonly IFinancialStatementTransactionRepository _financialStatementTransactionRepository;
-
-        public FinancialStatementTransactionController(IFinancialStatementTransactionRepository financialStatementTransactionRepository)
-        {
-            _financialStatementTransactionRepository = financialStatementTransactionRepository;
-        }
+        private readonly IFinancialStatementTransactionRepository _financialStatementTransactionRepository = financialStatementTransactionRepository;
 
         [AllowAnonymous]
         [HttpGet]
@@ -39,7 +34,7 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<FinancialStatementTransaction>> Get(Guid id)
         {
             var financialStatementTransaction = await _financialStatementTransactionRepository.GetById(id);
-            if (financialStatementTransaction == null) 
+            if (financialStatementTransaction == null)
                 return NotFound();
 
             return Ok(financialStatementTransaction);

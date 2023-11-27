@@ -15,31 +15,14 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CustomerController : ControllerBase
+    public class CustomerController(IOptions<AppSettings> appSettings, IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IAuthenticationService authenticationService, IMailService mailService, ICustomerRepository customerRepository) : ControllerBase
     {
-        private readonly AppSettings _appSettings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
-        private readonly IAuthenticationService _authenticationService;
-        private readonly IMailService _mailService;
-        private readonly ICustomerRepository _customerRepository;
-
-        public CustomerController(
-            IOptions<AppSettings> appSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
-            IAuthenticationService authenticationService,
-            IMailService mailService,
-            ICustomerRepository customerRepository
-            )
-        {
-            _appSettings = appSettings.Value;
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
-            _authenticationService = authenticationService;
-            _mailService = mailService;
-            _customerRepository = customerRepository;
-        }
+        private readonly AppSettings _appSettings = appSettings.Value;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly IAuthenticationService _authenticationService = authenticationService;
+        private readonly IMailService _mailService = mailService;
+        private readonly ICustomerRepository _customerRepository = customerRepository;
 
         [AllowAnonymous]
         [HttpGet("public")]

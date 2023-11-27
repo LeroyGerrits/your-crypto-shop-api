@@ -2,18 +2,13 @@
 
 namespace DGBCommerce.API
 {
-    public class JwtMiddleware
+    public class JwtMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
-
-        public JwtMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+        private readonly RequestDelegate _next = next;
 
         public async Task Invoke(HttpContext context, IMerchantRepository merchantRepository, IJwtUtils jwtUtils)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
             var merchantId = jwtUtils.ValidateJwtToken(token);
             if (merchantId != null)
             {

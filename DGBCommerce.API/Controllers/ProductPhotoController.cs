@@ -13,24 +13,12 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProductPhotoController : ControllerBase
+    public class ProductPhotoController(IOptions<FileUploadSettings> fileUploadSettings, IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IProductPhotoRepository productPhotoRepository) : ControllerBase
     {
-        private readonly FileUploadSettings _fileUploadSettings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils;
-        private readonly IProductPhotoRepository _productPhotoRepository;
-
-        public ProductPhotoController(
-            IOptions<FileUploadSettings> fileUploadSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IJwtUtils jwtUtils,
-            IProductPhotoRepository productPhotoRepository)
-        {
-            _fileUploadSettings = fileUploadSettings.Value;
-            _httpContextAccessor = httpContextAccessor;
-            _jwtUtils = jwtUtils;
-            _productPhotoRepository = productPhotoRepository;
-        }
+        private readonly FileUploadSettings _fileUploadSettings = fileUploadSettings.Value;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly IProductPhotoRepository _productPhotoRepository = productPhotoRepository;
 
         [AuthenticationRequired]
         [HttpGet]
@@ -87,7 +75,7 @@ namespace DGBCommerce.API.Controllers
 
             var fileExtension = Path.GetExtension(file.FileName).Replace(".", string.Empty);
 
-            if (!string.IsNullOrWhiteSpace(_fileUploadSettings.AllowedExtensions) && !_fileUploadSettings.AllowedExtensions.ToUpper().Contains(fileExtension.ToUpper()))
+            if (!string.IsNullOrWhiteSpace(_fileUploadSettings.AllowedExtensions) && !_fileUploadSettings.AllowedExtensions.Contains(fileExtension, StringComparison.CurrentCultureIgnoreCase))
                 return BadRequest(new { message = "File type " + fileExtension + " is not allowed. Only the following file types are allowed: " + _fileUploadSettings.AllowedExtensions + "." });
 
             var folder = Path.Combine(_fileUploadSettings.BaseFolder, authenticatedMerchantId.Value.ToString());

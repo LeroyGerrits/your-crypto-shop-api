@@ -8,14 +8,9 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CurrencyController : ControllerBase
+    public class CurrencyController(ICurrencyRepository currencyRepository) : ControllerBase
     {
-        private readonly ICurrencyRepository _currencyRepository;
-
-        public CurrencyController(ICurrencyRepository currencyRepository)
-        {
-            _currencyRepository = currencyRepository;
-        }
+        private readonly ICurrencyRepository _currencyRepository = currencyRepository;
 
         [AllowAnonymous]
         [HttpGet]

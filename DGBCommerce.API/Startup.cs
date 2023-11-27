@@ -10,19 +10,14 @@ using System.Text.Json.Serialization;
 
 namespace DGBCommerce.API
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public IConfiguration Configuration { get; }
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public IConfiguration _configuration = configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = Configuration.GetConnectionString("DGBCommerce") ?? throw new Exception("connectionString 'DBBCommerce' not set.");
-            RpcSettings rpcSettings = Configuration.GetSection("RpcSettings").Get<RpcSettings>() ?? throw new Exception("RPC settings not configured.");
+            string connectionString = _configuration.GetConnectionString("DGBCommerce") ?? throw new Exception("connectionString 'DBBCommerce' not set.");
+            RpcSettings rpcSettings = _configuration.GetSection("RpcSettings").Get<RpcSettings>() ?? throw new Exception("RPC settings not configured.");
             if (rpcSettings.DaemonUrl == null) throw new Exception($"RPC {nameof(rpcSettings.DaemonUrl)} not configured.");
             if (rpcSettings.Username == null) throw new Exception($"RPC {nameof(rpcSettings.Username)} not configured.");
             if (rpcSettings.Password == null) throw new Exception($"RPC {nameof(rpcSettings.Password)} not configured.");
@@ -34,7 +29,7 @@ namespace DGBCommerce.API
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            services.AddSingleton(provider => Configuration);
+            services.AddSingleton(provider => _configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             
             services.AddScoped<IAuthenticationService, AuthenticationService>();

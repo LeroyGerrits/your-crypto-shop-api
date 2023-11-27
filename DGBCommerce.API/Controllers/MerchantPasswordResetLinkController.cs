@@ -9,18 +9,10 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MerchantPasswordResetLinkController : ControllerBase
+    public class MerchantPasswordResetLinkController(IMerchantRepository merchantRepository, IMerchantPasswordResetLinkRepository merchantPasswordResetLinkRepository) : ControllerBase
     {
-        private readonly IMerchantRepository _merchantRepository;
-        private readonly IMerchantPasswordResetLinkRepository _merchantPasswordResetLinkRepository;
-
-        public MerchantPasswordResetLinkController(
-            IMerchantRepository merchantRepository,
-            IMerchantPasswordResetLinkRepository merchantPasswordResetLinkRepository)
-        {
-            _merchantRepository = merchantRepository;
-            _merchantPasswordResetLinkRepository = merchantPasswordResetLinkRepository;
-        }
+        private readonly IMerchantRepository _merchantRepository = merchantRepository;
+        private readonly IMerchantPasswordResetLinkRepository _merchantPasswordResetLinkRepository = merchantPasswordResetLinkRepository;
 
         [AllowAnonymous]
         [HttpGet("public")]

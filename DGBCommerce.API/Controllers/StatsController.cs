@@ -7,14 +7,9 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class StatsController : ControllerBase
+    public class StatsController(IStatsRepository currencyRepository) : ControllerBase
     {
-        private readonly IStatsRepository _statsRepository;
-
-        public StatsController(IStatsRepository currencyRepository)
-        {
-            _statsRepository = currencyRepository;
-        }
+        private readonly IStatsRepository _statsRepository = currencyRepository;
 
         [AllowAnonymous]
         [HttpGet]

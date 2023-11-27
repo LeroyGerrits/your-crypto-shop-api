@@ -70,7 +70,7 @@ namespace DGBCommerce.API
 
         public Guid? GetMerchantId(IHttpContextAccessor httpContextAccessor)
         {
-            var token = httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var token = httpContextAccessor.HttpContext?.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
             if (token == null) return null;
             return ValidateJwtToken(token);
         }

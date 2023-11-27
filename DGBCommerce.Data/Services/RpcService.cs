@@ -8,18 +8,11 @@ using Newtonsoft.Json;
 
 namespace DGBCommerce.Data.Services
 {
-    public class RpcService : IRpcService
+    public class RpcService(string deamonUrl, string rpcUsername, string rpcPassword) : IRpcService
     {
-        private readonly string _daemonUrl;
-        private readonly string _rpcUsername;
-        private readonly string _rpcPassword;
-
-        public RpcService(string deamonUrl, string rpcUsername, string rpcPassword)
-        {
-            _daemonUrl = deamonUrl;
-            _rpcUsername = rpcUsername;
-            _rpcPassword = rpcPassword;
-        }
+        private readonly string _daemonUrl = deamonUrl;
+        private readonly string _rpcUsername = rpcUsername;
+        private readonly string _rpcPassword = rpcPassword;
 
         public async Task<uint> GetBlockCount()
             => await Request<uint>("getblockcount");

@@ -8,14 +8,9 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class FaqController : ControllerBase
+    public class FaqController(IFaqRepository faqRepository) : ControllerBase
     {
-        private readonly IFaqRepository _faqRepository;
-
-        public FaqController(IFaqRepository faqRepository)
-        {
-            _faqRepository = faqRepository;
-        }
+        private readonly IFaqRepository _faqRepository = faqRepository;
 
         [AllowAnonymous]
         [HttpGet]
@@ -34,7 +29,7 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<Faq>> Get(Guid id)
         {
             var faq = await _faqRepository.GetById(id);
-            if (faq == null) 
+            if (faq == null)
                 return NotFound();
 
             return Ok(faq);
