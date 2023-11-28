@@ -15,7 +15,7 @@ namespace DGBCommerce.Domain.Models
         public required Gender Gender { get; set; }
         public string? FirstName { get; set; }
         public required string LastName { get; set; }
-        public Address? Address { get; set; }
+        public required Address Address { get; set; }
         public DateTime? LastLogin { get; set; }
         public string? LastIpAddress { get; set; }
         public DateTime? SecondLastLogin { get; set; }

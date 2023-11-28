@@ -51,11 +51,11 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> Get(Guid id)
         {
-            var authenticatedCustomerId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (authenticatedCustomerId == null)
-                return BadRequest("Customer not authorized.");
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
 
-            var customer = await _customerRepository.GetById(authenticatedCustomerId.Value, id);
+            var customer = await _customerRepository.GetById(authenticatedMerchantId.Value, id);
             if (customer == null)
                 return NotFound();
 
@@ -73,17 +73,24 @@ namespace DGBCommerce.API.Controllers
             return Ok(customer);
         }
 
-        [AllowAnonymous]
+        [AuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] MutateCustomerRequest value)
         {
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
             var address = await _addressService.GetAddress(value.AddressLine1, value.AddressLine2, value.PostalCode, value.City, value.Province, value.Country.Id!.Value);
+            if(address == null)
+                return BadRequest(new { message = "Could not retrieve address record." });
+
             value.Customer.Address = address;
             value.Customer.PasswordSalt = Utilities.GenerateSalt();
             value.Customer.Password = Utilities.GenerateRandomString(50);
 
-            var result = await _customerRepository.Create(value.Customer, Guid.Empty);
-            if (result.Success)
+            var result = await _customerRepository.Create(value.Customer, authenticatedMerchantId.Value);
+            if (result.Success && false) // TO-DO: Send e-mail with activation link pointing to merchant shop
             {
                 string accountActivationUrl = $"{_appSettings.UrlDgbCommerceWebsite}/account-activate/{result.Identifier}/{value.Customer.Password}";
 
@@ -100,17 +107,23 @@ namespace DGBCommerce.API.Controllers
 
         [AuthenticationRequired]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] Customer value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] MutateCustomerRequest value)
         {
-            var authenticatedCustomerId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (authenticatedCustomerId == null)
-                return BadRequest("Customer not authorized.");
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
 
-            var customer = await _customerRepository.GetById(authenticatedCustomerId.Value, id);
+            var customer = await _customerRepository.GetById(authenticatedMerchantId.Value, id);
             if (customer == null)
                 return NotFound();
 
-            var result = await _customerRepository.Update(value, authenticatedCustomerId.Value);
+            var address = await _addressService.GetAddress(value.AddressLine1, value.AddressLine2, value.PostalCode, value.City, value.Province, value.Country.Id!.Value);
+            if (address == null)
+                return BadRequest(new { message = "Could not retrieve address record." });
+
+            value.Customer.Address = address;
+
+            var result = await _customerRepository.Update(value.Customer, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
@@ -134,12 +147,12 @@ namespace DGBCommerce.API.Controllers
         [HttpPut("change-password")]
         public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            var authenticatedCustomerId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (authenticatedCustomerId == null)
-                return BadRequest("Customer not authorized.");
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
 
             // First retrieve the customer by ID so we can get the salt
-            var customerById = await _customerRepository.GetById(authenticatedCustomerId.Value, authenticatedCustomerId.Value);
+            var customerById = await _customerRepository.GetById(authenticatedMerchantId.Value, authenticatedMerchantId.Value);
             if (customerById == null)
                 return NotFound();
 
@@ -147,7 +160,7 @@ namespace DGBCommerce.API.Controllers
             var hashedCurrentPassword = Utilities.HashStringSha256(customerById.PasswordSalt + request.CurrentPassword);
 
             // Retrieve customer by ID and hashed password
-            var customer = await _customerRepository.GetByIdAndPassword(authenticatedCustomerId.Value, hashedCurrentPassword);
+            var customer = await _customerRepository.GetByIdAndPassword(authenticatedMerchantId.Value, hashedCurrentPassword);
             if (customer == null)
                 return BadRequest(new { message = "Your current password is incorrect." });
 
@@ -163,15 +176,15 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Customer>> Delete(Guid id)
         {
-            var authenticatedCustomerId = _jwtUtils.GetMerchantId(_httpContextAccessor);
-            if (authenticatedCustomerId == null)
-                return BadRequest("Customer not authorized.");
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
 
-            var customer = await _customerRepository.GetById(authenticatedCustomerId.Value, id);
+            var customer = await _customerRepository.GetById(authenticatedMerchantId.Value, id);
             if (customer == null)
                 return NotFound();
 
-            var result = await _customerRepository.Delete(id, authenticatedCustomerId.Value);
+            var result = await _customerRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
         }
 

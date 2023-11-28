@@ -25,6 +25,7 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> CreateCustomer(Customer customer, Guid mutationId)
             => await NonQuery("SP_MUTATE_Customer", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@CUS_SHOP", SqlDbType.UniqueIdentifier) { Value = customer.ShopId },
                 new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = customer.EmailAddress },
                 new SqlParameter("@CUS_USERNAME", SqlDbType.VarChar) { Value = customer.Username },
                 new SqlParameter("@CUS_PASSWORD_SALT", SqlDbType.VarChar) { Value = customer.PasswordSalt },
@@ -398,6 +399,10 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_Customer", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
                 new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = customer.Id },
+                new SqlParameter("@CUS_SHOP", SqlDbType.UniqueIdentifier) { Value = customer.ShopId },
+                new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = customer.EmailAddress },
+                new SqlParameter("@CUS_USERNAME", SqlDbType.VarChar) { Value = customer.Username },
+                new SqlParameter("@CUS_GENDER", SqlDbType.TinyInt) { Value = customer.Gender },
                 new SqlParameter("@CUS_FIRST_NAME", SqlDbType.NVarChar, 255) { Value = customer.FirstName },
                 new SqlParameter("@CUS_LAST_NAME", SqlDbType.NVarChar, 255) { Value = customer.LastName },
                 new SqlParameter("@CUS_ADDRESS", SqlDbType.UniqueIdentifier) { Value = customer.Address!.Id }
