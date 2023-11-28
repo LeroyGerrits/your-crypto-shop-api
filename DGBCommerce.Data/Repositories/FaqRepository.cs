@@ -7,14 +7,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class FaqRepository : IFaqRepository
+    public class FaqRepository(IDataAccessLayer dataAccessLayer) : IFaqRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public FaqRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<Faq>> Get(GetFaqsParameters parameters)
             => await GetRaw(parameters);
@@ -28,7 +23,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Faq>> GetRaw(GetFaqsParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetFaqs(parameters);
-            List<Faq> faqs = new();
+            List<Faq> faqs = [];
 
             foreach (DataRow row in table.Rows)
             {

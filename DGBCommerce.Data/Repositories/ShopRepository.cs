@@ -8,14 +8,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class ShopRepository : IShopRepository
+    public class ShopRepository(IDataAccessLayer dataAccessLayer) : IShopRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public ShopRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<Shop>> Get(GetShopsParameters parameters)
             => await GetRaw(parameters);
@@ -47,7 +42,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Shop>> GetRaw(GetShopsParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetShops(parameters);
-            List<Shop> shops = new();
+            List<Shop> shops = [];
 
             foreach (DataRow row in table.Rows)
             {
@@ -88,7 +83,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<PublicShop>> GetRawPublic(GetShopsParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetShops(parameters);
-            List<PublicShop> shops = new();
+            List<PublicShop> shops = [];
 
             foreach (DataRow row in table.Rows)
             {
@@ -115,7 +110,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<PublicShop>> GetRawByIdAndSubDomainPublic(Guid? id, string subDomain)
         {
             DataTable table = await _dataAccessLayer.GetShopByIdAndSubDomain(id, subDomain);
-            List<PublicShop> shops = new();
+            List<PublicShop> shops = [];
 
             foreach (DataRow row in table.Rows)
             {

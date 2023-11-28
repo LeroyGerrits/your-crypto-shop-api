@@ -9,14 +9,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class CustomerRepository : ICustomerRepository
+    public class CustomerRepository(IDataAccessLayer dataAccessLayer) : ICustomerRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public CustomerRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<Customer>> Get(GetCustomersParameters parameters)
             => await GetRaw(parameters);
@@ -63,7 +58,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Customer>> GetRaw(GetCustomersParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetCustomers(parameters);
-            List<Customer> customers = new();
+            List<Customer> customers = [];
 
             foreach (DataRow row in table.Rows)
             {
@@ -161,7 +156,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<PublicCustomer>> GetRawPublic(GetCustomersParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetCustomers(parameters);
-            List<PublicCustomer> customers = new();
+            List<PublicCustomer> customers = [];
 
             foreach (DataRow row in table.Rows)
             {

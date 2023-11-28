@@ -7,14 +7,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class NewsMessageRepository : INewsMessageRepository
+    public class NewsMessageRepository(IDataAccessLayer dataAccessLayer) : INewsMessageRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public NewsMessageRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<NewsMessage>> Get(GetNewsMessagesParameters parameters)
             => await GetRaw(parameters);
@@ -28,7 +23,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<NewsMessage>> GetRaw(GetNewsMessagesParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetNewsMessages(parameters);
-            List<NewsMessage> newsMessages = new();
+            List<NewsMessage> newsMessages = [];
 
             foreach (DataRow row in table.Rows)
             {

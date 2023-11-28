@@ -7,14 +7,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class ShopCategoryRepository : IShopCategoryRepository
+    public class ShopCategoryRepository(IDataAccessLayer dataAccessLayer) : IShopCategoryRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public ShopCategoryRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<ShopCategory>> Get(GetShopCategoriesParameters parameters)
             => await GetRaw(parameters);
@@ -28,7 +23,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<ShopCategory>> GetRaw(GetShopCategoriesParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetShopCategories(parameters);
-            List<ShopCategory> shopCategories = new();
+            List<ShopCategory> shopCategories = [];
 
             foreach (DataRow row in table.Rows)
             {

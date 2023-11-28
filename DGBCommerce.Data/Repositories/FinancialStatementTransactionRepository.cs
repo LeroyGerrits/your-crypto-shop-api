@@ -8,14 +8,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class FinancialStatementTransactionRepository : IFinancialStatementTransactionRepository
+    public class FinancialStatementTransactionRepository(IDataAccessLayer dataAccessLayer) : IFinancialStatementTransactionRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public FinancialStatementTransactionRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<FinancialStatementTransaction>> Get(GetFinancialStatementTransactionsParameters parameters)
             => await GetRaw(parameters);
@@ -29,7 +24,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<FinancialStatementTransaction>> GetRaw(GetFinancialStatementTransactionsParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetFinancialStatementTransactions(parameters);
-            List<FinancialStatementTransaction> financialStatementTransactions = new();
+            List<FinancialStatementTransaction> financialStatementTransactions = [];
 
             foreach (DataRow row in table.Rows)
             {

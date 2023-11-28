@@ -7,14 +7,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class CurrencyRepository : ICurrencyRepository
+    public class CurrencyRepository(IDataAccessLayer dataAccessLayer) : ICurrencyRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public CurrencyRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<Currency>> Get(GetCurrenciesParameters parameters)
             => await GetRaw(parameters);
@@ -28,7 +23,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Currency>> GetRaw(GetCurrenciesParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetCurrencies(parameters);
-            List<Currency> currencies = new();
+            List<Currency> currencies = [];
 
             foreach (DataRow row in table.Rows)
             {

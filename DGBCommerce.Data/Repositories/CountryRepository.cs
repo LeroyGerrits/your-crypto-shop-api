@@ -7,14 +7,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class CountryRepository : ICountryRepository
+    public class CountryRepository(IDataAccessLayer dataAccessLayer) : ICountryRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public CountryRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<Country>> Get(GetCountriesParameters parameters)
             => await GetRaw(parameters);
@@ -28,7 +23,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Country>> GetRaw(GetCountriesParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetCountries(parameters);
-            List<Country> countries = new();
+            List<Country> countries = [];
 
             foreach (DataRow row in table.Rows)
             {

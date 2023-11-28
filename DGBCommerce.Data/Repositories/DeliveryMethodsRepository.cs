@@ -7,14 +7,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class DeliveryMethodRepository : IDeliveryMethodRepository
+    public class DeliveryMethodRepository(IDataAccessLayer dataAccessLayer) : IDeliveryMethodRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public DeliveryMethodRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<DeliveryMethod>> Get(GetDeliveryMethodsParameters parameters)
             => await GetRaw(parameters);
@@ -37,7 +32,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<DeliveryMethod>> GetRaw(GetDeliveryMethodsParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetDeliveryMethods(parameters);
-            List<DeliveryMethod> deliveryMethods = new();
+            List<DeliveryMethod> deliveryMethods = [];
 
             foreach (DataRow row in table.Rows)
             {

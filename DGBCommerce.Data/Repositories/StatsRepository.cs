@@ -6,14 +6,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class StatsRepository : IStatsRepository
+    public class StatsRepository(IDataAccessLayer dataAccessLayer) : IStatsRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public StatsRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<Stats>> Get(GetParameters parameters)
             => await GetRaw();
@@ -24,7 +19,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Stats>> GetRaw()
         {
             DataTable table = await _dataAccessLayer.GetStats();
-            List<Stats> stats = new();
+            List<Stats> stats = [];
 
             foreach (DataRow row in table.Rows)
             {

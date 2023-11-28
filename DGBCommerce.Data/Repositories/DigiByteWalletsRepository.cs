@@ -8,14 +8,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class DigiByteWalletRepository : IDigiByteWalletRepository
+    public class DigiByteWalletRepository(IDataAccessLayer dataAccessLayer) : IDigiByteWalletRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public DigiByteWalletRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public async Task<IEnumerable<DigiByteWallet>> Get(GetDigiByteWalletsParameters parameters)
             => await GetRaw(parameters);
@@ -38,7 +33,7 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<DigiByteWallet>> GetRaw(GetDigiByteWalletsParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetDigiByteWallets(parameters);
-            List<DigiByteWallet> deliveryMethods = new();
+            List<DigiByteWallet> deliveryMethods = [];
 
             foreach (DataRow row in table.Rows)
             {

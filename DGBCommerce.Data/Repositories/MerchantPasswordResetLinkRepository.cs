@@ -7,14 +7,9 @@ using System.Data;
 
 namespace DGBCommerce.Data.Repositories
 {
-    public class MerchantPasswordResetLinkRepository : IMerchantPasswordResetLinkRepository
+    public class MerchantPasswordResetLinkRepository(IDataAccessLayer dataAccessLayer) : IMerchantPasswordResetLinkRepository
     {
-        private readonly IDataAccessLayer _dataAccessLayer;
-
-        public MerchantPasswordResetLinkRepository(IDataAccessLayer dataAccessLayer)
-        {
-            _dataAccessLayer = dataAccessLayer;
-        }
+        private readonly IDataAccessLayer _dataAccessLayer = dataAccessLayer;
 
         public Task<MerchantPasswordResetLink?> GetById(Guid merchantId, Guid id)
             => throw new InvalidOperationException();
