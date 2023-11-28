@@ -26,6 +26,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
 
+        Task<DataTable> GetAddress(string addressLine1, string? addressLine2, string postalCode, string city, string? province, Guid countryId);
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
         Task<DataTable> GetCustomers(GetCustomersParameters parameters);
         Task<DataTable> GetCustomerByEmailAddress(string emailAddress);

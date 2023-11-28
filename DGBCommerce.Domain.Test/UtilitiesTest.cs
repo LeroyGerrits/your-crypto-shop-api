@@ -12,14 +12,14 @@ namespace DGBCommerce.Domain.Test
         }
 
         [Fact]
-        public void Generate_salt_should_return_a_32_character_long_hash()
+        public void Generate_salt_should_return_a_string()
         {
             object valueHash = Utilities.GenerateSalt();
             Assert.NotNull(valueHash);
         }
 
         [Fact]
-        public void Empty_datetime_from_database_should_evaluate_no_null()
+        public void Empty_datetime_from_database_should_evaluate_to_null()
         {
             object value = DBNull.Value;
             object valueNullable = Utilities.DBNullableDateTime(value)!;

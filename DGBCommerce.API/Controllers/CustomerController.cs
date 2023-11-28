@@ -10,42 +10,41 @@ using Microsoft.Extensions.Options;
 using DGBCommerce.Domain.Parameters;
 using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Interfaces.Repositories;
+using DGBCommerce.Data.Repositories;
+using DGBCommerce.Domain.Interfaces.Services;
 
 namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CustomerController(IOptions<AppSettings> appSettings, IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IAuthenticationService authenticationService, IMailService mailService, ICustomerRepository customerRepository) : ControllerBase
+    public class CustomerController(IOptions<AppSettings> appSettings, IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IAddressService addressService, IAuthenticationService authenticationService, IMailService mailService, ICustomerRepository customerRepository) : ControllerBase
     {
         private readonly AppSettings _appSettings = appSettings.Value;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IJwtUtils _jwtUtils = jwtUtils;
+        private readonly IAddressService _addressService = addressService;
         private readonly IAuthenticationService _authenticationService = authenticationService;
         private readonly IMailService _mailService = mailService;
         private readonly ICustomerRepository _customerRepository = customerRepository;
 
-        [AllowAnonymous]
-        [HttpGet("public")]
-        public async Task<ActionResult<IEnumerable<PublicCustomer>>> GetPublic(Guid merchantId, string? firstName, string? lastName)
+        [AuthenticationRequired]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Customer>>> Get(Guid? shopId, string? username, string? emailAddress, string? firstName, string? lastName)
         {
-            var customers = await _customerRepository.GetPublic(new GetCustomersParameters()
+            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var customers = await _customerRepository.Get(new GetCustomersParameters()
             {
-                MerchantId = merchantId,
+                MerchantId = authenticatedMerchantId.Value,
+                ShopId = shopId,
+                Username = username,
+                EmailAddress = emailAddress,
                 FirstName = firstName,
                 LastName = lastName
             });
             return Ok(customers.ToList());
-        }
-
-        [AllowAnonymous]
-        [HttpGet("public/{id}")]
-        public async Task<ActionResult<PublicCustomer>> GetPublic(Guid merchantId, Guid id)
-        {
-            var customer = await _customerRepository.GetByIdPublic(merchantId, id);
-            if (customer == null)
-                return NotFound();
-
-            return Ok(customer);
         }
 
         [AuthenticationRequired]
@@ -76,22 +75,24 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] Customer value)
+        public async Task<ActionResult> Post([FromBody] MutateCustomerRequest value)
         {
-            value.PasswordSalt = Utilities.GenerateSalt();
-            value.Password = Utilities.GenerateRandomString(50);
-            var result = await _customerRepository.Create(value, Guid.Empty);
+            var address = await _addressService.GetAddress(value.AddressLine1, value.AddressLine2, value.PostalCode, value.City, value.Province, value.Country.Id!.Value);
+            value.Customer.Address = address;
+            value.Customer.PasswordSalt = Utilities.GenerateSalt();
+            value.Customer.Password = Utilities.GenerateRandomString(50);
 
+            var result = await _customerRepository.Create(value.Customer, Guid.Empty);
             if (result.Success)
             {
-                string accountActivationUrl = $"{_appSettings.UrlDgbCommerceWebsite}/account-activate/{result.Identifier}/{value.Password}";
+                string accountActivationUrl = $"{_appSettings.UrlDgbCommerceWebsite}/account-activate/{result.Identifier}/{value.Customer.Password}";
 
                 StringBuilder sbMail = new();
-                sbMail.Append($"<p>Hi {value.Username},</p>");
-                sbMail.Append($"<p>Your account was registered. Before you can use your account, you will need to activate it. Click on the following link to activate:</p>");
+                sbMail.Append($"<p>Hi {value.Customer.Username},</p>");
+                sbMail.Append($"<p>An account for you was created. Before you can use your account, you will need to activate it. Click on the following link to activate:</p>");
                 sbMail.Append($"<p><a href=\"{accountActivationUrl}\">{accountActivationUrl}</a></p>");
                 sbMail.Append($"<p>DGB Commerce</p>");
-                _mailService.SendMail(value.EmailAddress, "Activate your DGB Commerce account", sbMail.ToString());
+                _mailService.SendMail(value.Customer.EmailAddress, "Activate your DGB Commerce account", sbMail.ToString());
             }
 
             return Ok(result);

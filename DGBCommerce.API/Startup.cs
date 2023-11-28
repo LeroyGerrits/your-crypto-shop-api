@@ -36,12 +36,16 @@ namespace DGBCommerce.API
             services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IMailService, MailService>();
+
+            // Services
+            services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IRpcService, RpcService>(_ => new RpcService(rpcSettings.DaemonUrl, rpcSettings.Username, rpcSettings.Password));
             
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IDeliveryMethodRepository, DeliveryMethodRepository>();
             services.AddScoped<IDigiByteWalletRepository, DigiByteWalletRepository>();
             services.AddScoped<IFaqCategoryRepository, FaqCategoryRepository>();
