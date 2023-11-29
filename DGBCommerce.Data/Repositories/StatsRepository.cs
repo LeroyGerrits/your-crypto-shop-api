@@ -27,8 +27,8 @@ namespace DGBCommerce.Data.Repositories
                 {
                     Merchants = Convert.ToInt32(row["Merchants"]),
                     Shops = Convert.ToInt32(row["Shops"]),
-                    Orders = Convert.ToInt32(row["Orders"]),
-                    Transactions = Convert.ToInt32(row["Transactions"])
+                    Products = Convert.ToInt32(row["Products"]),
+                    Orders = Convert.ToInt32(row["Orders"])
                 });
             }
 

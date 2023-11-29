@@ -4,7 +4,7 @@
     {
         public required int Merchants { get; set; }
         public required int Shops { get; set; }
-        public required int Orders { get; set; }
-        public required int Transactions { get; set; }
+        public required int Products { get; set; }
+        public required int Orders { get; set; }        
     }
 }
