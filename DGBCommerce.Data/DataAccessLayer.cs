@@ -205,6 +205,8 @@ namespace DGBCommerce.Data
         public async Task<DataTable> GetCustomers(GetCustomersParameters parameters)
             => await Get("SP_GET_Customers", [
                 new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@CUS_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@CUS_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = parameters.EmailAddress },
                 new SqlParameter("@CUS_USERNAME", SqlDbType.VarChar) { Value = parameters.Username },
                 new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar) { Value = parameters.Password },
