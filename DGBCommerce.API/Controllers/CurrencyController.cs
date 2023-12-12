@@ -25,7 +25,7 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<Currency>> GetById(Guid id)
         {
             var currency = await _currencyRepository.GetById(id);
-            if (currency == null) 
+            if (currency == null)
                 return NotFound();
 
             return Ok(currency);

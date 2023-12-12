@@ -34,7 +34,7 @@ namespace DGBCommerce.BackgroundWorker
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings" + (env == "Development" ? ".Development" : string.Empty) + ".json", optional: false, reloadOnChange: true); ;
-            
+
             return builder.Build();
         }
     }

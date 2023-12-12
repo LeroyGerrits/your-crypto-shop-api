@@ -25,7 +25,7 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<Country>> GetById(Guid id)
         {
             var country = await _countryRepository.GetById(id);
-            if (country == null) 
+            if (country == null)
                 return NotFound();
 
             return Ok(country);
