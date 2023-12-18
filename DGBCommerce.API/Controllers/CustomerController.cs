@@ -8,9 +8,7 @@ using DGBCommerce.Domain;
 using System.Text;
 using Microsoft.Extensions.Options;
 using DGBCommerce.Domain.Parameters;
-using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Interfaces.Repositories;
-using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain.Interfaces.Services;
 
 namespace DGBCommerce.API.Controllers
@@ -82,7 +80,7 @@ namespace DGBCommerce.API.Controllers
                 return BadRequest("Merchant not authorized.");
 
             var address = await _addressService.GetAddress(value.AddressLine1, value.AddressLine2, value.PostalCode, value.City, value.Province, value.Country.Id!.Value);
-            if(address == null)
+            if (address == null)
                 return BadRequest(new { message = "Could not retrieve address record." });
 
             value.Customer.Address = address;

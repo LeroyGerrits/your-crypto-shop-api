@@ -2,15 +2,9 @@
 
 namespace DGBCommerce.API.Controllers.Responses
 {
-    public class GetProductResponse
+    public class GetProductResponse(Product product, List<Guid> categoryIds)
     {
-        public Product Product { get; set; }
-        public List<Guid> CategoryIds { get; set; }
-
-        public GetProductResponse(Product product, List<Guid> categoryIds)
-        {
-            Product = product;
-            CategoryIds = categoryIds;
-        }
+        public Product Product { get; set; } = product;
+        public List<Guid> CategoryIds { get; set; } = categoryIds;
     }
 }

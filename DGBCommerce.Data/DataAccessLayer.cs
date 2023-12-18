@@ -72,6 +72,15 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRL_KEY", SqlDbType.VarChar) { Value = merchantPasswordResetLink.Key }
             ]);
 
+        public async Task<MutationResult> CreateOrder(Order order, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Order", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = order.Shop.Id },
+                new SqlParameter("@ORD_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = order.Customer.Id },
+                new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
+                new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id }
+            ], mutationId);
+
         public async Task<MutationResult> CreateProduct(Product product, Guid mutationId)
             => await NonQuery("SP_MUTATE_Product", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -140,6 +149,12 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_DigiByteWallet", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = digiByteWalletId }
+            ], mutationId);
+
+        public async Task<MutationResult> DeleteOrder(Guid orderId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Order", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@ORD_ID", SqlDbType.UniqueIdentifier) { Value = orderId }
             ], mutationId);
 
         public async Task<MutationResult> DeleteProduct(Guid shopId, Guid mutationId)
@@ -315,6 +330,16 @@ namespace DGBCommerce.Data
                 new SqlParameter("@MER_LAST_NAME", SqlDbType.NVarChar) { Value = parameters.LastName }
             ]);
 
+        public async Task<DataTable> GetOrders(GetOrdersParameters parameters)
+            => await Get("SP_GET_Orders", [
+                new SqlParameter("@ORD_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@ORD_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@ORD_DATE_FROM", SqlDbType.DateTime) { Value = parameters.DateFrom },
+                new SqlParameter("@ORD_DATE_UNTIL", SqlDbType.DateTime) { Value = parameters.DateUntil },
+                new SqlParameter("@ORD_STATUS", SqlDbType.TinyInt) { Value = parameters.Status }
+            ]);
+
         public async Task<DataTable> GetProducts(GetProductsParameters parameters)
             => await Get("SP_GET_Products", [
                 new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
@@ -470,6 +495,13 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_MerchantPasswordResetLink", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
                 new SqlParameter("@PRL_ID", SqlDbType.UniqueIdentifier) { Value = merchantPasswordResetLink.Id }
+            ], mutationId);
+
+        public async Task<MutationResult> UpdateOrder(Order order, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Order", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
+                new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id }
             ], mutationId);
 
         public async Task<MutationResult> UpdateProduct(Product product, Guid mutationId)
