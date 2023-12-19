@@ -21,6 +21,18 @@ namespace DGBCommerce.Data.Repositories
             return shops.ToList().SingleOrDefault();
         }
 
+        public async Task<PublicShop?> GetByIdPublic(Guid id)
+        {
+            var shops = await GetRawPublic(new GetShopsParameters() { Id = id });
+            return shops.SingleOrDefault();
+        }
+
+        public async Task<PublicShop?> GetBySubDomainPublic(string subDomain)
+        {
+            var shops = await GetRawPublic(new GetShopsParameters() { SubDomain = subDomain });
+            return shops.SingleOrDefault();
+        }
+
         public async Task<IEnumerable<PublicShop>> GetPublic(GetShopsParameters parameters)
             => await GetRawPublic(parameters);
 

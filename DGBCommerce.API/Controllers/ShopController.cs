@@ -20,20 +20,6 @@ namespace DGBCommerce.API.Controllers
         private readonly IShopRepository _shopRepository = shopRepository;
 
         [AllowAnonymous]
-        [HttpGet("public")]
-        public async Task<ActionResult<IEnumerable<PublicShop>>> GetPublic(string? name, string? subDomain, Guid? countryId, Guid? categoryId)
-        {
-            var shops = await _shopRepository.GetPublic(new GetShopsParameters()
-            {
-                Name = name,
-                SubDomain = subDomain,
-                CountryId = countryId,
-                CategoryId = categoryId
-            });
-            return Ok(shops.ToList());
-        }
-
-        [AllowAnonymous]
         [HttpGet("public/featured")]
         public async Task<ActionResult<IEnumerable<PublicShop>>> GetFeaturedPublic()
         {
@@ -75,15 +61,51 @@ namespace DGBCommerce.API.Controllers
             return Ok(shops.ToList());
         }
 
+        [AllowAnonymous]
+        [HttpGet("public")]
+        public async Task<ActionResult<IEnumerable<PublicShop>>> GetPublic(string? name, string? subDomain, Guid? countryId, Guid? categoryId)
+        {
+            var shops = await _shopRepository.GetPublic(new GetShopsParameters()
+            {
+                Name = name,
+                SubDomain = subDomain,
+                CountryId = countryId,
+                CategoryId = categoryId
+            });
+            return Ok(shops.ToList());
+        }
+
         [AuthenticationRequired]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Shop>> Get(Guid id)
+        public async Task<ActionResult<Shop>> GetById(Guid id)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
             var shop = await _shopRepository.GetById(authenticatedMerchantId.Value, id);
+            if (shop == null)
+                return NotFound();
+
+            return Ok(shop);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/{id}")]
+        public async Task<ActionResult<PublicShop>> GetByIdPublic(Guid id)
+        {
+            var shop = await _shopRepository.GetByIdPublic(id);
+            if (shop == null)
+                return NotFound();
+
+            return Ok(shop);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/GetBySubDomain/{subDomain}")]
+        public async Task<ActionResult<PublicShop>> GetBySubDomainPublic(string subDomain)
+        {
+            var shop = await _shopRepository.GetBySubDomainPublic(subDomain);
             if (shop == null)
                 return NotFound();
 
