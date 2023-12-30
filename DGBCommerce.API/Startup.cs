@@ -70,7 +70,7 @@ namespace DGBCommerce.API
                 app.UseSwaggerUI();
                 app.UseCors(
                     options => options
-                    .WithOrigins("http://localhost:4200")
+                    .WithOrigins(["http://localhost:4200", "http://localhost:4201"])
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                 );
