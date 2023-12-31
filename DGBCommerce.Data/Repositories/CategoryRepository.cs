@@ -2,6 +2,7 @@
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -18,6 +19,12 @@ namespace DGBCommerce.Data.Repositories
         {
             var categories = await this.GetRaw(new GetCategoriesParameters() { MerchantId = merchantId, Id = id });
             return categories.ToList().SingleOrDefault();
+        }
+
+        public async Task<IEnumerable<PublicCategory>> GetByShopIdPublic(Guid shopId)
+        {
+            var categories = await GetRawPublic(new GetCategoriesParameters() { ShopId = shopId });
+            return categories.ToList();
         }
 
         public Task<MutationResult> Create(Category item, Guid mutationId)
@@ -53,6 +60,27 @@ namespace DGBCommerce.Data.Repositories
                     Name = Utilities.DbNullableString(row["cat_name"]),
                     Visible = Convert.ToBoolean(row["cat_visible"]),
                     SortOrder = Utilities.DbNullableInt(row["cat_sortorder"])
+                });
+            }
+
+            return categories;
+        }
+
+        private async Task<IEnumerable<PublicCategory>> GetRawPublic(GetCategoriesParameters parameters)
+        {
+            // Only get visible categories
+            parameters.Visible = true;
+
+            DataTable table = await _dataAccessLayer.GetCategories(parameters);
+            List<PublicCategory> categories = [];
+
+            foreach (DataRow row in table.Rows)
+            {
+                categories.Add(new()
+                {
+                    Id = new Guid(row["cat_id"].ToString()!),
+                    ParentId = Utilities.DbNullableGuid(row["cat_parent"]),
+                    Name = Utilities.DbNullableString(row["cat_name"])
                 });
             }
 

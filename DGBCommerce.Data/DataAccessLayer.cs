@@ -200,7 +200,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CAT_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
                 new SqlParameter("@CAT_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = parameters.ParentId },
-                new SqlParameter("@CAT_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
+                new SqlParameter("@CAT_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
+                new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = parameters.Visible }
             ]);
 
         public async Task<DataTable> GetCountries(GetCountriesParameters parameters)

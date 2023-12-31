@@ -2,7 +2,9 @@ using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DGBCommerce.API.Controllers
@@ -62,6 +64,30 @@ namespace DGBCommerce.API.Controllers
                 return NotFound();
 
             return Ok(category);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/GetByShopId/{shopId}")]
+        public async Task<ActionResult<PublicCategory>> GetByShopIdPublic(Guid shopId)
+        {
+            var categories = await _categoryRepository.GetByShopIdPublic(shopId);
+
+            Dictionary<Guid, List<PublicCategory>> dictCategoriesPerParent = [];
+            foreach (PublicCategory category in categories)
+            {
+                Guid dictionaryKey = category.ParentId ?? Guid.Empty;
+
+                if (dictCategoriesPerParent.TryGetValue(dictionaryKey, out List<PublicCategory>? value))
+                    value.Add(category);
+                else
+                    dictCategoriesPerParent.Add(dictionaryKey, [category]);
+            }
+
+            foreach (PublicCategory category in categories)
+                if (dictCategoriesPerParent.TryGetValue(category.Id!.Value, out List<PublicCategory>? value))
+                    category.Children = value;
+
+            return Ok(categories.Where(c => !c.ParentId.HasValue).ToList());
         }
 
         [AuthenticationRequired]
