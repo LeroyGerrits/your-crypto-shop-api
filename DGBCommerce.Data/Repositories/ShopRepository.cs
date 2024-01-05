@@ -18,7 +18,7 @@ namespace DGBCommerce.Data.Repositories
         public async Task<PublicShop?> GetByIdAndSubDomainPublic(Guid? id, string subDomain)
         {
             var shops = await GetRawByIdAndSubDomainPublic(id, subDomain);
-            return shops.ToList().SingleOrDefault();
+            return shops.SingleOrDefault();
         }
 
         public async Task<PublicShop?> GetByIdPublic(Guid id)
@@ -29,7 +29,7 @@ namespace DGBCommerce.Data.Repositories
 
         public async Task<PublicShop?> GetBySubDomainPublic(string subDomain)
         {
-            var shops = await GetRawPublic(new GetShopsParameters() { SubDomain = subDomain });
+            var shops = await GetRawByIdAndSubDomainPublic(null, subDomain);
             return shops.SingleOrDefault();
         }
 
