@@ -16,7 +16,7 @@ namespace DGBCommerce.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = _configuration.GetConnectionString("DGBCommerce") ?? throw new Exception("connectionString 'DBBCommerce' not set.");
+            string connectionString = _configuration.GetConnectionString("DGBCommerce") ?? throw new Exception("Connection string 'DBBCommerce' not set.");
             RpcSettings rpcSettings = _configuration.GetSection("RpcSettings").Get<RpcSettings>() ?? throw new Exception("RPC settings not configured.");
             if (rpcSettings.DaemonUrl == null) throw new Exception($"RPC {nameof(rpcSettings.DaemonUrl)} not configured.");
             if (rpcSettings.Username == null) throw new Exception($"RPC {nameof(rpcSettings.Username)} not configured.");
@@ -54,6 +54,9 @@ namespace DGBCommerce.API
             services.AddScoped<IMerchantRepository, MerchantRepository>();
             services.AddScoped<IMerchantPasswordResetLinkRepository, MerchantPasswordResetLinkRepository>();
             services.AddScoped<INewsMessageRepository, NewsMessageRepository>();
+            services.AddScoped<IPageRepository, PageRepository>();
+            services.AddScoped<IPage2CategoryRepository, Page2CategoryRepository>();
+            services.AddScoped<IPageCategoryRepository, PageCategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProduct2CategoryRepository, Product2CategoryRepository>();
             services.AddScoped<IProductPhotoRepository, ProductPhotoRepository>();

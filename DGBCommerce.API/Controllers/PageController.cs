@@ -11,59 +11,59 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProductController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, ICategoryRepository categoryRepository, IProductRepository productRepository, IProduct2CategoryRepository product2CategoryRepository) : ControllerBase
+    public class PageController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IPageRepository pageRepository, IPageCategoryRepository pageCategoryRepository, IPage2CategoryRepository page2CategoryRepository) : ControllerBase
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IJwtUtils _jwtUtils = jwtUtils;
-        private readonly ICategoryRepository _categoryRepository = categoryRepository;
-        private readonly IProductRepository _productRepository = productRepository;
-        private readonly IProduct2CategoryRepository _product2CategoryRepository = product2CategoryRepository;
+        private readonly IPageRepository _pageRepository = pageRepository;
+        private readonly IPageCategoryRepository _pageCategoryRepository = pageCategoryRepository;
+        private readonly IPage2CategoryRepository _page2CategoryRepository = page2CategoryRepository;
 
         [AuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> Get(string? name, Guid? shopId, Guid? categoryId)
+        public async Task<ActionResult<IEnumerable<Page>>> Get(string? title, Guid? shopId, bool? visible)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var products = await _productRepository.Get(new GetProductsParameters()
+            var pages = await _pageRepository.Get(new GetPagesParameters()
             {
                 MerchantId = authenticatedMerchantId.Value,
-                Name = name,
+                Title = title,
                 ShopId = shopId,
-                CategoryId = categoryId
+                Visible = visible
             });
-            return Ok(products.ToList());
+            return Ok(pages.ToList());
         }
 
         [AuthenticationRequired]
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetProductResponse>> Get(Guid id)
+        public async Task<ActionResult<GetPageResponse>> Get(Guid id)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var product = await _productRepository.GetById(authenticatedMerchantId.Value, id);
-            if (product == null)
+            var page = await _pageRepository.GetById(authenticatedMerchantId.Value, id);
+            if (page == null)
                 return NotFound();
 
-            var product2Categories = await _product2CategoryRepository.Get(new GetProduct2CategoriesParameters() { MerchantId = authenticatedMerchantId.Value, ProductId = product.Id });
-            var selectedCategoryIds = product2Categories.Select(c => c.CategoryId).ToList();
+            var page2Categories = await _page2CategoryRepository.Get(new GetPage2CategoriesParameters() { MerchantId = authenticatedMerchantId.Value, PageId = page.Id });
+            var selectedCategoryIds = page2Categories.Select(c => c.CategoryId).ToList();
 
-            return Ok(new GetProductResponse(product, selectedCategoryIds));
+            return Ok(new GetPageResponse(page, selectedCategoryIds));
         }
 
         [AuthenticationRequired]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] MutateProductRequest value)
+        public async Task<ActionResult> Post([FromBody] MutatePageRequest value)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var result = await _productRepository.Create(value.Product, authenticatedMerchantId.Value);
+            var result = await _pageRepository.Create(value.Page, authenticatedMerchantId.Value);
 
             if (result.Success)
                 this.ProcessCheckedCategories(authenticatedMerchantId.Value, result.Identifier, value.CheckedCategories);
@@ -73,17 +73,17 @@ namespace DGBCommerce.API.Controllers
 
         [AuthenticationRequired]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] MutateProductRequest value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] MutatePageRequest value)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var product = await _productRepository.GetById(authenticatedMerchantId.Value, id);
-            if (product == null)
+            var page = await _pageRepository.GetById(authenticatedMerchantId.Value, id);
+            if (page == null)
                 return NotFound();
 
-            var result = await _productRepository.Update(value.Product, authenticatedMerchantId.Value);
+            var result = await _pageRepository.Update(value.Page, authenticatedMerchantId.Value);
 
             if (result.Success)
                 this.ProcessCheckedCategories(authenticatedMerchantId.Value, id, value.CheckedCategories);
@@ -93,21 +93,21 @@ namespace DGBCommerce.API.Controllers
 
         [AuthenticationRequired]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Product>> Delete(Guid id)
+        public async Task<ActionResult<Page>> Delete(Guid id)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var product = await _productRepository.GetById(authenticatedMerchantId.Value, id);
-            if (product == null)
+            var page = await _pageRepository.GetById(authenticatedMerchantId.Value, id);
+            if (page == null)
                 return NotFound();
 
-            var result = await _productRepository.Delete(id, authenticatedMerchantId.Value);
+            var result = await _pageRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
-        private async void ProcessCheckedCategories(Guid merchantId, Guid productId, string? checkedCategoriesString)
+        private async void ProcessCheckedCategories(Guid merchantId, Guid pageId, string? checkedCategoriesString)
         {
             if (!string.IsNullOrWhiteSpace(checkedCategoriesString))
             {
@@ -123,13 +123,13 @@ namespace DGBCommerce.API.Controllers
                             checkedCategoryIds.Add(checkedCategoryId.Value);
                     }
 
-                    var categories = await _categoryRepository.Get(new GetCategoriesParameters() { MerchantId = merchantId });
-                    foreach (Category category in categories)
+                    var categories = await _pageCategoryRepository.Get(new GetPageCategoriesParameters() { });
+                    foreach (PageCategory category in categories)
                     {
                         if (checkedCategoryIds.Contains(category.Id!.Value))
-                            await _product2CategoryRepository.Create(new() { ProductId = productId, CategoryId = category.Id.Value }, merchantId);
+                            await _page2CategoryRepository.Create(new() { PageId = pageId, CategoryId = category.Id.Value }, merchantId);
                         else
-                            await _product2CategoryRepository.Delete(productId, category.Id.Value, merchantId);
+                            await _page2CategoryRepository.Delete(pageId, category.Id.Value, merchantId);
                     }
                 }
             }

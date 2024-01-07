@@ -81,6 +81,22 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id }
             ], mutationId);
 
+        public async Task<MutationResult> CreatePage(Page page, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Page", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@PAG_SHOP", SqlDbType.UniqueIdentifier) { Value = page.Shop.Id },
+                new SqlParameter("@PAG_TITE", SqlDbType.NVarChar) { Value = page.Title },
+                new SqlParameter("@PAG_CONTENT", SqlDbType.NVarChar) { Value = page.Content },
+                new SqlParameter("@PAG_VISIBLE", SqlDbType.NVarChar) { Value = page.Visible }
+            ], mutationId);
+
+        public async Task<MutationResult> CreatePage2Category(Page2Category pageCategory, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Product2Category", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@P2C_PAGE", SqlDbType.UniqueIdentifier) { Value = pageCategory.PageId },
+                new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = pageCategory.CategoryId }
+            ], mutationId);
+
         public async Task<MutationResult> CreateProduct(Product product, Guid mutationId)
             => await NonQuery("SP_MUTATE_Product", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -157,10 +173,23 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_ID", SqlDbType.UniqueIdentifier) { Value = orderId }
             ], mutationId);
 
-        public async Task<MutationResult> DeleteProduct(Guid shopId, Guid mutationId)
+        public async Task<MutationResult> DeletePage(Guid pageId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Page", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@PAG_ID", SqlDbType.UniqueIdentifier) { Value = pageId }
+            ], mutationId);
+
+        public async Task<MutationResult> DeletePage2Category(Guid pageId, Guid categoryId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Page2Category", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@P2C_PAGE", SqlDbType.UniqueIdentifier) { Value = pageId },
+                new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = categoryId }
+            ], mutationId);
+
+        public async Task<MutationResult> DeleteProduct(Guid productId, Guid mutationId)
             => await NonQuery("SP_MUTATE_Product", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
-                new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = shopId }
+                new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = productId }
             ], mutationId);
 
         public async Task<MutationResult> DeleteProduct2Category(Guid productId, Guid categoryId, Guid mutationId)
@@ -341,6 +370,28 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_STATUS", SqlDbType.TinyInt) { Value = parameters.Status }
             ]);
 
+        public async Task<DataTable> GetPages(GetPagesParameters parameters)
+            => await Get("SP_GET_Pages", [
+                new SqlParameter("@PAG_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@PAG_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("@PAG_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@PAG_TITLE", SqlDbType.NVarChar) { Value = parameters.Title },
+                new SqlParameter("@PAG_VISIBLE", SqlDbType.Bit) { Value = parameters.Visible }
+            ]);
+
+        public async Task<DataTable> GetPage2Categories(GetPage2CategoriesParameters parameters)
+            => await Get("SP_GET_Page2Categories", [
+                new SqlParameter("@P2C_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.PageId },
+                new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId }
+            ]);
+
+        public async Task<DataTable> GetPageCategories(GetPageCategoriesParameters parameters)
+            => await Get("SP_GET_PageCategories", [
+                new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@CAT_NAME", SqlDbType.VarChar) { Value = parameters.Name }
+            ]);
+
         public async Task<DataTable> GetProducts(GetProductsParameters parameters)
             => await Get("SP_GET_Products", [
                 new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
@@ -503,6 +554,16 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
                 new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
                 new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id }
+            ], mutationId);
+
+        public async Task<MutationResult> UpdatePage(Page page, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Page", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@PAG_ID", SqlDbType.UniqueIdentifier) { Value = page.Id },
+                new SqlParameter("@PAG_SHOP", SqlDbType.UniqueIdentifier) { Value = page.Shop.Id },
+                new SqlParameter("@PAG_TITLE", SqlDbType.NVarChar) { Value = page.Title },
+                new SqlParameter("@PAG_CONTENT", SqlDbType.NVarChar) { Value = page.Content },
+                new SqlParameter("@PAG_VISIBLE", SqlDbType.NVarChar) { Value = page.Visible }
             ], mutationId);
 
         public async Task<MutationResult> UpdateProduct(Product product, Guid mutationId)

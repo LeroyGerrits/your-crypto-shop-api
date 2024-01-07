@@ -32,18 +32,18 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Product2Category>> GetRaw(GetProduct2CategoriesParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetProduct2Categories(parameters);
-            List<Product2Category> shops = [];
+            List<Product2Category> productCategories = [];
 
             foreach (DataRow row in table.Rows)
             {
-                shops.Add(new Product2Category()
+                productCategories.Add(new Product2Category()
                 {
                     ProductId = new Guid(row["p2c_product"].ToString()!),
                     CategoryId = new Guid(row["p2c_category"].ToString()!),
                 });
             }
 
-            return shops;
+            return productCategories;
         }
     }
 }
