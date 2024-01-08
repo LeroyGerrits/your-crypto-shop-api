@@ -85,13 +85,13 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_Page", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
                 new SqlParameter("@PAG_SHOP", SqlDbType.UniqueIdentifier) { Value = page.Shop.Id },
-                new SqlParameter("@PAG_TITE", SqlDbType.NVarChar) { Value = page.Title },
+                new SqlParameter("@PAG_TITLE", SqlDbType.NVarChar) { Value = page.Title },
                 new SqlParameter("@PAG_CONTENT", SqlDbType.NVarChar) { Value = page.Content },
                 new SqlParameter("@PAG_VISIBLE", SqlDbType.NVarChar) { Value = page.Visible }
             ], mutationId);
 
         public async Task<MutationResult> CreatePage2Category(Page2Category pageCategory, Guid mutationId)
-            => await NonQuery("SP_MUTATE_Product2Category", [
+            => await NonQuery("SP_MUTATE_Page2Category", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
                 new SqlParameter("@P2C_PAGE", SqlDbType.UniqueIdentifier) { Value = pageCategory.PageId },
                 new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = pageCategory.CategoryId }

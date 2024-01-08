@@ -45,7 +45,7 @@ namespace DGBCommerce.Data.Repositories
                         Name = Utilities.DbNullableString(row["pag_shop_name"]),
                         MerchantId = new Guid(row["pag_shop_merchant"].ToString()!)
                     },
-                    Title = Utilities.DbNullableString(row["pag_name"]),
+                    Title = Utilities.DbNullableString(row["pag_title"]),
                     Content = Utilities.DbNullableString(row["pag_content"]),
                     Visible = Convert.ToBoolean(row["pag_visible"])
                 });
