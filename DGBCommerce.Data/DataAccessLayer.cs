@@ -105,7 +105,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = product.Description },
                 new SqlParameter("@PRD_STOCK", SqlDbType.Int) { Value = product.Stock },
                 new SqlParameter("@PRD_PRICE", SqlDbType.Decimal) { Value = product.Price },
-                new SqlParameter("@PRD_VISIBLE", SqlDbType.NVarChar) { Value = product.Visible }
+                new SqlParameter("@PRD_VISIBLE", SqlDbType.Bit) { Value = product.Visible },
+                new SqlParameter("@PRD_SHOW_ON_HOME", SqlDbType.Bit) { Value = product.ShowOnHome }
             ], mutationId);
 
         public async Task<MutationResult> CreateProduct2Category(Product2Category productCategory, Guid mutationId)
@@ -575,7 +576,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = product.Description },
                 new SqlParameter("@PRD_STOCK", SqlDbType.Int) { Value = product.Stock },
                 new SqlParameter("@PRD_PRICE", SqlDbType.Decimal) { Value = product.Price },
-                new SqlParameter("@PRD_VISIBLE", SqlDbType.NVarChar) { Value = product.Visible }
+                new SqlParameter("@PRD_VISIBLE", SqlDbType.Bit) { Value = product.Visible },
+                new SqlParameter("@PRD_SHOW_ON_HOME", SqlDbType.Bit) { Value = product.ShowOnHome }
             ], mutationId);
 
         public async Task<MutationResult> UpdateProductPhoto(ProductPhoto productPhoto, Guid mutationId)

@@ -45,6 +45,7 @@ namespace DGBCommerce.Data.Repositories
                     Stock = Utilities.DbNullableInt(row["prd_stock"]),
                     Price = Convert.ToDecimal(row["prd_price"]),
                     Visible = Convert.ToBoolean(row["prd_visible"]),
+                    ShowOnHome = Convert.ToBoolean(row["prd_show_on_home"]),
                     MainPhotoId = Utilities.DbNullableGuid(row["prd_main_photo_id"]),
                     MainPhotoExtension = Utilities.DbNullableString(row["prd_main_photo_extension"])
                 });

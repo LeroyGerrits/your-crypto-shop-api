@@ -9,6 +9,7 @@
         public int? Stock { get; set; }
         public decimal Price { get; set; }
         public required bool Visible { get; set; }
+        public required bool ShowOnHome { get; set; }
         public Guid? MainPhotoId { get; set; }
         public string? MainPhotoExtension { get; set; }
     }
