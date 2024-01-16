@@ -3,5 +3,8 @@ using DGBCommerce.Domain.Parameters;
 
 namespace DGBCommerce.Domain.Interfaces.Repositories
 {
-    public interface IProductRepository : IMutableRepository<Product, GetProductsParameters> { }
+    public interface IProductRepository : IMutableRepository<Product, GetProductsParameters> 
+    {
+        Task<IEnumerable<PublicProduct>> GetPublic(GetProductsParameters parameters);
+    }
 }

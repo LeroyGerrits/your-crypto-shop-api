@@ -14,6 +14,9 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<Product>> Get(GetProductsParameters parameters)
             => await GetRaw(parameters);
 
+        public async Task<IEnumerable<PublicProduct>> GetPublic(GetProductsParameters parameters)
+            => await GetRawPublic(parameters);
+
         public async Task<Product?> GetById(Guid merchantId, Guid id)
         {
             var shops = await GetRaw(new GetProductsParameters() { MerchantId = merchantId, Id = id });
@@ -46,6 +49,28 @@ namespace DGBCommerce.Data.Repositories
                     Price = Convert.ToDecimal(row["prd_price"]),
                     Visible = Convert.ToBoolean(row["prd_visible"]),
                     ShowOnHome = Convert.ToBoolean(row["prd_show_on_home"]),
+                    MainPhotoId = Utilities.DbNullableGuid(row["prd_main_photo_id"]),
+                    MainPhotoExtension = Utilities.DbNullableString(row["prd_main_photo_extension"])
+                });
+            }
+
+            return shops;
+        }
+
+        private async Task<IEnumerable<PublicProduct>> GetRawPublic(GetProductsParameters parameters)
+        {
+            DataTable table = await _dataAccessLayer.GetProducts(parameters);
+            List<PublicProduct> shops = [];
+
+            foreach (DataRow row in table.Rows)
+            {
+                shops.Add(new PublicProduct()
+                {
+                    Id = new Guid(row["prd_id"].ToString()!),
+                    Name = Utilities.DbNullableString(row["prd_name"]),
+                    Description = Utilities.DbNullableString(row["prd_description"]),
+                    Stock = Utilities.DbNullableInt(row["prd_stock"]),
+                    Price = Convert.ToDecimal(row["prd_price"]),
                     MainPhotoId = Utilities.DbNullableGuid(row["prd_main_photo_id"]),
                     MainPhotoExtension = Utilities.DbNullableString(row["prd_main_photo_extension"])
                 });

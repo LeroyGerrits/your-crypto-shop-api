@@ -5,6 +5,7 @@ using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DGBCommerce.API.Controllers
@@ -21,7 +22,7 @@ namespace DGBCommerce.API.Controllers
 
         [AuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> Get(string? name, Guid? shopId, Guid? categoryId)
+        public async Task<ActionResult<IEnumerable<Product>>> Get(string? name, Guid? shopId, Guid? categoryId, bool? visible, bool? showOnHome)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -32,7 +33,10 @@ namespace DGBCommerce.API.Controllers
                 MerchantId = authenticatedMerchantId.Value,
                 Name = name,
                 ShopId = shopId,
-                CategoryId = categoryId
+                CategoryId = categoryId,
+                Visible = visible,
+                ShowOnHome = showOnHome
+
             });
             return Ok(products.ToList());
         }
@@ -53,6 +57,22 @@ namespace DGBCommerce.API.Controllers
             var selectedCategoryIds = product2Categories.Select(c => c.CategoryId).ToList();
 
             return Ok(new GetProductResponse(product, selectedCategoryIds));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public")]
+        public async Task<ActionResult<IEnumerable<PublicProduct>>> GetPublic(string? name, Guid? shopId, Guid? categoryId, bool? visible, bool? showOnHome)
+        {
+            var products = await _productRepository.GetPublic(new GetProductsParameters()
+            {
+                Name = name,
+                ShopId = shopId,
+                CategoryId = categoryId,
+                Visible = visible,
+                ShowOnHome = showOnHome
+
+            });
+            return Ok(products.ToList());
         }
 
         [AuthenticationRequired]

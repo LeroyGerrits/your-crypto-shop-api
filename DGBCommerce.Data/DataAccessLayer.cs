@@ -399,7 +399,9 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@PRD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
                 new SqlParameter("@PRD_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId },
-                new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
+                new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
+                new SqlParameter("@PRD_VISIBLE", SqlDbType.Bit) { Value = parameters.Visible },
+                new SqlParameter("@PRD_SHOW_ON_HOME", SqlDbType.Bit) { Value = parameters.ShowOnHome }
             ]);
 
         public async Task<DataTable> GetProduct2Categories(GetProduct2CategoriesParameters parameters)
