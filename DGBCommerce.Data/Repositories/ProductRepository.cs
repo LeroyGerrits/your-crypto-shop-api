@@ -2,6 +2,7 @@
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -19,8 +20,14 @@ namespace DGBCommerce.Data.Repositories
 
         public async Task<Product?> GetById(Guid merchantId, Guid id)
         {
-            var shops = await GetRaw(new GetProductsParameters() { MerchantId = merchantId, Id = id });
-            return shops.ToList().SingleOrDefault();
+            var products = await GetRaw(new GetProductsParameters() { MerchantId = merchantId, Id = id });
+            return products.ToList().SingleOrDefault();
+        }
+
+        public async Task<PublicProduct?> GetByIdPublic(Guid shopId, Guid id)
+        {
+            var products = await GetRawPublic(new GetProductsParameters() { ShopId = shopId, Id = id });
+            return products.ToList().SingleOrDefault();
         }
 
         public Task<MutationResult> Create(Product item, Guid mutationId)

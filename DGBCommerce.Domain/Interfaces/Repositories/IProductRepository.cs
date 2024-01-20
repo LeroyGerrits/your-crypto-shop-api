@@ -6,5 +6,6 @@ namespace DGBCommerce.Domain.Interfaces.Repositories
     public interface IProductRepository : IMutableRepository<Product, GetProductsParameters> 
     {
         Task<IEnumerable<PublicProduct>> GetPublic(GetProductsParameters parameters);
+        Task<PublicProduct?> GetByIdPublic(Guid shopId, Guid id);
     }
 }

@@ -61,7 +61,7 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("public")]
-        public async Task<ActionResult<IEnumerable<PublicProduct>>> GetPublic(string? name, Guid? shopId, Guid? categoryId, bool? visible, bool? showOnHome)
+        public async Task<ActionResult<IEnumerable<PublicProduct>>> GetPublic(Guid shopId, string? name, Guid? categoryId, bool? visible, bool? showOnHome)
         {
             var products = await _productRepository.GetPublic(new GetProductsParameters()
             {
@@ -73,6 +73,17 @@ namespace DGBCommerce.API.Controllers
 
             });
             return Ok(products.ToList());
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/{id}")]
+        public async Task<ActionResult<IEnumerable<PublicProduct>>> GetPublicById(Guid shopId, Guid id)
+        {
+            var product = await _productRepository.GetByIdPublic(shopId, id);
+            if (product == null)
+                return NotFound();
+
+            return Ok(product);
         }
 
         [AuthenticationRequired]
