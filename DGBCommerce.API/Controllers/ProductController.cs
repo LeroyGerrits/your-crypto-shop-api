@@ -70,8 +70,8 @@ namespace DGBCommerce.API.Controllers
                 CategoryId = categoryId,
                 Visible = visible,
                 ShowOnHome = showOnHome
-
             });
+
             return Ok(products.ToList());
         }
 
