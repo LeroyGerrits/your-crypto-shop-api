@@ -48,7 +48,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(merchant);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<Merchant>> Get(Guid id)
         {
@@ -97,7 +97,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Merchant value)
         {
@@ -129,7 +129,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("change-password")]
         public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
@@ -158,7 +158,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Merchant>> Delete(Guid id)
         {

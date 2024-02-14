@@ -17,7 +17,7 @@ namespace DGBCommerce.API.Controllers
         private readonly IDigiByteWalletRepository _digiByteWalletRepository = digiByteWalletRepository;
         private readonly IRpcService _rpcService = rpcService;
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DigiByteWallet>>> Get(string? name, string? address)
         {
@@ -34,7 +34,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(digiByteWallets.ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<DigiByteWallet>> Get(Guid id)
         {
@@ -49,7 +49,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(digiByteWallet);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] DigiByteWallet value)
         {
@@ -72,7 +72,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] DigiByteWallet value)
         {
@@ -99,7 +99,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<DigiByteWallet>> Delete(Guid id)
         {

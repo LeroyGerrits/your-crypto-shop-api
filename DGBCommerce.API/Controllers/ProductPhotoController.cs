@@ -20,7 +20,7 @@ namespace DGBCommerce.API.Controllers
         private readonly IJwtUtils _jwtUtils = jwtUtils;
         private readonly IProductPhotoRepository _productPhotoRepository = productPhotoRepository;
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductPhoto>>> Get(Guid? productId)
         {
@@ -36,7 +36,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(productPhotos.ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductPhoto>> Get(Guid id)
         {
@@ -51,7 +51,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(productPhoto);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPost, DisableRequestSizeLimit]
         public async Task<ActionResult> Post(Guid productId)
         {
@@ -122,7 +122,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] ProductPhoto value)
         {
@@ -138,7 +138,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}/ChangeDescription")]
         public async Task<ActionResult> ChangeDescription(Guid id, [FromBody] ProductPhotoEditDescriptionRequest request)
         {
@@ -154,7 +154,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}/ChangeMain")]
         public async Task<ActionResult> ChangeMain(Guid id)
         {
@@ -170,7 +170,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}/ChangeVisible")]
         public async Task<ActionResult> ChangeVisible(Guid id, bool visible)
         {
@@ -186,7 +186,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}/Down")]
         public async Task<ActionResult> MoveDown(Guid id)
         {
@@ -202,7 +202,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}/Up")]
         public async Task<ActionResult> MoveUp(Guid id)
         {
@@ -218,7 +218,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<ProductPhoto>> Delete(Guid id)
         {

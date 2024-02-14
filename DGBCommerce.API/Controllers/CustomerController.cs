@@ -25,7 +25,7 @@ namespace DGBCommerce.API.Controllers
         private readonly IMailService _mailService = mailService;
         private readonly ICustomerRepository _customerRepository = customerRepository;
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> Get(Guid? shopId, string? username, string? emailAddress, string? firstName, string? lastName)
         {
@@ -45,7 +45,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(customers.ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> Get(Guid id)
         {
@@ -71,7 +71,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(customer);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] MutateCustomerRequest value)
         {
@@ -103,7 +103,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] MutateCustomerRequest value)
         {
@@ -141,7 +141,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("change-password")]
         public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
@@ -170,7 +170,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Customer>> Delete(Guid id)
         {

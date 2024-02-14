@@ -19,7 +19,7 @@ namespace DGBCommerce.API.Controllers
         private readonly IPageCategoryRepository _pageCategoryRepository = pageCategoryRepository;
         private readonly IPage2CategoryRepository _page2CategoryRepository = page2CategoryRepository;
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Page>>> Get(string? title, Guid? shopId, bool? visible)
         {
@@ -37,7 +37,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(pages.ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<GetPageResponse>> Get(Guid id)
         {
@@ -55,7 +55,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(new GetPageResponse(page, selectedCategoryIds));
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] MutatePageRequest value)
         {
@@ -71,7 +71,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] MutatePageRequest value)
         {
@@ -91,7 +91,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Page>> Delete(Guid id)
         {

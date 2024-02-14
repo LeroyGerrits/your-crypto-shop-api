@@ -20,7 +20,7 @@ namespace DGBCommerce.API.Controllers
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IProduct2CategoryRepository _product2CategoryRepository = product2CategoryRepository;
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> Get(string? name, Guid? shopId, Guid? categoryId, bool? visible, bool? showOnHome)
         {
@@ -41,7 +41,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(products.ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<GetProductResponse>> Get(Guid id)
         {
@@ -86,7 +86,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(product);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] MutateProductRequest value)
         {
@@ -102,7 +102,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] MutateProductRequest value)
         {
@@ -122,7 +122,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Product>> Delete(Guid id)
         {

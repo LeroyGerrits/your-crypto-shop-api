@@ -42,7 +42,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(shop == null);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Shop>>> Get(string? name, string? subDomain, Guid? countryId, Guid? categoryId)
         {
@@ -75,7 +75,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(shops.ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<Shop>> GetById(Guid id)
         {
@@ -112,7 +112,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(shop);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Shop value)
         {
@@ -134,7 +134,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Shop value)
         {
@@ -160,7 +160,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Shop>> Delete(Guid id)
         {

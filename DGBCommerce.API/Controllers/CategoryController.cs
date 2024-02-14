@@ -17,7 +17,7 @@ namespace DGBCommerce.API.Controllers
         private readonly IJwtUtils _jwtUtils = jwtUtils;
         private readonly ICategoryRepository _categoryRepository = shopRepository;
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> Get(Guid? shopId, Guid? parentId, string? name)
         {
@@ -51,7 +51,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(categories.Where(c => !c.ParentId.HasValue).ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetById(Guid id)
         {
@@ -90,7 +90,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(categories.Where(c => !c.ParentId.HasValue).ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Category value)
         {
@@ -102,7 +102,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Category value)
         {
@@ -118,7 +118,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}/Down")]
         public async Task<ActionResult> MoveDown(Guid id)
         {
@@ -134,7 +134,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}/Up")]
         public async Task<ActionResult> MoveUp(Guid id)
         {
@@ -150,7 +150,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}/ChangeParent/{parentId}")]
         public async Task<ActionResult> ChangeParent(Guid id, Guid parentId)
         {
@@ -174,7 +174,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Category>> Delete(Guid id)
         {

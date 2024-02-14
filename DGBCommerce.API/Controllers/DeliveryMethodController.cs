@@ -14,7 +14,7 @@ namespace DGBCommerce.API.Controllers
         private readonly IJwtUtils _jwtUtils = jwtUtils;
         private readonly IDeliveryMethodRepository _deliveryMethodRepository = deliveryMethodRepository;
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeliveryMethod>>> Get(string? name, Guid? shopId)
         {
@@ -31,7 +31,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(deliveryMethods.ToList());
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Get(Guid id)
         {
@@ -46,7 +46,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(deliveryMethod);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] DeliveryMethod value)
         {
@@ -58,7 +58,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] DeliveryMethod value)
         {
@@ -74,7 +74,7 @@ namespace DGBCommerce.API.Controllers
             return Ok(result);
         }
 
-        [AuthenticationRequired]
+        [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Delete(Guid id)
         {
