@@ -1,4 +1,5 @@
-﻿using DGBCommerce.Domain.Interfaces.Repositories;
+﻿using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Interfaces.Repositories;
 
 namespace DGBCommerce.API
 {
@@ -6,14 +7,26 @@ namespace DGBCommerce.API
     {
         private readonly RequestDelegate _next = next;
 
-        public async Task Invoke(HttpContext context, IMerchantRepository merchantRepository, IJwtUtils jwtUtils)
+        public async Task Invoke(HttpContext context, ICustomerRepository customerRepository, IMerchantRepository merchantRepository, IJwtUtils jwtUtils)
         {
-            var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
-            var merchantId = jwtUtils.ValidateJwtToken(token);
-            if (merchantId != null)
+            var authorizationToken = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
+            var jwtToken = jwtUtils.ValidateJwtToken(authorizationToken);
+            if (jwtToken != null)
             {
-                var merchant = Task.Run(() => merchantRepository.GetById(merchantId.Value, merchantId.Value)).Result;
-                context.Items["Merchant"] = merchant;
+                var id = new Guid(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var type = jwtToken.Claims.First(x => x.Type == "type").Value;
+
+                if (type == nameof(Customer))
+                {
+                    var merchant = Task.Run(() => customerRepository.GetById(id, id)).Result;
+                    context.Items["Customer"] = merchant;
+                }
+
+                if (type == nameof(Merchant))
+                {
+                    var merchant = Task.Run(() => merchantRepository.GetById(id, id)).Result;
+                    context.Items["Merchant"] = merchant;
+                }
             }
 
             await _next(context);

@@ -9,8 +9,10 @@ namespace DGBCommerce.API
 {
     public interface IJwtUtils
     {
+        public string GenerateJwtToken(Customer customer);
         public string GenerateJwtToken(Merchant merchant);
-        public Guid? ValidateJwtToken(string? token);
+        public JwtSecurityToken? ValidateJwtToken(string? token);
+        public Guid? GetCustomerId(IHttpContextAccessor httpContextAccessor);
         public Guid? GetMerchantId(IHttpContextAccessor httpContextAccessor);
     }
 
@@ -26,21 +28,13 @@ namespace DGBCommerce.API
                 throw new Exception("JWT secret not configured.");
         }
 
-        public string GenerateJwtToken(Merchant merchant)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret!);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", merchant.Id.ToString()!) }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
+        public string GenerateJwtToken(Customer customer)
+            => GenerateJwtToken(customer.Id.ToString()!, nameof(Customer));
 
-        public Guid? ValidateJwtToken(string? token)
+        public string GenerateJwtToken(Merchant merchant)
+            => GenerateJwtToken(merchant.Id.ToString()!, nameof(Merchant));
+
+        public JwtSecurityToken? ValidateJwtToken(string? token)
         {
             if (token == null)
                 return null;
@@ -60,7 +54,7 @@ namespace DGBCommerce.API
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                return new Guid(jwtToken.Claims.First(x => x.Type == "id").Value);
+                return jwtToken;
             }
             catch
             {
@@ -68,11 +62,43 @@ namespace DGBCommerce.API
             }
         }
 
+        public Guid? GetCustomerId(IHttpContextAccessor httpContextAccessor)
+            => GetId(httpContextAccessor, nameof(Customer));
+
         public Guid? GetMerchantId(IHttpContextAccessor httpContextAccessor)
+            => GetId(httpContextAccessor, nameof(Merchant));
+
+        private Guid? GetId(IHttpContextAccessor httpContextAccessor, string type)
         {
-            var token = httpContextAccessor.HttpContext?.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
-            if (token == null) return null;
-            return ValidateJwtToken(token);
+            var authorizationToken = httpContextAccessor.HttpContext?.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
+            var jwtToken = ValidateJwtToken(authorizationToken);
+            if (jwtToken != null)
+            {
+                var tokenId = new Guid(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var tokenType = jwtToken.Claims.First(x => x.Type == "type").Value;
+                return tokenType == type ? tokenId : null;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private string GenerateJwtToken(string id, string type)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret!);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] {
+                    new Claim("id", id),
+                    new Claim("type", type)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

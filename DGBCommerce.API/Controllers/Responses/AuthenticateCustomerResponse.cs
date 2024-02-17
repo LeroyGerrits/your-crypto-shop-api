@@ -2,9 +2,9 @@
 
 namespace DGBCommerce.API.Controllers.Responses
 {
-    public class AuthenticationResponse(Merchant merchant, string token)
+    public class AuthenticateCustomerResponse(Customer customer, string token)
     {
-        public Merchant Merchant { get; set; } = merchant;
+        public Customer Customer { get; set; } = customer;
         public string Token { get; set; } = token;
     }
 }

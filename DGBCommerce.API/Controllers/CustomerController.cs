@@ -198,7 +198,7 @@ namespace DGBCommerce.API.Controllers
             // Hash the password using the salt
             request.Password = Utilities.HashStringSha256(customerByEmailAddress.PasswordSalt + request.Password);
 
-            var response = _authenticationService.Authenticate(request);
+            var response = _authenticationService.AuthenticateCustomer(request);
             if (response == null)
                 return BadRequest(new { message = "E-mail address or password is incorrect" });
 
