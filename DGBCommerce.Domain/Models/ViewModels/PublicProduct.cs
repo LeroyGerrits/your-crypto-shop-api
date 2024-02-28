@@ -1,4 +1,4 @@
-﻿namespace DGBCommerce.Domain.Models
+﻿namespace DGBCommerce.Domain.Models.ViewModels
 {
     public class PublicProduct
     {

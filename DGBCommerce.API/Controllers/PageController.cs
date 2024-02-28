@@ -4,20 +4,23 @@ using DGBCommerce.API.Controllers.Responses;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PageController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IPageRepository pageRepository, IPageCategoryRepository pageCategoryRepository, IPage2CategoryRepository page2CategoryRepository) : ControllerBase
+    public class PageController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IPageRepository pageRepository, IPageCategoryRepository pageCategoryRepository, IPage2CategoryRepository page2CategoryRepository, IShopRepository shopRepository) : ControllerBase
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IJwtUtils _jwtUtils = jwtUtils;
         private readonly IPageRepository _pageRepository = pageRepository;
         private readonly IPageCategoryRepository _pageCategoryRepository = pageCategoryRepository;
         private readonly IPage2CategoryRepository _page2CategoryRepository = page2CategoryRepository;
+        private readonly IShopRepository _shopRepository = shopRepository;
 
         [MerchantAuthenticationRequired]
         [HttpGet]
@@ -53,6 +56,33 @@ namespace DGBCommerce.API.Controllers
             var selectedCategoryIds = page2Categories.Select(c => c.CategoryId).ToList();
 
             return Ok(new GetPageResponse(page, selectedCategoryIds));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/GetByShopId/{shopId}")]
+        public async Task<ActionResult<PublicPage>> GetByShopIdPublic(Guid shopId)
+        {
+            var shop = await _shopRepository.GetByIdPublic(shopId);
+            if (shop == null)
+                return NotFound();
+
+            var pages = await _pageRepository.GetByShopIdPublic(shopId);
+            var page2categories = await _page2CategoryRepository.Get(new GetPage2CategoriesParameters() { MerchantId = shop.MerchantId });
+
+            Dictionary<Guid, List<Guid>> dictCategoryIdsPerPage = [];
+            foreach (Page2Category page2category in page2categories)
+            {
+                if (dictCategoryIdsPerPage.TryGetValue(page2category.PageId, out List<Guid>? value))
+                    value.Add(page2category.CategoryId);
+                else
+                    dictCategoryIdsPerPage.Add(page2category.PageId, [page2category.CategoryId]);
+            }
+
+            foreach (PublicPage page in pages)
+                if (dictCategoryIdsPerPage.TryGetValue(page.Id!.Value, out List<Guid>? value))
+                    page.CategoryIds = value;
+
+            return Ok(pages.ToList());
         }
 
         [MerchantAuthenticationRequired]

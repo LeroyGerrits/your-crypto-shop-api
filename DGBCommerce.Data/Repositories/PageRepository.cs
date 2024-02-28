@@ -2,6 +2,7 @@
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -18,6 +19,12 @@ namespace DGBCommerce.Data.Repositories
         {
             var pages = await GetRaw(new GetPagesParameters() { MerchantId = merchantId, Id = id });
             return pages.ToList().SingleOrDefault();
+        }
+
+        public async Task<IEnumerable<PublicPage>> GetByShopIdPublic(Guid shopId)
+        {
+            var pages = await GetRawPublic(new GetPagesParameters() { ShopId = shopId });
+            return pages.ToList();
         }
 
         public Task<MutationResult> Create(Page item, Guid mutationId)
@@ -48,6 +55,27 @@ namespace DGBCommerce.Data.Repositories
                     Title = Utilities.DbNullableString(row["pag_title"]),
                     Content = Utilities.DbNullableString(row["pag_content"]),
                     Visible = Convert.ToBoolean(row["pag_visible"])
+                });
+            }
+
+            return pages;
+        }
+
+        private async Task<IEnumerable<PublicPage>> GetRawPublic(GetPagesParameters parameters)
+        {
+            // Only get visible pages
+            parameters.Visible = true;
+
+            DataTable table = await _dataAccessLayer.GetPages(parameters);
+            List<PublicPage> pages = [];
+
+            foreach (DataRow row in table.Rows)
+            {
+                pages.Add(new()
+                {
+                    Id = new Guid(row["pag_id"].ToString()!),
+                    Title = Utilities.DbNullableString(row["pag_title"]),
+                    Content = Utilities.DbNullableString(row["pag_content"])
                 });
             }
 
