@@ -77,7 +77,7 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("public/{id}")]
+        [HttpGet("public/{shopId}/{id}")]
         public async Task<ActionResult<IEnumerable<PublicProduct>>> GetPublicById(Guid shopId, Guid id)
         {
             var product = await _productRepository.GetByIdPublic(shopId, id);
