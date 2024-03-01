@@ -42,11 +42,11 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Product>> GetRaw(GetProductsParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetProducts(parameters);
-            List<Product> shops = [];
+            List<Product> products = [];
 
             foreach (DataRow row in table.Rows)
             {
-                shops.Add(new Product()
+                products.Add(new Product()
                 {
                     Id = new Guid(row["prd_id"].ToString()!),
                     ShopId = new Guid(row["prd_shop"].ToString()!),
@@ -61,17 +61,20 @@ namespace DGBCommerce.Data.Repositories
                 });
             }
 
-            return shops;
+            return products;
         }
 
         private async Task<IEnumerable<PublicProduct>> GetRawPublic(GetProductsParameters parameters)
         {
+            // Only get visible products
+            parameters.Visible = true;
+
             DataTable table = await _dataAccessLayer.GetProducts(parameters);
-            List<PublicProduct> shops = [];
+            List<PublicProduct> products = [];
 
             foreach (DataRow row in table.Rows)
             {
-                shops.Add(new PublicProduct()
+                products.Add(new PublicProduct()
                 {
                     Id = new Guid(row["prd_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["prd_name"]),
@@ -83,7 +86,7 @@ namespace DGBCommerce.Data.Repositories
                 });
             }
 
-            return shops;
+            return products;
         }
     }
 }

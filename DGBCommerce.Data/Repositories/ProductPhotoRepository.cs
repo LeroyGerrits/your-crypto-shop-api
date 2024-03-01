@@ -2,6 +2,7 @@
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -16,9 +17,12 @@ namespace DGBCommerce.Data.Repositories
 
         public async Task<ProductPhoto?> GetById(Guid merchantId, Guid id)
         {
-            var shops = await GetRaw(new GetProductPhotosParameters() { MerchantId = merchantId, Id = id });
-            return shops.ToList().SingleOrDefault();
+            var photos = await GetRaw(new GetProductPhotosParameters() { MerchantId = merchantId, Id = id });
+            return photos.ToList().SingleOrDefault();
         }
+
+        public async Task<IEnumerable<PublicProductPhoto>> GetByProductIdPublic(Guid productId)
+            => await GetRawPublic(new GetProductPhotosParameters() { ProductId = productId });
 
         public Task<MutationResult> Create(ProductPhoto item, Guid mutationId)
             => _dataAccessLayer.CreateProductPhoto(item, mutationId);
@@ -47,11 +51,11 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<ProductPhoto>> GetRaw(GetProductPhotosParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetProductPhotos(parameters);
-            List<ProductPhoto> shops = [];
+            List<ProductPhoto> photos = [];
 
             foreach (DataRow row in table.Rows)
             {
-                shops.Add(new ProductPhoto()
+                photos.Add(new ProductPhoto()
                 {
                     Id = new Guid(row["pht_id"].ToString()!),
                     ProductId = new Guid(row["pht_product"].ToString()!),
@@ -67,7 +71,34 @@ namespace DGBCommerce.Data.Repositories
                 });
             }
 
-            return shops;
+            return photos;
+        }
+
+        private async Task<IEnumerable<PublicProductPhoto>> GetRawPublic(GetProductPhotosParameters parameters)
+        {
+            // Only get visible photos
+            parameters.Visible = true;
+
+            DataTable table = await _dataAccessLayer.GetProductPhotos(parameters);
+            List<PublicProductPhoto> photos = [];
+
+            foreach (DataRow row in table.Rows)
+            {
+                photos.Add(new PublicProductPhoto()
+                {
+                    Id = new Guid(row["pht_id"].ToString()!),
+                    File = Utilities.DbNullableString(row["pht_file"]),
+                    Extension = Utilities.DbNullableString(row["pht_extension"]),
+                    FileSize = Convert.ToInt32(row["pht_file_size"]),
+                    Width = Convert.ToInt32(row["pht_width"]),
+                    Height = Convert.ToInt32(row["pht_height"]),
+                    Description = Utilities.DbNullableString(row["pht_description"]),
+                    SortOrder = Utilities.DbNullableInt(row["pht_sortorder"]),
+                    Main = Convert.ToBoolean(row["pht_main"])
+                });
+            }
+
+            return photos;
         }
     }
 }
