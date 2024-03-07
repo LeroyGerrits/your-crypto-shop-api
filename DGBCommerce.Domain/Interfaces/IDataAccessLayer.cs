@@ -19,8 +19,8 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateProduct2Category(Product2Category productCategory, Guid mutationId);
         Task<MutationResult> CreateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
-        Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart, Guid mutationId);
-        Task<MutationResult> CreateShoppingCartItem(ShoppingCartItem shoppingCartItem, Guid mutationId);
+        Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart);
+        Task<MutationResult> CreateShoppingCartItem(ShoppingCartItem shoppingCartItem);
 
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteCustomer(Guid categoryId, Guid mutationId);
@@ -33,7 +33,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteProduct2Category(Guid productId, Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
-        Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId, Guid mutationId);
+        Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId);
 
         Task<DataTable> GetAddress(string addressLine1, string? addressLine2, string postalCode, string city, string? province, Guid countryId);
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
@@ -91,6 +91,6 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateProductPhotoMoveDown(Guid productPhotoId, Guid productId, Guid mutationId);
         Task<MutationResult> UpdateProductPhotoMoveUp(Guid productPhotoId, Guid productId, Guid mutationId);
         Task<MutationResult> UpdateShop(Shop shop, Guid mutationId);
-        Task<MutationResult> UpdateShoppingCartItem(ShoppingCartItem shoppingCartItem, Guid mutationId);
+        Task<MutationResult> UpdateShoppingCartItem(ShoppingCartItem shoppingCartItem);
     }
 }

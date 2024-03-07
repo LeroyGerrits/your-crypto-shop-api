@@ -33,7 +33,7 @@ namespace DGBCommerce.Data.Repositories
             => await GetRaw(new GetShoppingCartsParameters() { CustomerId = customerId });
 
         public Task<MutationResult> Create(ShoppingCart item, Guid mutationId)
-            => _dataAccessLayer.CreateShoppingCart(item, mutationId);
+            => _dataAccessLayer.CreateShoppingCart(item);
 
         public Task<MutationResult> Update(ShoppingCart item, Guid mutationId)
             => throw new InvalidOperationException($"{nameof(ShoppingCart)} objects can not be updated.");

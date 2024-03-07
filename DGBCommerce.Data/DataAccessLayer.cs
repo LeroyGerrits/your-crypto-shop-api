@@ -141,6 +141,22 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id }
             ], mutationId);
+
+        public async Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart)
+            => await NonQuery("SP_MUTATE_ShoppingCart", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@SHC_SESSION", SqlDbType.UniqueIdentifier) { Value = shoppingCart.Session },
+                new SqlParameter("@SHC_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = shoppingCart.CustomerId },
+                new SqlParameter("@SHP_LAST_IP_ADDRESS", SqlDbType.VarChar) { Value = shoppingCart.LastIpAddress }
+            ]);
+
+        public async Task<MutationResult> CreateShoppingCartItem(ShoppingCartItem shoppingCartItem)
+            => await NonQuery("SP_MUTATE_ShoppingCartItem", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@SCI_SHOPPING_CART", SqlDbType.UniqueIdentifier) { Value = shoppingCartItem.ShoppingCartId },
+                new SqlParameter("@SCI_PRODUCT", SqlDbType.UniqueIdentifier) { Value = shoppingCartItem.ProductId },
+                new SqlParameter("@SCI_AMOUNT", SqlDbType.Int) { Value = shoppingCartItem.Amount }
+            ]);
         #endregion
 
         #region Delete
@@ -211,6 +227,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier) { Value = shopId }
             ], mutationId);
+
+        public async Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId)
+            => await NonQuery("SP_MUTATE_ShoppingCartItem", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = shoppingCartItemId }
+            ]);
         #endregion
 
         #region Get
@@ -441,6 +463,20 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = subDomain }
             ]);
 
+        public async Task<DataTable> GetShoppingCarts(GetShoppingCartsParameters parameters)
+            => await Get("SP_GET_ShoppingCarts", [
+                new SqlParameter("@SHC_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@SHC_SESSION", SqlDbType.UniqueIdentifier) { Value = parameters.Session },
+                new SqlParameter("@SHC_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = parameters.CustomerId }
+            ]);
+
+        public async Task<DataTable> GetShoppingCartItems(GetShoppingCartItemsParameters parameters)
+            => await Get("SP_GET_ShoppingCartItems", [
+                new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@SHC_SHOPPING_CART", SqlDbType.UniqueIdentifier) { Value = parameters.ShoppingCartId },
+                new SqlParameter("@SHC_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId }
+            ]);
+
         public async Task<DataTable> GetStats()
             => await Get("SP_GET_Stats", []);
         #endregion
@@ -637,6 +673,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id }
             ], mutationId);
+
+        public async Task<MutationResult> UpdateShoppingCartItem(ShoppingCartItem shoppingCartItem)
+            => await NonQuery("SP_MUTATE_ShoppingCartItem", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = shoppingCartItem.Id },
+                new SqlParameter("@SCI_AMOUNT", SqlDbType.Int) { Value = shoppingCartItem.Amount }
+            ]);
         #endregion
 
         private async Task<DataTable> Get(string storedProcedure, List<SqlParameter> parameters)

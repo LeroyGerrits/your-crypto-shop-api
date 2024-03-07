@@ -27,13 +27,13 @@ namespace DGBCommerce.Data.Repositories
             => await GetRaw(new GetShoppingCartItemsParameters() { ShoppingCartId = shoppingCartId });
 
         public Task<MutationResult> Create(ShoppingCartItem item, Guid mutationId)
-            => _dataAccessLayer.CreateShoppingCartItem(item, mutationId);
+            => _dataAccessLayer.CreateShoppingCartItem(item);
 
         public Task<MutationResult> Update(ShoppingCartItem item, Guid mutationId)
-            => _dataAccessLayer.UpdateShoppingCartItem(item, mutationId);
+            => _dataAccessLayer.UpdateShoppingCartItem(item);
 
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
-            => _dataAccessLayer.DeleteShoppingCartItem(id, mutationId);
+            => _dataAccessLayer.DeleteShoppingCartItem(id);
 
         private async Task<IEnumerable<ShoppingCartItem>> GetRaw(GetShoppingCartItemsParameters parameters)
         {
