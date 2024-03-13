@@ -9,11 +9,12 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ShoppingCartController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IShoppingCartRepository shoppingCartRepository) : ControllerBase
+    public class ShoppingCartController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IShoppingCartRepository shoppingCartRepository, IShoppingCartItemRepository shoppingCartItemRepository) : ControllerBase
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IJwtUtils _jwtUtils = jwtUtils;
         private readonly IShoppingCartRepository _shoppingCartRepository = shoppingCartRepository;
+        private readonly IShoppingCartItemRepository _shoppingCartItemRepository = shoppingCartItemRepository;
 
         [MerchantAuthenticationRequired]
         [HttpGet]
@@ -32,12 +33,36 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("public")]
-        public async Task<ActionResult<ShoppingCart>> GetPublic()
+        [HttpGet("public/{sessionId}")]
+        public async Task<ActionResult<ShoppingCart>> GetPublic(Guid sessionId)
         {
-            var sessionId = GetSessionId();
             var shoppingCart = await _shoppingCartRepository.GetBySession(sessionId);
-            return Ok(shoppingCart);
+            if (shoppingCart != null)
+            {
+                var shoppingCartItems = await _shoppingCartItemRepository.GetByShoppingCartId(shoppingCart.Id!.Value);
+                shoppingCart.Items = shoppingCartItems.ToList();
+                return Ok(shoppingCart);
+            }
+            else
+            {
+                var shoppingCartToCreate = new ShoppingCart()
+                {
+                    CustomerId = _jwtUtils.GetCustomerId(_httpContextAccessor),
+                    LastIpAddress = _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString(),
+                    Session = sessionId
+                };
+                var result = await _shoppingCartRepository.Create(shoppingCartToCreate, Guid.Empty);
+
+                if (result.Success)
+                {
+                    shoppingCartToCreate.Id = result.Identifier;
+                    return Ok(shoppingCartToCreate);
+                }
+                else
+                {
+                    return BadRequest(new { message = result.Message });
+                }
+            }
         }
 
         [MerchantAuthenticationRequired]
@@ -55,18 +80,16 @@ namespace DGBCommerce.API.Controllers
             return Ok(shoppingCart);
         }
 
-        private Guid GetSessionId()
+        [AllowAnonymous]
+        [HttpPost("public/AddItem")]
+        public async Task<ActionResult> AddItem([FromBody] ShoppingCartItem value)
         {
-            if (_httpContextAccessor.HttpContext == null)
-                throw new Exception("No HTTP context available.");
+            var shoppingCart = await _shoppingCartRepository.GetById(value.ShoppingCartId);
+            if (shoppingCart == null)
+                return BadRequest("Merchant not authorized.");
 
-            if (_httpContextAccessor.HttpContext.Items["shoppingCartSessionId"] != null && Guid.TryParse(_httpContextAccessor.HttpContext.Items["shoppingCartSessionId"]!.ToString(), out Guid sessionIdContext))
-                return sessionIdContext;
-
-            Guid sessionId = Guid.NewGuid();
-            _httpContextAccessor.HttpContext!.Items["shoppingCartSessionId"] = sessionId;
-
-            return sessionId;
+            var result = await _shoppingCartItemRepository.Create(value, Guid.Empty);
+            return Ok(result);
         }
     }
 }

@@ -147,7 +147,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
                 new SqlParameter("@SHC_SESSION", SqlDbType.UniqueIdentifier) { Value = shoppingCart.Session },
                 new SqlParameter("@SHC_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = shoppingCart.CustomerId },
-                new SqlParameter("@SHP_LAST_IP_ADDRESS", SqlDbType.VarChar) { Value = shoppingCart.LastIpAddress }
+                new SqlParameter("@SHC_LAST_IP_ADDRESS", SqlDbType.VarChar) { Value = shoppingCart.LastIpAddress }
             ]);
 
         public async Task<MutationResult> CreateShoppingCartItem(ShoppingCartItem shoppingCartItem)
@@ -473,8 +473,8 @@ namespace DGBCommerce.Data
         public async Task<DataTable> GetShoppingCartItems(GetShoppingCartItemsParameters parameters)
             => await Get("SP_GET_ShoppingCartItems", [
                 new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
-                new SqlParameter("@SHC_SHOPPING_CART", SqlDbType.UniqueIdentifier) { Value = parameters.ShoppingCartId },
-                new SqlParameter("@SHC_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId }
+                new SqlParameter("@SCI_SHOPPING_CART", SqlDbType.UniqueIdentifier) { Value = parameters.ShoppingCartId },
+                new SqlParameter("@SCI_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId }
             ]);
 
         public async Task<DataTable> GetStats()

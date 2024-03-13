@@ -82,6 +82,7 @@ namespace DGBCommerce.API
             }
             else
             {
+                app.UseHttpsRedirection();
                 app.UseCors(
                     options => options
                     .SetIsOriginAllowedToAllowWildcardSubdomains()
@@ -91,8 +92,7 @@ namespace DGBCommerce.API
                 );
             }
 
-            app.UseMiddleware<JwtMiddleware>();
-            app.UseHttpsRedirection();
+            app.UseMiddleware<JwtMiddleware>();            
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions()
             {
