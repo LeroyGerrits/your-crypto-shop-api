@@ -8,6 +8,8 @@
         public string? ProductName { get; set; }
         public decimal? ProductPrice { get; set; }
         public int? ProductStock { get; set; }
+        public Guid? ProductMainPhotoId { get; set; }
+        public string? ProductMainPhotoExtension { get; set; }
         public required uint Amount { get; set; }
 
         public decimal Total 

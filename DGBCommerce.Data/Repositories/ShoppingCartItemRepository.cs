@@ -50,6 +50,8 @@ namespace DGBCommerce.Data.Repositories
                     ProductName = row["sci_product_name"].ToString()!,
                     ProductPrice = Convert.ToDecimal(row["sci_product_price"]),
                     ProductStock = Utilities.DbNullableInt(row["sci_product_stock"]),
+                    ProductMainPhotoId = Utilities.DbNullableGuid(row["sci_product_main_photo_id"]),
+                    ProductMainPhotoExtension = Utilities.DbNullableString(row["sci_product_main_photo_extension"]),
                     Amount = Convert.ToUInt32(row["sci_amount"])
                 };
 
