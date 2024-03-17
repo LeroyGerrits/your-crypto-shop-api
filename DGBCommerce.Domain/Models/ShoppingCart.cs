@@ -9,6 +9,11 @@
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Edited { get; set; } = DateTime.UtcNow;
         public List<ShoppingCartItem>? Items { get; set; }
-        public uint CumulativeItems { get; set; }
+
+        public uint CumulativeAmount
+            => this.Items != null ? (uint)this.Items.Sum(item => item.Amount) : 0;
+
+        public decimal CumulativeTotal
+            => this.Items != null ? this.Items.Sum(item => item.Total) : 0;
     }
 }

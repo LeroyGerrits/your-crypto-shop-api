@@ -86,9 +86,36 @@ namespace DGBCommerce.API.Controllers
         {
             var shoppingCart = await _shoppingCartRepository.GetById(value.ShoppingCartId);
             if (shoppingCart == null)
-                return BadRequest("Merchant not authorized.");
+                return BadRequest("Shopping cart not available.");
 
             var result = await _shoppingCartItemRepository.Create(value, Guid.Empty);
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPut("public/{id}")]
+        public async Task<ActionResult> EditItem(Guid id, [FromBody] ShoppingCartItem value)
+        {
+            var shoppingCart = await _shoppingCartRepository.GetById(value.ShoppingCartId);
+            if (shoppingCart == null)
+                return BadRequest("Shopping cart not available.");
+
+            var shoppingCartItem = await _shoppingCartItemRepository.GetById(id);
+            if (shoppingCartItem == null)
+                return BadRequest("Shopping cart item not found.");
+
+            var result = await _shoppingCartItemRepository.Update(value, Guid.Empty);
+            return Ok(result);
+        }
+
+        [HttpDelete("public/DeleteItem/{sessionId}/{id}")]
+        public async Task<ActionResult<Shop>> DeleteItem(Guid sessionId, Guid id)
+        {
+            var shoppingCart = await _shoppingCartRepository.GetBySession(sessionId);
+            if (shoppingCart == null)
+                return BadRequest("Shopping cart not available.");
+
+            var result = await _shoppingCartItemRepository.Delete(id, Guid.Empty);
             return Ok(result);
         }
     }

@@ -55,8 +55,7 @@ namespace DGBCommerce.Data.Repositories
                     CustomerId = Utilities.DbNullableGuid(row["shc_customer"]),
                     LastIpAddress = Utilities.DbNullableString(row["shc_last_ip_address"]),
                     Created = Convert.ToDateTime(row["shc_created"]),
-                    Edited = Convert.ToDateTime(row["shc_edited"]),
-                    CumulativeItems = Convert.ToUInt32(row["shc_cumulative_items"])
+                    Edited = Convert.ToDateTime(row["shc_edited"])
                 };
 
                 shoppingCarts.Add(shoppingCart);
