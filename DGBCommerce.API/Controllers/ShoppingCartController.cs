@@ -93,7 +93,7 @@ namespace DGBCommerce.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("public/{id}")]
+        [HttpPut("public/EditItem/{id}")]
         public async Task<ActionResult> EditItem(Guid id, [FromBody] ShoppingCartItem value)
         {
             var shoppingCart = await _shoppingCartRepository.GetById(value.ShoppingCartId);
