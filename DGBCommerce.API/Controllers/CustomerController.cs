@@ -188,10 +188,10 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public async Task<ActionResult> Authenticate([FromBody] AuthenticateRequest request)
+        public async Task<ActionResult> Authenticate([FromBody] AuthenticateCustomerRequest request)
         {
             // First retrieve the account by e-mail address so we can get the salt
-            var customerByEmailAddress = await _customerRepository.GetByEmailAddress(request.EmailAddress);
+            var customerByEmailAddress = await _customerRepository.GetByEmailAddress(request.ShopId, request.EmailAddress);
             if (customerByEmailAddress == null)
                 return BadRequest(new { message = "E-mail address or password is incorrect" });
 

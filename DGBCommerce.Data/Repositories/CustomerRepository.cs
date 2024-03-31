@@ -25,17 +25,11 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<PublicCustomer>> GetPublic(GetCustomersParameters parameters)
             => await GetRawPublic(parameters);
 
-        public async Task<PublicCustomer?> GetByIdPublic(Guid merchantId, Guid id)
-        {
-            var customers = await GetRawPublic(new GetCustomersParameters() { MerchantId = merchantId, Id = id });
-            return customers.ToList().SingleOrDefault();
-        }
+        public async Task<Customer?> GetByEmailAddress(Guid shopId, string emailAddress)
+            => await GetRawByEmailAddress(shopId, emailAddress);
 
-        public async Task<Customer?> GetByEmailAddress(string emailAddress)
-            => await GetRawByEmailAddress(emailAddress);
-
-        public async Task<Customer?> GetByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress)
-            => await GetRawByEmailAddressAndPassword(emailAddress, password, ipAddress);
+        public async Task<Customer?> GetByEmailAddressAndPassword(Guid shopId, string emailAddress, string password, string? ipAddress)
+            => await GetRawByEmailAddressAndPassword(shopId, emailAddress, password, ipAddress);
 
         public async Task<Customer?> GetByIdAndPassword(Guid id, string password)
             => await GetRawByIdAndPassword(id, password);
@@ -98,9 +92,9 @@ namespace DGBCommerce.Data.Repositories
             return customers;
         }
 
-        private async Task<Customer?> GetRawByEmailAddress(string emailAddress)
+        private async Task<Customer?> GetRawByEmailAddress(Guid shopId, string emailAddress)
         {
-            DataTable table = await _dataAccessLayer.GetCustomerByEmailAddress(emailAddress);
+            DataTable table = await _dataAccessLayer.GetCustomerByEmailAddress(shopId, emailAddress);
 
             if (table.Rows.Count != 1)
                 return null;
@@ -135,9 +129,9 @@ namespace DGBCommerce.Data.Repositories
             };
         }
 
-        private async Task<Customer?> GetRawByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress)
+        private async Task<Customer?> GetRawByEmailAddressAndPassword(Guid shopId, string emailAddress, string password, string? ipAddress)
         {
-            DataTable table = await _dataAccessLayer.GetCustomerByEmailAddressAndPassword(emailAddress, password, ipAddress);
+            DataTable table = await _dataAccessLayer.GetCustomerByEmailAddressAndPassword(shopId, emailAddress, password, ipAddress);
 
             if (table.Rows.Count != 1)
                 return null;

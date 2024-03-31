@@ -7,7 +7,7 @@ namespace DGBCommerce.API.Services
 {
     public interface IAuthenticationService
     {
-        AuthenticateCustomerResponse? AuthenticateCustomer(AuthenticateRequest model);
+        AuthenticateCustomerResponse? AuthenticateCustomer(AuthenticateCustomerRequest model);
         AuthenticateMerchantResponse? AuthenticateMerchant(AuthenticateRequest model);
     }
 
@@ -18,17 +18,17 @@ namespace DGBCommerce.API.Services
         private readonly IMerchantRepository _merchantRepository = merchantRepository;
         private readonly IJwtUtils _jwtUtils = jwtUtils;
 
-        public AuthenticateCustomerResponse? AuthenticateCustomer(AuthenticateRequest model)
+        public AuthenticateCustomerResponse? AuthenticateCustomer(AuthenticateCustomerRequest request)
         {
-            Customer? customer = _customerRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password, _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString()).Result;
+            Customer? customer = _customerRepository.GetByEmailAddressAndPassword(request.ShopId, request.EmailAddress, request.Password, _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString()).Result;
             if (customer == null) return null;
             var token = _jwtUtils.GenerateJwtToken(customer);
             return new AuthenticateCustomerResponse(customer, token);
         }
 
-        public AuthenticateMerchantResponse? AuthenticateMerchant(AuthenticateRequest model)
+        public AuthenticateMerchantResponse? AuthenticateMerchant(AuthenticateRequest request)
         {
-            Merchant? merchant = _merchantRepository.GetByEmailAddressAndPassword(model.EmailAddress, model.Password, _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString()).Result;
+            Merchant? merchant = _merchantRepository.GetByEmailAddressAndPassword(request.EmailAddress, request.Password, _httpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString()).Result;
             if (merchant == null) return null;
             var token = _jwtUtils.GenerateJwtToken(merchant);
             return new AuthenticateMerchantResponse(merchant, token);

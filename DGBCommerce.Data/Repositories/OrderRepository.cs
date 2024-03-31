@@ -49,12 +49,7 @@ namespace DGBCommerce.Data.Repositories
                 shops.Add(new Order()
                 {
                     Id = new Guid(row["ord_id"].ToString()!),
-                    Shop = new()
-                    {
-                        Id = new Guid(row["ord_shop"].ToString()!),
-                        Name = Utilities.DbNullableString(row["ord_shop_name"]),
-                        MerchantId = new Guid(row["ord_shop_merchant"].ToString()!)
-                    },
+                    ShopId = new Guid(row["ord_shop"].ToString()!),
                     Customer = new()
                     {
                         Id = new Guid(row["ord_customer"].ToString()!),

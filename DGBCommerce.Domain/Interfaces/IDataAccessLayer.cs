@@ -38,8 +38,8 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetAddress(string addressLine1, string? addressLine2, string postalCode, string city, string? province, Guid countryId);
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
         Task<DataTable> GetCustomers(GetCustomersParameters parameters);
-        Task<DataTable> GetCustomerByEmailAddress(string emailAddress);
-        Task<DataTable> GetCustomerByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress);
+        Task<DataTable> GetCustomerByEmailAddress(Guid shopId, string emailAddress);
+        Task<DataTable> GetCustomerByEmailAddressAndPassword(Guid shopId, string emailAddress, string password, string? ipAddress);
         Task<DataTable> GetCustomerByIdAndPassword(Guid id, string password);
         Task<DataTable> GetCountries(GetCountriesParameters parameters);
         Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters);

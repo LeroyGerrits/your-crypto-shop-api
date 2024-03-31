@@ -75,7 +75,7 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> CreateOrder(Order order, Guid mutationId)
             => await NonQuery("SP_MUTATE_Order", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
-                new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = order.Shop.Id },
+                new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = order.ShopId },
                 new SqlParameter("@ORD_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = order.Customer.Id },
                 new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
                 new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id }
@@ -284,13 +284,15 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CUS_LAST_NAME", SqlDbType.NVarChar) { Value = parameters.LastName }
             ]);
 
-        public async Task<DataTable> GetCustomerByEmailAddress(string emailAddress)
+        public async Task<DataTable> GetCustomerByEmailAddress(Guid shopId, string emailAddress)
            => await Get("SP_GET_Customer_ByEmailAddress", [
-                new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress }
+               new SqlParameter("@CUS_SHOP", SqlDbType.UniqueIdentifier) { Value = shopId },
+               new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress }
            ]);
 
-        public async Task<DataTable> GetCustomerByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress)
+        public async Task<DataTable> GetCustomerByEmailAddressAndPassword(Guid shopId, string emailAddress, string password, string? ipAddress)
             => await Get("SP_GET_Customer_ByEmailAddressAndPassword", [
+                new SqlParameter("@CUS_SHOP", SqlDbType.UniqueIdentifier) { Value = shopId },
                 new SqlParameter("@CUS_EMAIL_ADDRESS", SqlDbType.VarChar) { Value = emailAddress },
                 new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar) { Value = password },
                 new SqlParameter("@CUS_IP_ADDRESS", SqlDbType.VarChar) { Value = ipAddress }
