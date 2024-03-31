@@ -50,7 +50,9 @@ namespace DGBCommerce.API.Controllers
                 };
 
                 var resultCustomer = await _customerRepository.Create(customer, Guid.Empty);
-                if (!resultCustomer.Success)
+                if (resultCustomer.Success)
+                    customer.Id = resultCustomer.Identifier;
+                else
                     return BadRequest(new { message = $"Could not create customer: {resultCustomer.Message}" });
             }
 
