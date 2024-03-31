@@ -7,5 +7,6 @@
         public required string Title { get; set; }        
         public string? Content { get; set; }
         public required bool Visible { get; set; }
+        public required bool Index { get; set; }
     }
 }

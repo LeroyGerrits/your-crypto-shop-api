@@ -54,7 +54,8 @@ namespace DGBCommerce.Data.Repositories
                     },
                     Title = Utilities.DbNullableString(row["pag_title"]),
                     Content = Utilities.DbNullableString(row["pag_content"]),
-                    Visible = Convert.ToBoolean(row["pag_visible"])
+                    Visible = Convert.ToBoolean(row["pag_visible"]),
+                    Index = Convert.ToBoolean(row["pag_index"])
                 });
             }
 
@@ -75,7 +76,8 @@ namespace DGBCommerce.Data.Repositories
                 {
                     Id = new Guid(row["pag_id"].ToString()!),
                     Title = Utilities.DbNullableString(row["pag_title"]),
-                    Content = Utilities.DbNullableString(row["pag_content"])
+                    Content = Utilities.DbNullableString(row["pag_content"]),
+                    Index = Convert.ToBoolean(row["pag_index"]),
                 });
             }
 

@@ -87,7 +87,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PAG_SHOP", SqlDbType.UniqueIdentifier) { Value = page.Shop.Id },
                 new SqlParameter("@PAG_TITLE", SqlDbType.NVarChar) { Value = page.Title },
                 new SqlParameter("@PAG_CONTENT", SqlDbType.NVarChar) { Value = page.Content },
-                new SqlParameter("@PAG_VISIBLE", SqlDbType.NVarChar) { Value = page.Visible }
+                new SqlParameter("@PAG_VISIBLE", SqlDbType.Bit) { Value = page.Visible },
+                new SqlParameter("@PAG_INDEX", SqlDbType.Bit) { Value = page.Index }
             ], mutationId);
 
         public async Task<MutationResult> CreatePage2Category(Page2Category pageCategory, Guid mutationId)
@@ -602,7 +603,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PAG_SHOP", SqlDbType.UniqueIdentifier) { Value = page.Shop.Id },
                 new SqlParameter("@PAG_TITLE", SqlDbType.NVarChar) { Value = page.Title },
                 new SqlParameter("@PAG_CONTENT", SqlDbType.NVarChar) { Value = page.Content },
-                new SqlParameter("@PAG_VISIBLE", SqlDbType.NVarChar) { Value = page.Visible }
+                new SqlParameter("@PAG_VISIBLE", SqlDbType.Bit) { Value = page.Visible },
+                new SqlParameter("@PAG_INDEX", SqlDbType.Bit) { Value = page.Index }
             ], mutationId);
 
         public async Task<MutationResult> UpdateProduct(Product product, Guid mutationId)
