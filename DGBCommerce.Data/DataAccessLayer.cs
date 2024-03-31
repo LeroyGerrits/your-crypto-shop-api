@@ -47,7 +47,7 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> CreateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId)
             => await NonQuery("SP_MUTATE_DigiByteWallet", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
-                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.Merchant.Id },
+                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.MerchantId },
                 new SqlParameter("@DBW_NAME", SqlDbType.NVarChar, 255) { Value = digiByteWallet.Name },
                 new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar, 100) { Value = digiByteWallet.Address }
             ], mutationId);
@@ -140,7 +140,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_NAME", SqlDbType.NVarChar) { Value = shop.Name },
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar) { Value = shop.SubDomain },
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
-                new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id }
+                new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id },
+                new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id }
             ], mutationId);
 
         public async Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart)
@@ -555,7 +556,7 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_DigiByteWallet", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
                 new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.Id },
-                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.Merchant.Id },
+                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.MerchantId },
                 new SqlParameter("@DBW_NAME", SqlDbType.NVarChar, 255) { Value = digiByteWallet.Name },
                 new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar, 100) { Value = digiByteWallet.Address }
             ], mutationId);
@@ -673,7 +674,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_NAME", SqlDbType.NVarChar, 255) { Value = shop.Name },
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar, 100) { Value = shop.SubDomain },
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
-                new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id }
+                new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id },
+                new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id }
             ], mutationId);
 
         public async Task<MutationResult> UpdateShoppingCartItem(ShoppingCartItem shoppingCartItem)

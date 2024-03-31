@@ -58,7 +58,7 @@ namespace DGBCommerce.Data.Repositories
 
             foreach (DataRow row in table.Rows)
             {
-                Shop shop = new()                
+                Shop shop = new()
                 {
                     Id = new Guid(row["shp_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["shp_name"]),
@@ -67,7 +67,7 @@ namespace DGBCommerce.Data.Repositories
                     Featured = Convert.ToBoolean(row["shp_featured"])
                 };
 
-                if (row["shp_country"] !=DBNull.Value)
+                if (row["shp_country"] != DBNull.Value)
                 {
                     shop.Country = new Country()
                     {
@@ -83,6 +83,17 @@ namespace DGBCommerce.Data.Repositories
                     {
                         Id = Utilities.DbNullableGuid(row["shp_category"]),
                         Name = Utilities.DbNullableString(row["shp_category_name"])
+                    };
+                }
+
+                if (row["shp_wallet"] != DBNull.Value)
+                {
+                    shop.Wallet = new DigiByteWallet()
+                    {
+                        Id = Utilities.DbNullableGuid(row["shp_wallet"]),
+                        MerchantId = new Guid(row["shp_merchant"].ToString()!),
+                        Name = Utilities.DbNullableString(row["shp_wallet_name"]),
+                        Address = Utilities.DbNullableString(row["shp_wallet_address"])
                     };
                 }
 
