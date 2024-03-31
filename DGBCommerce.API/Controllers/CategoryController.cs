@@ -84,7 +84,7 @@ namespace DGBCommerce.API.Controllers
             }
 
             foreach (PublicCategory category in categories)
-                if (dictCategoriesPerParent.TryGetValue(category.Id!.Value, out List<PublicCategory>? value))
+                if (dictCategoriesPerParent.TryGetValue(category.Id, out List<PublicCategory>? value))
                     category.Children = value;
 
             return Ok(categories.Where(c => !c.ParentId.HasValue).ToList());

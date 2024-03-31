@@ -79,7 +79,7 @@ namespace DGBCommerce.API.Controllers
             }
 
             foreach (PublicPage page in pages)
-                if (dictCategoryIdsPerPage.TryGetValue(page.Id!.Value, out List<Guid>? value))
+                if (dictCategoryIdsPerPage.TryGetValue(page.Id, out List<Guid>? value))
                     page.CategoryIds = value;
 
             return Ok(pages.ToList());

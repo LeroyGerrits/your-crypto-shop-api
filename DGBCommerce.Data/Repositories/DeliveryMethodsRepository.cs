@@ -2,6 +2,7 @@
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -18,6 +19,12 @@ namespace DGBCommerce.Data.Repositories
         {
             var deliveryMethods = await GetRaw(new GetDeliveryMethodsParameters() { MerchantId = merchantId, Id = id });
             return deliveryMethods.ToList().SingleOrDefault();
+        }
+
+        public async Task<IEnumerable<PublicDeliveryMethod>> GetByShopIdPublic(Guid shopId)
+        {
+            var categories = await GetRawPublic(new GetDeliveryMethodsParameters() { ShopId = shopId });
+            return categories.ToList();
         }
 
         public Task<MutationResult> Create(DeliveryMethod item, Guid mutationId)
@@ -45,6 +52,24 @@ namespace DGBCommerce.Data.Repositories
                         Name = Utilities.DbNullableString(row["dlm_shop_name"]),
                         MerchantId = new Guid(row["dlm_shop_merchant"].ToString()!)
                     },
+                    Name = Utilities.DbNullableString(row["dlm_name"]),
+                    Costs = Utilities.DbNullableDecimal(row["dlm_costs"])
+                });
+            }
+
+            return deliveryMethods;
+        }
+
+        private async Task<IEnumerable<PublicDeliveryMethod>> GetRawPublic(GetDeliveryMethodsParameters parameters)
+        {
+            DataTable table = await _dataAccessLayer.GetDeliveryMethods(parameters);
+            List<PublicDeliveryMethod> deliveryMethods = [];
+
+            foreach (DataRow row in table.Rows)
+            {
+                deliveryMethods.Add(new()
+                {
+                    Id = new Guid(row["dlm_id"].ToString()!),
                     Name = Utilities.DbNullableString(row["dlm_name"]),
                     Costs = Utilities.DbNullableDecimal(row["dlm_costs"])
                 });

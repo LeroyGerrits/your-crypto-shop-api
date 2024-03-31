@@ -1,7 +1,9 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DGBCommerce.API.Controllers
@@ -44,6 +46,14 @@ namespace DGBCommerce.API.Controllers
                 return NotFound();
 
             return Ok(deliveryMethod);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/GetByShopId/{shopId}")]
+        public async Task<ActionResult<PublicDeliveryMethod>> GetByShopIdPublic(Guid shopId)
+        {
+            var deliveryMethods = await _deliveryMethodRepository.GetByShopIdPublic(shopId);            
+            return Ok(deliveryMethods);
         }
 
         [MerchantAuthenticationRequired]

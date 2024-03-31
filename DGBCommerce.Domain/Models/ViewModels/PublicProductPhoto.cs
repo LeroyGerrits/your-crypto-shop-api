@@ -2,7 +2,7 @@
 {
     public class PublicProductPhoto
     {        
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
         public required string File { get; set; }
         public required string Extension { get; set; }
         public required int FileSize { get; set; }

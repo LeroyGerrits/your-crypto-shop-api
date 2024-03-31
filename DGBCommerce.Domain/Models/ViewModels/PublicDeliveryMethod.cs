@@ -1,10 +1,9 @@
 ﻿namespace DGBCommerce.Domain.Models.ViewModels
 {
-    public class PublicCategory
+    public class PublicDeliveryMethod
     {
         public Guid Id { get; set; }
-        public Guid? ParentId { get; set; }
         public required string Name { get; set; }
-        public List<PublicCategory>? Children { get; set; }
+        public decimal? Costs { get; set; }
     }
 }
