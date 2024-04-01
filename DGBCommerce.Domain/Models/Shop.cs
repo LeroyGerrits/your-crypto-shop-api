@@ -1,4 +1,6 @@
-﻿namespace DGBCommerce.Domain.Models
+﻿using DGBCommerce.Domain.Enums;
+
+namespace DGBCommerce.Domain.Models
 {
     public class Shop
     {
@@ -10,5 +12,6 @@
         public ShopCategory? Category { get; set; }
         public bool Featured { get; set; }
         public DigiByteWallet? Wallet { get; set; }
+        public ShopOrderMethod OrderMethod { get; set; }
     }
 }

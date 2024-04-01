@@ -1,4 +1,5 @@
 ﻿using DGBCommerce.Domain;
+using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
@@ -64,6 +65,7 @@ namespace DGBCommerce.Data.Repositories
                     Name = Utilities.DbNullableString(row["shp_name"]),
                     MerchantId = new Guid(row["shp_merchant"].ToString()!),
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
+                    OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
                 };
 

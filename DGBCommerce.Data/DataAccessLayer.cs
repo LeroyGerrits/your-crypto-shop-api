@@ -78,7 +78,9 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = order.ShopId },
                 new SqlParameter("@ORD_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = order.Customer.Id },
                 new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
-                new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id }
+                new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id },
+                new SqlParameter("@ORD_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = order.DeliveryMethodId },
+                new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments }
             ], mutationId);
 
         public async Task<MutationResult> CreatePage(Page page, Guid mutationId)
@@ -141,7 +143,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar) { Value = shop.SubDomain },
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id },
-                new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id }
+                new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id },
+                new SqlParameter("@SHP_ORDER_METHOD", SqlDbType.TinyInt) { Value = shop.OrderMethod }
             ], mutationId);
 
         public async Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart)
@@ -596,7 +599,9 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_Order", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
                 new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
-                new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id }
+                new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id },
+                new SqlParameter("@ORD_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = order.DeliveryMethodId },
+                new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments }
             ], mutationId);
 
         public async Task<MutationResult> UpdatePage(Page page, Guid mutationId)
@@ -677,7 +682,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar, 100) { Value = shop.SubDomain },
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id },
-                new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id }
+                new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id },
+                new SqlParameter("@SHP_ORDER_METHOD", SqlDbType.TinyInt) { Value = shop.OrderMethod }
             ], mutationId);
 
         public async Task<MutationResult> UpdateShoppingCartItem(ShoppingCartItem shoppingCartItem)
