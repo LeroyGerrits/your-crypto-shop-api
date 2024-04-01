@@ -13,31 +13,33 @@ namespace DGBCommerce.API.Controllers
     public class OrderController(
         IAddressService addressService,
         ICustomerRepository customerRepository,
+        IDeliveryMethodRepository deliveryMethodRepository,
         IOrderRepository orderRepository,
         IShopRepository shopRepository,
         IShoppingCartRepository shoppingCartRepository,
         IShoppingCartItemRepository shoppingCartItemRepository) : ControllerBase
     {
-        private readonly IAddressService _addressService = addressService;
-        private readonly ICustomerRepository _customerRepository = customerRepository;
-        private readonly IOrderRepository _orderRepository = orderRepository;
-        private readonly IShopRepository _shopRepository = shopRepository;
-        private readonly IShoppingCartRepository _shoppingCartRepository = shoppingCartRepository;
-        private readonly IShoppingCartItemRepository _shoppingCartItemRepository = shoppingCartItemRepository;
-
         [AllowAnonymous]
         [HttpPost("public")]
         public async Task<ActionResult> Post([FromBody] CreateOrderRequest value)
         {
-            var shop = await _shopRepository.GetByIdPublic(value.ShopId);
+            var shoppingCart = await shoppingCartRepository.GetBySession(value.SessionId);
+            if (shoppingCart == null)
+                return NotFound(new { message = "Shopping cart not found." });
+
+            var shop = await shopRepository.GetByIdPublic(value.ShopId);
             if (shop == null)
                 return NotFound(new { message = "Shop not found." });
 
-            var address = await _addressService.GetAddress(value.AddressLine1, value.AddressLine2, value.PostalCode, value.City, value.Province, value.CountryId);
+            var deliveryMethod = await deliveryMethodRepository.GetByIdPublic(value.DeliveryMethodId);
+            if (deliveryMethod == null)
+                return BadRequest(new { message = "Delivery method not found." });
+
+            var address = await addressService.GetAddress(value.AddressLine1, value.AddressLine2, value.PostalCode, value.City, value.Province, value.CountryId);
             if (address == null)
                 return BadRequest(new { message = "Could not retrieve address record." });
 
-            var customer = await _customerRepository.GetByEmailAddress(value.ShopId, value.EmailAddress);
+            var customer = await customerRepository.GetByEmailAddress(value.ShopId, value.EmailAddress);
             if (customer == null)
             {
                 // Create a new salt and hash the new password with it
@@ -59,7 +61,7 @@ namespace DGBCommerce.API.Controllers
                     
                 };
 
-                var resultCustomer = await _customerRepository.Create(customer, Guid.Empty);
+                var resultCustomer = await customerRepository.Create(customer, Guid.Empty);
                 if (resultCustomer.Success)
                     customer.Id = resultCustomer.Identifier;
                 else
@@ -78,10 +80,39 @@ namespace DGBCommerce.API.Controllers
                 Comments = value.Comments
             };
 
-            var resultOrder = await _orderRepository.Create(orderToCreate, Guid.Empty);
+            var resultOrder = await orderRepository.Create(orderToCreate, Guid.Empty);
             if (resultOrder.Success)
             {
-                // TO-DO: Convert shopping cart items to order items
+                // Creating the order was successfull, now create the order items
+                orderToCreate.Id = resultOrder.Identifier;
+                List<OrderItem> orderItemsToCreate = [];
+                                
+                var shoppingCartItems = await shoppingCartItemRepository.GetByShoppingCartId(shoppingCart.Id!.Value);
+                foreach (var shoppingCartItem in shoppingCartItems)
+                {
+                    orderItemsToCreate.Add(new()
+                    {
+                        OrderId = orderToCreate.Id.Value,
+                        Type = Domain.Enums.OrderItemType.ShoppingCartItem,
+                        Amount = shoppingCartItem.Amount,
+                        Price = shoppingCartItem.ProductPrice,
+                        Description = shoppingCartItem.ProductName
+                    });
+                }
+
+                orderItemsToCreate.Add(new()
+                {
+                    OrderId = orderToCreate.Id.Value,
+                    Type = Domain.Enums.OrderItemType.DeliveryMethod,
+                    Amount = 1,
+                    Price = deliveryMethod.Costs ?? 0,
+                    Description = deliveryMethod.Name
+                });
+
+                foreach (var orderItemToCreate in orderItemsToCreate)
+                {
+                    // TO-DO: Convert shopping cart items to order items
+                }
             }
 
             return Ok(resultOrder);

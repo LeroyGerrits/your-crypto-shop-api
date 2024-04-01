@@ -21,6 +21,12 @@ namespace DGBCommerce.Data.Repositories
             return deliveryMethods.ToList().SingleOrDefault();
         }
 
+        public async Task<PublicDeliveryMethod?> GetByIdPublic(Guid id)
+        {
+            var categories = await GetRawPublic(new GetDeliveryMethodsParameters() { Id = id});
+            return categories.ToList().SingleOrDefault();
+        }
+
         public async Task<IEnumerable<PublicDeliveryMethod>> GetByShopIdPublic(Guid shopId)
         {
             var categories = await GetRawPublic(new GetDeliveryMethodsParameters() { ShopId = shopId });

@@ -77,6 +77,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
                 new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = order.ShopId },
                 new SqlParameter("@ORD_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = order.Customer.Id },
+                new SqlParameter("@ORD_STATUS", SqlDbType.TinyInt) { Value = order.Status },
                 new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
                 new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id },
                 new SqlParameter("@ORD_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = order.DeliveryMethodId },
