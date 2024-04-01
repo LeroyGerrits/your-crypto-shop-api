@@ -1,4 +1,5 @@
 using DGBCommerce.API.Controllers.Requests;
+using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Interfaces.Services;
 using DGBCommerce.Domain.Models;
@@ -25,7 +26,7 @@ namespace DGBCommerce.API.Controllers
         private readonly IShoppingCartItemRepository _shoppingCartItemRepository = shoppingCartItemRepository;
 
         [AllowAnonymous]
-        [HttpPost]
+        [HttpPost("public")]
         public async Task<ActionResult> Post([FromBody] CreateOrderRequest value)
         {
             var shop = await _shopRepository.GetByIdPublic(value.ShopId);
@@ -39,14 +40,23 @@ namespace DGBCommerce.API.Controllers
             var customer = await _customerRepository.GetByEmailAddress(value.ShopId, value.EmailAddress);
             if (customer == null)
             {
+                // Create a new salt and hash the new password with it
+                var newPasswordSalt = Utilities.GenerateSalt();
+                var newPassword = Utilities.GenerateRandomString(50);
+                var hashedNewPassword = Utilities.HashStringSha256(newPasswordSalt + newPassword);
+
                 customer = new Customer()
                 {
                     ShopId = value.ShopId,
+                    PasswordSalt = newPasswordSalt,
+                    Password = hashedNewPassword,
                     EmailAddress = value.EmailAddress,
                     Username = value.EmailAddress,
                     Gender = value.Gender,
                     FirstName = value.FirstName,
                     LastName = value.LastName,
+                    Address = address
+                    
                 };
 
                 var resultCustomer = await _customerRepository.Create(customer, Guid.Empty);
@@ -60,9 +70,12 @@ namespace DGBCommerce.API.Controllers
             {
                 ShopId = value.ShopId,
                 Customer = customer,
+                Date = DateTime.UtcNow,
+                Status = Domain.Enums.OrderStatus.New,                
                 BillingAddress = address,
-                ShippingAddress = address,
-                Status = Domain.Enums.OrderStatus.New
+                ShippingAddress = address,                
+                DeliveryMethodId = value.DeliveryMethodId,
+                Comments = value.Comments
             };
 
             var resultOrder = await _orderRepository.Create(orderToCreate, Guid.Empty);

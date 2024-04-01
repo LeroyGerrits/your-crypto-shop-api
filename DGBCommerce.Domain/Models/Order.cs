@@ -11,5 +11,7 @@ namespace DGBCommerce.Domain.Models
         public required OrderStatus Status { get; set; }
         public required Address BillingAddress { get; set; }
         public required Address ShippingAddress { get; set; }
+        public required Guid DeliveryMethodId { get; set; }
+        public string? Comments { get; set; }
     }
 }

@@ -5,6 +5,7 @@ namespace DGBCommerce.API.Controllers.Requests
     public class CreateOrderRequest
     {
         public required Guid ShopId { get; set; }
+        public Guid? CustomerId { get; set; }
         public required string EmailAddress { get; set; }
         public required Gender Gender { get; set; }
         public string? FirstName { get; set; }
@@ -16,6 +17,7 @@ namespace DGBCommerce.API.Controllers.Requests
         public string? Province { get; set; }
         public required Guid CountryId { get; set; }
         public required Guid DeliveryMethodId { get; set; }
+        public string? Comments { get; set; }
         public required Guid SessionId { get; set; }
     }
 }

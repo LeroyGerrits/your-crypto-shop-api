@@ -110,22 +110,7 @@ namespace DGBCommerce.Data.Repositories
                 PasswordSalt = Utilities.DbNullableString(row["cus_password_salt"]),
                 Gender = (Gender)Convert.ToInt32(row["cus_gender"]),
                 FirstName = Utilities.DbNullableString(row["cus_first_name"]),
-                LastName = Utilities.DbNullableString(row["cus_last_name"]),
-                Address = new()
-                {
-                    Id = new Guid(row["cus_address"].ToString()!),
-                    AddressLine1 = Utilities.DbNullableString(row["cus_address_address_line_1"]),
-                    AddressLine2 = Utilities.DbNullableString(row["cus_address_address_line_2"]),
-                    PostalCode = Utilities.DbNullableString(row["cus_address_postal_code"]),
-                    City = Utilities.DbNullableString(row["cus_address_city"]),
-                    Province = Utilities.DbNullableString(row["cus_address_province"]),
-                    Country = new()
-                    {
-                        Id = new Guid(row["cus_address_country"].ToString()!),
-                        Code = Utilities.DbNullableString(row["cus_address_country_code"]),
-                        Name = Utilities.DbNullableString(row["cus_address_country_name"])
-                    }
-                },
+                LastName = Utilities.DbNullableString(row["cus_last_name"])
             };
         }
 

@@ -3,9 +3,10 @@
     public enum OrderStatus
     {
         New = 0,
-        Abandoned = 1,
-        Paid = 2,
-        Shipped = 3,
-        Finished = 4
+        AwaitingPayment = 1,
+        Abandoned = 2,
+        Paid = 3,
+        Shipped = 4,
+        Finished = 5
     }
 }

@@ -42,11 +42,11 @@ namespace DGBCommerce.Data.Repositories
         private async Task<IEnumerable<Order>> GetRaw(GetOrdersParameters parameters)
         {
             DataTable table = await _dataAccessLayer.GetOrders(parameters);
-            List<Order> shops = [];
+            List<Order> orders = [];
 
             foreach (DataRow row in table.Rows)
             {
-                shops.Add(new Order()
+                orders.Add(new Order()
                 {
                     Id = new Guid(row["ord_id"].ToString()!),
                     ShopId = new Guid(row["ord_shop"].ToString()!),
@@ -89,11 +89,13 @@ namespace DGBCommerce.Data.Repositories
                             Code = Utilities.DbNullableString(row["ord_address_shipping_country_code"]),
                             Name = Utilities.DbNullableString(row["ord_address_shipping_country_name"])
                         }
-                    }
+                    },
+                    DeliveryMethodId = new Guid(row["ord_delivery_method"].ToString()!),
+                    Comments = row["ord_comments"].ToString()
                 });
             }
 
-            return shops;
+            return orders;
         }
     }
 }
