@@ -145,29 +145,27 @@ namespace DGBCommerce.API.Controllers
 
         private async void ProcessCheckedCategories(Guid merchantId, Guid productId, string? checkedCategoriesString)
         {
+            List<Guid> checkedCategoryIds = [];
+
             if (!string.IsNullOrWhiteSpace(checkedCategoriesString))
             {
-                string[] splitCheckedCategoriesString = checkedCategoriesString.Split(',');
-                if (splitCheckedCategoriesString.Length > 0)
+                string[] splitCheckedCategoriesString = checkedCategoriesString!.Split(',');
+
+                foreach (string checkedCategoryIdString in splitCheckedCategoriesString)
                 {
-                    List<Guid> checkedCategoryIds = [];
-
-                    foreach (string checkedCategoryIdString in splitCheckedCategoriesString)
-                    {
-                        Guid? checkedCategoryId = Utilities.NullableGuid(checkedCategoryIdString);
-                        if (checkedCategoryId.HasValue)
-                            checkedCategoryIds.Add(checkedCategoryId.Value);
-                    }
-
-                    var categories = await categoryRepository.Get(new GetCategoriesParameters() { MerchantId = merchantId });
-                    foreach (Category category in categories)
-                    {
-                        if (checkedCategoryIds.Contains(category.Id!.Value))
-                            await product2CategoryRepository.Create(new() { ProductId = productId, CategoryId = category.Id.Value }, merchantId);
-                        else
-                            await product2CategoryRepository.Delete(productId, category.Id.Value, merchantId);
-                    }
+                    Guid? checkedCategoryId = Utilities.NullableGuid(checkedCategoryIdString);
+                    if (checkedCategoryId.HasValue)
+                        checkedCategoryIds.Add(checkedCategoryId.Value);
                 }
+            }
+
+            var categories = await categoryRepository.Get(new GetCategoriesParameters() { MerchantId = merchantId });
+            foreach (Category category in categories)
+            {
+                if (checkedCategoryIds.Contains(category.Id!.Value))
+                    await product2CategoryRepository.Create(new() { ProductId = productId, CategoryId = category.Id.Value }, merchantId);
+                else
+                    await product2CategoryRepository.Delete(productId, category.Id.Value, merchantId);
             }
         }
     }
