@@ -11,15 +11,15 @@ namespace DGBCommerce.API
         {
             var authorizationToken = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
             var jwtToken = jwtUtils.ValidateJwtToken(authorizationToken);
-            if (jwtToken != null)
+            if (jwtToken != null && jwtToken.Claims.Count(claim => claim.Type == "id" || claim.Type == "type") == 2)
             {
                 var id = new Guid(jwtToken.Claims.First(x => x.Type == "id").Value);
                 var type = jwtToken.Claims.First(x => x.Type == "type").Value;
 
                 if (type == nameof(Customer))
                 {
-                    var merchant = Task.Run(() => customerRepository.GetById(id, id)).Result;
-                    context.Items["Customer"] = merchant;
+                    var customer = Task.Run(() => customerRepository.GetById(id, id)).Result;
+                    context.Items["Customer"] = customer;
                 }
 
                 if (type == nameof(Merchant))
