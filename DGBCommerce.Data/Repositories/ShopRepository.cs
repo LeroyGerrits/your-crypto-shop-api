@@ -125,7 +125,9 @@ namespace DGBCommerce.Data.Repositories
                     CountryName = Utilities.DbNullableString(row["shp_country_name"]),
                     CategoryId = Utilities.DbNullableGuid(row["shp_category"]),
                     CategoryName = Utilities.DbNullableString(row["shp_category_name"]),
-                    Featured = Convert.ToBoolean(row["shp_featured"])
+                    Featured = Convert.ToBoolean(row["shp_featured"]),
+                    HasWallet = (row["shp_wallet"] != DBNull.Value),
+                    OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"])
                 });
             }
 
@@ -152,7 +154,9 @@ namespace DGBCommerce.Data.Repositories
                     CountryName = Utilities.DbNullableString(row["shp_country_name"]),
                     CategoryId = Utilities.DbNullableGuid(row["shp_category"]),
                     CategoryName = Utilities.DbNullableString(row["shp_category_name"]),
-                    Featured = Convert.ToBoolean(row["shp_featured"])
+                    Featured = Convert.ToBoolean(row["shp_featured"]),
+                    HasWallet = (row["shp_wallet"] != DBNull.Value),
+                    OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"])
                 });
             }
 

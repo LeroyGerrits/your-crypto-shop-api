@@ -16,6 +16,12 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<Customer>> Get(GetCustomersParameters parameters)
             => await GetRaw(parameters);
 
+        public async Task<Customer?> GetById(Guid id)
+        {
+            var customers = await GetRaw(new GetCustomersParameters() { Id = id });
+            return customers.ToList().SingleOrDefault();
+        }
+
         public async Task<Customer?> GetById(Guid merchantId, Guid id)
         {
             var customers = await GetRaw(new GetCustomersParameters() { MerchantId = merchantId, Id = id });

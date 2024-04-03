@@ -6,6 +6,7 @@ namespace DGBCommerce.Domain.Interfaces.Repositories
 {
     public interface ICustomerRepository : IMutableRepository<Customer, GetCustomersParameters>
     {
+        Task<Customer?> GetById(Guid id);
         Task<Customer?> GetByEmailAddressAndPassword(Guid shopId, string emailAddress, string password, string? ipAddress);
         Task<Customer?> GetByEmailAddress(Guid shopId, string emailAddress);
         Task<Customer?> GetByIdAndPassword(Guid id, string password);

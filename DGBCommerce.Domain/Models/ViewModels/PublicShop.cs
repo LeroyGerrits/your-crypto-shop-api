@@ -1,4 +1,6 @@
-﻿namespace DGBCommerce.Domain.Models.ViewModels
+﻿using DGBCommerce.Domain.Enums;
+
+namespace DGBCommerce.Domain.Models.ViewModels
 {
     public class PublicShop
     {
@@ -14,5 +16,7 @@
         public Guid? CategoryId { get; set; }
         public string? CategoryName { get; set; }
         public bool Featured { get; set; }
+        public bool HasWallet { get; set; }
+        public ShopOrderMethod OrderMethod { get; set; }
     }
 }

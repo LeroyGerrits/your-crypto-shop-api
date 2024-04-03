@@ -15,6 +15,7 @@ namespace DGBCommerce.API.Controllers
         IAddressService addressService,
         ICustomerRepository customerRepository,
         IDeliveryMethodRepository deliveryMethodRepository,
+        IRpcService rpcService,
         IOrderRepository orderRepository,
         IOrderItemRepository orderItemRepository,
         IShopRepository shopRepository,
@@ -33,6 +34,9 @@ namespace DGBCommerce.API.Controllers
             if (shop == null)
                 return NotFound(new { message = "Shop not found." });
 
+            if (!shop.HasWallet)
+                return NotFound(new { message = "Shop has no wallet configured." });
+
             var deliveryMethod = await deliveryMethodRepository.GetByIdPublic(value.DeliveryMethodId);
             if (deliveryMethod == null)
                 return BadRequest(new { message = "Delivery method not found." });
@@ -41,10 +45,13 @@ namespace DGBCommerce.API.Controllers
             if (address == null)
                 return BadRequest(new { message = "Could not retrieve address record." });
 
-            var customer = await customerRepository.GetByEmailAddress(value.ShopId, value.EmailAddress);
+            Customer? customer = null;
+
+            if (value.CustomerId != null)
+                customer = await customerRepository.GetById(value.CustomerId.Value!);
+
             if (customer == null)
             {
-                // Create a new salt and hash the new password with it
                 var newPasswordSalt = Utilities.GenerateSalt();
                 var newPassword = Utilities.GenerateRandomString(50);
                 var hashedNewPassword = Utilities.HashStringSha256(newPasswordSalt + newPassword);
@@ -60,7 +67,7 @@ namespace DGBCommerce.API.Controllers
                     FirstName = value.FirstName,
                     LastName = value.LastName,
                     Address = address
-                    
+
                 };
 
                 var resultCustomer = await customerRepository.Create(customer, Guid.Empty);
@@ -88,7 +95,7 @@ namespace DGBCommerce.API.Controllers
                 // Creating the order was successfull, now create the order items
                 orderToCreate.Id = resultOrder.Identifier;
                 List<OrderItem> orderItemsToCreate = [];
-                                
+
                 // Shopping cart items
                 var shoppingCartItems = await shoppingCartItemRepository.GetByShoppingCartId(shoppingCart.Id!.Value);
                 foreach (var shoppingCartItem in shoppingCartItems)
@@ -116,7 +123,16 @@ namespace DGBCommerce.API.Controllers
                 foreach (var orderItemToCreate in orderItemsToCreate)
                     await orderItemRepository.Create(orderItemToCreate, Guid.Empty);
 
-                // Finally, create transaction
+                // If shop order method is 'Automated', create a transaction
+                if (shop.OrderMethod == ShopOrderMethod.Automated)
+                {
+                    var cumulativePrice = orderItemsToCreate.Sum(i => i.Amount * i.Price);
+                    Guid newTransactionId = Guid.NewGuid();
+                    var newDigiByteAddress = await rpcService.GetNewAddress($"DGB Commerce Transaction ${newTransactionId}");
+
+                }
+
+                // Send e-mails
             }
 
             return Ok(resultOrder);
