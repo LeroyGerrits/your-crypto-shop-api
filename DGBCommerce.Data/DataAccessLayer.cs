@@ -84,6 +84,17 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments }
             ], mutationId);
 
+        public async Task<MutationResult> CreateOrderItem(OrderItem orderItem, Guid mutationId)
+            => await NonQuery("SP_MUTATE_OrderItem", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@ORI_ORDER", SqlDbType.UniqueIdentifier) { Value = orderItem.OrderId },
+                new SqlParameter("@ORI_TYPE", SqlDbType.TinyInt) { Value = orderItem.Type },
+                new SqlParameter("@ORI_PRODUCT", SqlDbType.UniqueIdentifier) { Value = orderItem.ProductId },
+                new SqlParameter("@ORI_AMOUNT", SqlDbType.Int) { Value = orderItem.Amount },
+                new SqlParameter("@ORI_PRICE", SqlDbType.Decimal) { Value = orderItem.Price },
+                new SqlParameter("@ORI_DESCRIPTION", SqlDbType.NVarChar) { Value = orderItem.Description }
+            ], mutationId);
+
         public async Task<MutationResult> CreatePage(Page page, Guid mutationId)
             => await NonQuery("SP_MUTATE_Page", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -194,6 +205,12 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_Order", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@ORD_ID", SqlDbType.UniqueIdentifier) { Value = orderId }
+            ], mutationId);
+
+        public async Task<MutationResult> DeleteOrderItem(Guid orderItemId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_OrderItem", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@ORI_ID", SqlDbType.UniqueIdentifier) { Value = orderItemId }
             ], mutationId);
 
         public async Task<MutationResult> DeletePage(Guid pageId, Guid mutationId)
@@ -396,9 +413,19 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
                 new SqlParameter("@ORD_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@ORD_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = parameters.CustomerId },
                 new SqlParameter("@ORD_DATE_FROM", SqlDbType.DateTime) { Value = parameters.DateFrom },
                 new SqlParameter("@ORD_DATE_UNTIL", SqlDbType.DateTime) { Value = parameters.DateUntil },
                 new SqlParameter("@ORD_STATUS", SqlDbType.TinyInt) { Value = parameters.Status }
+            ]);
+
+        public async Task<DataTable> GetOrderItems(GetOrderItemsParameters parameters)
+            => await Get("SP_GET_OrderItems", [
+                new SqlParameter("@ORI_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@ORI_ORDER", SqlDbType.UniqueIdentifier) { Value = parameters.OrderId },
+                new SqlParameter("@ORI_TYPE", SqlDbType.TinyInt) { Value = parameters.Type },
+                new SqlParameter("@ORI_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId },
+                new SqlParameter("@ORI_DESCRIPTION", SqlDbType.NVarChar) { Value = parameters.Description }
             ]);
 
         public async Task<DataTable> GetPages(GetPagesParameters parameters)
@@ -603,6 +630,15 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id },
                 new SqlParameter("@ORD_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = order.DeliveryMethodId },
                 new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments }
+            ], mutationId);
+
+        public async Task<MutationResult> UpdateOrderItem(OrderItem orderItem, Guid mutationId)
+            => await NonQuery("SP_MUTATE_OrderItem", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@ORI_ID", SqlDbType.UniqueIdentifier) { Value = orderItem.Id },
+                new SqlParameter("@ORI_AMOUNT", SqlDbType.Int) { Value = orderItem.Amount },
+                new SqlParameter("@ORI_PRICE", SqlDbType.Decimal) { Value = orderItem.Price },
+                new SqlParameter("@ORI_DESCRIPTION", SqlDbType.NVarChar) { Value = orderItem.Description }
             ], mutationId);
 
         public async Task<MutationResult> UpdatePage(Page page, Guid mutationId)

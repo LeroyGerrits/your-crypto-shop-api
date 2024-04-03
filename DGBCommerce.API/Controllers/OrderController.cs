@@ -1,5 +1,6 @@
 using DGBCommerce.API.Controllers.Requests;
 using DGBCommerce.Domain;
+using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Interfaces.Services;
 using DGBCommerce.Domain.Models;
@@ -15,6 +16,7 @@ namespace DGBCommerce.API.Controllers
         ICustomerRepository customerRepository,
         IDeliveryMethodRepository deliveryMethodRepository,
         IOrderRepository orderRepository,
+        IOrderItemRepository orderItemRepository,
         IShopRepository shopRepository,
         IShoppingCartRepository shoppingCartRepository,
         IShoppingCartItemRepository shoppingCartItemRepository) : ControllerBase
@@ -73,9 +75,9 @@ namespace DGBCommerce.API.Controllers
                 ShopId = value.ShopId,
                 Customer = customer,
                 Date = DateTime.UtcNow,
-                Status = Domain.Enums.OrderStatus.New,                
+                Status = OrderStatus.New,
                 BillingAddress = address,
-                ShippingAddress = address,                
+                ShippingAddress = address,
                 DeliveryMethodId = value.DeliveryMethodId,
                 Comments = value.Comments
             };
@@ -87,32 +89,34 @@ namespace DGBCommerce.API.Controllers
                 orderToCreate.Id = resultOrder.Identifier;
                 List<OrderItem> orderItemsToCreate = [];
                                 
+                // Shopping cart items
                 var shoppingCartItems = await shoppingCartItemRepository.GetByShoppingCartId(shoppingCart.Id!.Value);
                 foreach (var shoppingCartItem in shoppingCartItems)
                 {
                     orderItemsToCreate.Add(new()
                     {
                         OrderId = orderToCreate.Id.Value,
-                        Type = Domain.Enums.OrderItemType.ShoppingCartItem,
+                        Type = OrderItemType.ShoppingCartItem,
                         Amount = shoppingCartItem.Amount,
-                        Price = shoppingCartItem.ProductPrice,
-                        Description = shoppingCartItem.ProductName
+                        Price = shoppingCartItem.ProductPrice!.Value,
+                        Description = shoppingCartItem.ProductName!
                     });
                 }
 
+                // Delivery method
                 orderItemsToCreate.Add(new()
                 {
                     OrderId = orderToCreate.Id.Value,
-                    Type = Domain.Enums.OrderItemType.DeliveryMethod,
+                    Type = OrderItemType.DeliveryMethod,
                     Amount = 1,
                     Price = deliveryMethod.Costs ?? 0,
                     Description = deliveryMethod.Name
                 });
 
                 foreach (var orderItemToCreate in orderItemsToCreate)
-                {
-                    // TO-DO: Convert shopping cart items to order items
-                }
+                    await orderItemRepository.Create(orderItemToCreate, Guid.Empty);
+
+                // Finally, create transaction
             }
 
             return Ok(resultOrder);
