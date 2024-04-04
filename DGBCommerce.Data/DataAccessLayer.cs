@@ -180,8 +180,9 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
                 new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = transaction.Id },
                 new SqlParameter("@TRX_SHOP", SqlDbType.UniqueIdentifier) { Value = transaction.ShopId },
-                new SqlParameter("@TRX_AMOUNT", SqlDbType.Decimal) { Value = transaction.Amount },
-                new SqlParameter("@TRX_RECIPIENT", SqlDbType.VarChar) { Value = transaction.Recipient }
+                new SqlParameter("@TRX_RECIPIENT", SqlDbType.VarChar) { Value = transaction.Recipient },
+                new SqlParameter("@TRX_AMOUNT_DUE", SqlDbType.Decimal) { Value = transaction.AmountDue },
+                new SqlParameter("@TRX_AMOUNT_PAID", SqlDbType.Decimal) { Value = transaction.AmountPaid }
             ], mutationId);
         #endregion
 
@@ -265,12 +266,6 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = shoppingCartItemId }
             ]);
-
-        public async Task<MutationResult> DeleteTransaction(Guid transactionId, Guid mutationId)
-            => await NonQuery("SP_MUTATE_Transaction", [
-                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
-                new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = transactionId }
-            ], mutationId);
         #endregion
 
         #region Get
@@ -769,11 +764,11 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SCI_AMOUNT", SqlDbType.Int) { Value = shoppingCartItem.Amount }
             ]);
 
-        public async Task<MutationResult> UpdateTransaction(Transaction transaction, Guid mutationId)
+        public async Task<MutationResult> UpdateTransactionAmountPaid(Guid transactionId, decimal amountPaid, Guid mutationId)
             => await NonQuery("SP_MUTATE_Transaction", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
-                new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = transaction.Id },
-                new SqlParameter("@TRX_PAID", SqlDbType.Decimal) { Value = transaction.Paid }
+                new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = transactionId },
+                new SqlParameter("@TRX_AMOUNT_PAID", SqlDbType.Decimal) { Value = amountPaid }
             ], mutationId);
         #endregion
 

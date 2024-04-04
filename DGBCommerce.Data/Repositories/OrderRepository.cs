@@ -46,14 +46,14 @@ namespace DGBCommerce.Data.Repositories
 
             foreach (DataRow row in table.Rows)
             {
-                orders.Add(new Order()
+                var order = new Order()
                 {
                     Id = new Guid(row["ord_id"].ToString()!),
                     ShopId = new Guid(row["ord_shop"].ToString()!),
                     Customer = new()
                     {
                         Id = new Guid(row["ord_customer"].ToString()!),
-                        ShopId = new Guid(row["ord_customer_shop"].ToString()!),
+                        ShopId = new Guid(row["ord_shop"].ToString()!),
                         EmailAddress = Utilities.DbNullableString(row["ord_customer_email_address"]),
                         Username = Utilities.DbNullableString(row["ord_customer_username"]),
                         Gender = (Gender)Convert.ToInt32(row["ord_customer_gender"]),
@@ -91,9 +91,23 @@ namespace DGBCommerce.Data.Repositories
                         }
                     },
                     DeliveryMethodId = new Guid(row["ord_delivery_method"].ToString()!),
-                    Comments = row["ord_comments"].ToString(),
-                    TransactionId = Utilities.DbNullableGuid(row["ord_transaction"])
-                });
+                    Comments = row["ord_comments"].ToString()
+                };
+
+                if (row["ord_transaction"] != DBNull.Value)
+                {
+                    order.Transaction = new Transaction()
+                    {
+                        Id = new Guid(row["ord_transaction"].ToString()!),
+                        ShopId = new Guid(row["ord_shop"].ToString()!),
+                        Recipient = Utilities.DbNullableString(row["ord_transaction_recipient"]),
+                        AmountDue = Convert.ToDecimal(row["ord_transaction_amount_due"]),
+                        AmountPaid = Convert.ToDecimal(row["ord_transaction_amount_paid"]),
+                        PaidInFull = Utilities.DBNullableDateTime(row["ord_transaction_paid_in_full"])
+                    };
+                }
+
+                orders.Add(order);
             }
 
             return orders;

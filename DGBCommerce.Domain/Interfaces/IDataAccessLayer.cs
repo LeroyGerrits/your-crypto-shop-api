@@ -38,7 +38,6 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
         Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId);
-        Task<MutationResult> DeleteTransaction(Guid transactionId, Guid mutationId);
 
         Task<DataTable> GetAddress(string addressLine1, string? addressLine2, string postalCode, string city, string? province, Guid countryId);
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
@@ -102,6 +101,6 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateProductPhotoMoveUp(Guid productPhotoId, Guid productId, Guid mutationId);
         Task<MutationResult> UpdateShop(Shop shop, Guid mutationId);
         Task<MutationResult> UpdateShoppingCartItem(ShoppingCartItem shoppingCartItem);
-        Task<MutationResult> UpdateTransaction(Transaction transaction, Guid mutationId);
+        Task<MutationResult> UpdateTransactionAmountPaid(Guid transactionId, decimal amountPaid, Guid mutationId);
     }
 }

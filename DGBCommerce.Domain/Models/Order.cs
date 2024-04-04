@@ -13,6 +13,6 @@ namespace DGBCommerce.Domain.Models
         public required Address ShippingAddress { get; set; }
         public required Guid DeliveryMethodId { get; set; }
         public string? Comments { get; set; }
-        public Guid? TransactionId { get; set; }
+        public Transaction? Transaction { get; set; }
     }
 }

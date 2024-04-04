@@ -4,7 +4,7 @@ namespace DGBCommerce.Domain.Parameters
 {
     public class GetOrdersParameters : GetParameters
     {
-        public Guid MerchantId { get; set; }
+        public Guid? MerchantId { get; set; }
         public Guid? Id { get; set; }
         public Guid? ShopId { get; set; }
         public Guid? CustomerId { get; set; }

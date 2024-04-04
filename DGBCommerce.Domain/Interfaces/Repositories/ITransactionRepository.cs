@@ -1,4 +1,5 @@
-﻿using DGBCommerce.Domain.Models;
+﻿using DGBCommerce.Domain.Enums;
+using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
 
 namespace DGBCommerce.Domain.Interfaces.Repositories
@@ -7,5 +8,6 @@ namespace DGBCommerce.Domain.Interfaces.Repositories
     {
         Task<IEnumerable<Transaction>> GetByShopId(Guid ordeshopId);
         Task<IEnumerable<Transaction>> GetUnpaid();
+        Task<MutationResult> UpdateAmountPaid(Transaction item, decimal amountPaid, Guid mutationId);
     }
 }

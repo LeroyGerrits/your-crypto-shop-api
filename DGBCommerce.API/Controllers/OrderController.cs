@@ -84,7 +84,7 @@ namespace DGBCommerce.API.Controllers
                 ShopId = value.ShopId,
                 Customer = customer,
                 Date = DateTime.UtcNow,
-                Status = OrderStatus.New,
+                Status = (shop.OrderMethod == ShopOrderMethod.Automated ? OrderStatus.AwaitingPayment : OrderStatus.New),
                 BillingAddress = address,
                 ShippingAddress = address,
                 DeliveryMethodId = value.DeliveryMethodId,
@@ -134,8 +134,9 @@ namespace DGBCommerce.API.Controllers
                     {
                         Id = newTransactionId,
                         ShopId = shop.Id,
-                        Amount = orderItemsToCreate.Sum(i => i.Amount * i.Price),
-                        Recipient = newDigiByteAddress
+                        Recipient = newDigiByteAddress,
+                        AmountDue = orderItemsToCreate.Sum(i => i.Amount * i.Price),
+                        AmountPaid = 0
                     };
 
                     var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);

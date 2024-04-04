@@ -22,7 +22,7 @@ namespace DGBCommerce.Data.Repositories
             => await GetRaw(new GetTransactionsParameters() { Unpaid = true });
 
         public Task<Transaction?> GetById(Guid merchantId, Guid id)
-            => throw new InvalidOperationException($"{nameof(ShoppingCart)} objects can not be retrieved by merchant ID.");
+            => throw new InvalidOperationException($"{nameof(Transaction)} objects can not be retrieved by merchant ID.");
 
         public async Task<Transaction?> GetById(Guid id)
         {
@@ -34,10 +34,13 @@ namespace DGBCommerce.Data.Repositories
             => _dataAccessLayer.CreateTransaction(item, mutationId);
 
         public Task<MutationResult> Update(Transaction item, Guid mutationId)
-            => _dataAccessLayer.UpdateTransaction(item, mutationId);
+            => throw new InvalidOperationException($"{nameof(Transaction)} objects can not be updated.");
+
+        public Task<MutationResult> UpdateAmountPaid(Transaction item, decimal amountPaid, Guid mutationId)
+            => _dataAccessLayer.UpdateTransactionAmountPaid(item.Id!.Value, amountPaid, mutationId);
 
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
-            => _dataAccessLayer.DeleteTransaction(id, mutationId);
+            => throw new InvalidOperationException($"{nameof(Transaction)} objects can not be deleted.");
 
         private async Task<IEnumerable<Transaction>> GetRaw(GetTransactionsParameters parameters)
         {
@@ -51,10 +54,10 @@ namespace DGBCommerce.Data.Repositories
                     Id = new Guid(row["trx_id"].ToString()!),
                     ShopId = new Guid(row["trx_shop"].ToString()!),
                     Date = Convert.ToDateTime(row["trx_date"]),
-                    Amount = Convert.ToDecimal(row["trx_amount"]),
                     Recipient = Utilities.DbNullableString(row["trx_recipient"]),
-                    Paid = Utilities.DbNullableDecimal(row["trx_paid"]),
-                    PayDate = Utilities.DBNullableDateTime(row["trx_paydate"])
+                    AmountDue = Convert.ToDecimal(row["trx_amount_due"]),                    
+                    AmountPaid = Convert.ToDecimal(row["trx_amount_paid"]),
+                    PaidInFull = Utilities.DBNullableDateTime(row["trx_paid_in_full"])
                 });
             }
 
