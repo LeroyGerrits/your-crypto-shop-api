@@ -31,10 +31,10 @@ namespace DGBCommerce.Data.Repositories
             => _dataAccessLayer.UpdateOrder(item, mutationId);
 
         public Task<MutationResult> UpdateStatus(Order item, OrderStatus status, Guid mutationId)
-            => _dataAccessLayer.UpdateOrder(item, mutationId);
+            => _dataAccessLayer.UpdateOrderStatus(item.Id!.Value, status, mutationId);
 
-        public Task<MutationResult> UpdateStatusAndTransaction(Order item, string txId, Guid mutationId)
-            => _dataAccessLayer.UpdateOrder(item, mutationId);
+        public Task<MutationResult> UpdateTransaction(Order item, Guid transactionId, Guid mutationId)
+            => _dataAccessLayer.UpdateOrderTransaction(item.Id!.Value, transactionId, mutationId);
 
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
             => _dataAccessLayer.DeleteOrder(id, mutationId);
@@ -91,7 +91,8 @@ namespace DGBCommerce.Data.Repositories
                         }
                     },
                     DeliveryMethodId = new Guid(row["ord_delivery_method"].ToString()!),
-                    Comments = row["ord_comments"].ToString()
+                    Comments = row["ord_comments"].ToString(),
+                    TransactionId = Utilities.DbNullableGuid(row["ord_transaction"])
                 });
             }
 

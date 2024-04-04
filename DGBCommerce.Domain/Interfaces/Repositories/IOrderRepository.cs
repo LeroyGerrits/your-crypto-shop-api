@@ -8,6 +8,6 @@ namespace DGBCommerce.Domain.Interfaces.Repositories
     {
         Task<IEnumerable<Order>> GetByStatus(OrderStatus status);        
         Task<MutationResult> UpdateStatus(Order item, OrderStatus status, Guid mutationId);
-        Task<MutationResult> UpdateStatusAndTransaction(Order item, string txId, Guid mutationId);
+        Task<MutationResult> UpdateTransaction(Order item, Guid transactionId, Guid mutationId);
     }
 }

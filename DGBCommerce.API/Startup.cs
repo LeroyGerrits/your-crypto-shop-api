@@ -67,6 +67,7 @@ namespace DGBCommerce.API
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IShoppingCartItemRepository, ShoppingCartItemRepository>();
             services.AddScoped<IStatsRepository, StatsRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
         }
 
         public void Configure(WebApplication app)

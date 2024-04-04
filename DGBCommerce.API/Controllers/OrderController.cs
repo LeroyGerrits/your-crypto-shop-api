@@ -1,4 +1,5 @@
 using DGBCommerce.API.Controllers.Requests;
+using DGBCommerce.API.Services;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces.Repositories;
@@ -20,7 +21,8 @@ namespace DGBCommerce.API.Controllers
         IOrderItemRepository orderItemRepository,
         IShopRepository shopRepository,
         IShoppingCartRepository shoppingCartRepository,
-        IShoppingCartItemRepository shoppingCartItemRepository) : ControllerBase
+        IShoppingCartItemRepository shoppingCartItemRepository,
+        ITransactionRepository transactionRepository) : ControllerBase
     {
         [AllowAnonymous]
         [HttpPost("public")]
@@ -123,16 +125,34 @@ namespace DGBCommerce.API.Controllers
                 foreach (var orderItemToCreate in orderItemsToCreate)
                     await orderItemRepository.Create(orderItemToCreate, Guid.Empty);
 
-                // If shop order method is 'Automated', create a transaction
+                // If shop order method is 'Automated', create a transaction and e-mail customer with payment link
                 if (shop.OrderMethod == ShopOrderMethod.Automated)
                 {
-                    var cumulativePrice = orderItemsToCreate.Sum(i => i.Amount * i.Price);
                     Guid newTransactionId = Guid.NewGuid();
-                    var newDigiByteAddress = await rpcService.GetNewAddress($"DGB Commerce Transaction ${newTransactionId}");
+                    var newDigiByteAddress = await rpcService.GetNewAddress($"DGB Commerce Transaction {newTransactionId}");
+                    var transactionToCreate = new Transaction()
+                    {
+                        Id = newTransactionId,
+                        ShopId = shop.Id,
+                        Amount = orderItemsToCreate.Sum(i => i.Amount * i.Price),
+                        Recipient = newDigiByteAddress
+                    };
 
+                    var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);
+                    if (resultTransaction.Success)
+                    {
+                        var resultOrderTransaction = await orderRepository.UpdateTransaction(orderToCreate, newTransactionId, Guid.Empty);
+                        
+                        // Send e-mail
+                    }
                 }
 
-                // Send e-mails
+                // If shop order method requires manual action, just send an e-mail with a confirmation.
+                // Once the merchant updates the order status, the customer will receive a separate e-mail with a payment link.
+                if (shop.OrderMethod == ShopOrderMethod.ManualActionRequired)
+                {
+                    // Send e-mail
+                }
             }
 
             return Ok(resultOrder);

@@ -7,5 +7,6 @@
         public string? Recipient { get; set; }
         public DateTime? DateFrom { get; set; }
         public DateTime? DateUntil { get; set; }
+        public bool? Unpaid { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DGBCommerce.Domain.Models;
+﻿using DGBCommerce.Domain.Enums;
+using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -22,6 +23,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
         Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart);
         Task<MutationResult> CreateShoppingCartItem(ShoppingCartItem shoppingCartItem);
+        Task<MutationResult> CreateTransaction(Transaction transaction, Guid mutationId);
 
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteCustomer(Guid categoryId, Guid mutationId);
@@ -36,6 +38,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
         Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId);
+        Task<MutationResult> DeleteTransaction(Guid transactionId, Guid mutationId);
 
         Task<DataTable> GetAddress(string addressLine1, string? addressLine2, string postalCode, string city, string? province, Guid countryId);
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
@@ -70,6 +73,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetShoppingCarts(GetShoppingCartsParameters parameters);
         Task<DataTable> GetShoppingCartItems(GetShoppingCartItemsParameters parameters);
         Task<DataTable> GetStats();
+        Task<DataTable> GetTransactions(GetTransactionsParameters parameters);
 
         Task<MutationResult> UpdateCategory(Category category, Guid mutationId);
         Task<MutationResult> UpdateCategoryChangeParent(Guid categoryId, Guid parentId, Guid mutationId);
@@ -85,6 +89,8 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateMerchantPasswordAndSalt(Merchant merchant, string password, string passwordSalt, Guid mutationId);
         Task<MutationResult> UpdateMerchantPasswordResetLinkUsed(MerchantPasswordResetLink merchantPasswordResetLink, Guid mutationId);
         Task<MutationResult> UpdateOrder(Order order, Guid mutationId);
+        Task<MutationResult> UpdateOrderStatus(Guid orderId, OrderStatus status, Guid mutationId);
+        Task<MutationResult> UpdateOrderTransaction(Guid orderId, Guid transactionId, Guid mutationId);
         Task<MutationResult> UpdateOrderItem(OrderItem orderItem, Guid mutationId);
         Task<MutationResult> UpdatePage(Page page, Guid mutationId);
         Task<MutationResult> UpdateProduct(Product product, Guid mutationId);
@@ -96,5 +102,6 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateProductPhotoMoveUp(Guid productPhotoId, Guid productId, Guid mutationId);
         Task<MutationResult> UpdateShop(Shop shop, Guid mutationId);
         Task<MutationResult> UpdateShoppingCartItem(ShoppingCartItem shoppingCartItem);
+        Task<MutationResult> UpdateTransaction(Transaction transaction, Guid mutationId);
     }
 }

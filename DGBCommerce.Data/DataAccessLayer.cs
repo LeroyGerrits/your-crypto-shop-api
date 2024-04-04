@@ -174,6 +174,15 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SCI_PRODUCT", SqlDbType.UniqueIdentifier) { Value = shoppingCartItem.ProductId },
                 new SqlParameter("@SCI_AMOUNT", SqlDbType.Int) { Value = shoppingCartItem.Amount }
             ]);
+
+        public async Task<MutationResult> CreateTransaction(Transaction transaction, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Transaction", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = transaction.Id },
+                new SqlParameter("@TRX_SHOP", SqlDbType.UniqueIdentifier) { Value = transaction.ShopId },
+                new SqlParameter("@TRX_AMOUNT", SqlDbType.Decimal) { Value = transaction.Amount },
+                new SqlParameter("@TRX_RECIPIENT", SqlDbType.VarChar) { Value = transaction.Recipient }
+            ], mutationId);
         #endregion
 
         #region Delete
@@ -256,6 +265,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = shoppingCartItemId }
             ]);
+
+        public async Task<MutationResult> DeleteTransaction(Guid transactionId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Transaction", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = transactionId }
+            ], mutationId);
         #endregion
 
         #region Get
@@ -514,6 +529,16 @@ namespace DGBCommerce.Data
 
         public async Task<DataTable> GetStats()
             => await Get("SP_GET_Stats", []);
+
+        public async Task<DataTable> GetTransactions(GetTransactionsParameters parameters)
+            => await Get("SP_GET_TRANSACTIONS", [
+                new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@TRX_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@TRX_RECIPIENT", SqlDbType.VarChar) { Value = parameters.Recipient },
+                new SqlParameter("@TRX_DATE_FROM", SqlDbType.DateTime) { Value = parameters.DateFrom },
+                new SqlParameter("@TRX_DATE_UNTIL", SqlDbType.DateTime) { Value = parameters.DateUntil },
+                new SqlParameter("@TRX_UNPAID", SqlDbType.Bit) { Value = parameters.Unpaid }
+            ]);
         #endregion
 
         #region Update
@@ -632,6 +657,20 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments }
             ], mutationId);
 
+        public async Task<MutationResult> UpdateOrderStatus(Guid orderId, OrderStatus status, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Order", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
+                new SqlParameter("@ORD_ID", SqlDbType.UniqueIdentifier) { Value = orderId },
+                new SqlParameter("@ORD_STATUS", SqlDbType.TinyInt) { Value = status }
+            ], mutationId);
+
+        public async Task<MutationResult> UpdateOrderTransaction(Guid orderId, Guid transactionId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Order", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 22 },
+                new SqlParameter("@ORD_ID", SqlDbType.UniqueIdentifier) { Value = orderId },
+                new SqlParameter("@ORD_TRANSACTION", SqlDbType.UniqueIdentifier) { Value = transactionId }
+            ], mutationId);
+
         public async Task<MutationResult> UpdateOrderItem(OrderItem orderItem, Guid mutationId)
             => await NonQuery("SP_MUTATE_OrderItem", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
@@ -729,6 +768,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = shoppingCartItem.Id },
                 new SqlParameter("@SCI_AMOUNT", SqlDbType.Int) { Value = shoppingCartItem.Amount }
             ]);
+
+        public async Task<MutationResult> UpdateTransaction(Transaction transaction, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Transaction", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@TRX_ID", SqlDbType.UniqueIdentifier) { Value = transaction.Id },
+                new SqlParameter("@TRX_PAID", SqlDbType.Decimal) { Value = transaction.Paid }
+            ], mutationId);
         #endregion
 
         private async Task<DataTable> Get(string storedProcedure, List<SqlParameter> parameters)

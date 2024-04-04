@@ -4,7 +4,7 @@
     {
         public Guid? Id { get; set; }
         public required Guid ShopId { get; set; }
-        public required DateTime Date { get; set; }
+        public DateTime Date { get; set; }
         public required decimal Amount { get; set; }
         public required string Recipient { get; set; }
         public decimal? Paid { get; set; }

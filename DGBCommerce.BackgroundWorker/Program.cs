@@ -13,8 +13,9 @@ namespace DGBCommerce.BackgroundWorker
             var _configuration = GetConfig();
             string connectionString = _configuration.GetConnectionString("DGBCommerce") ?? throw new Exception("connectionString 'DBBCommerce' not set.");
             DataAccessLayer dataAccessLayer = new(connectionString);
-            MerchantRepository merchantRepository = new(dataAccessLayer);
+            MerchantRepository merchantRepository = new(dataAccessLayer);            
             OrderRepository orderRepository = new(dataAccessLayer);
+            TransactionRepository transactionRepository = new(dataAccessLayer);
 
             Console.WriteLine("ConnectionString:");
             Console.WriteLine(connectionString);
@@ -32,6 +33,13 @@ namespace DGBCommerce.BackgroundWorker
             foreach (Merchant merchant in merchants)
             {
                 Console.WriteLine(merchant.Username);
+            }
+
+            // Retrieve Transactions that are unpaid and have been open for shorter than 3 days
+            var unpaidTransactions = await transactionRepository.GetUnpaid();
+            foreach (Transaction transaction in unpaidTransactions)
+            {
+                Console.WriteLine($"Checking transaction {transaction.Id} for wallet {transaction.Recipient}.");
             }
 
             Console.ReadLine();
