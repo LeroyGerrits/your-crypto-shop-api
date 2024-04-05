@@ -4,6 +4,7 @@ using DGBCommerce.Data.Services;
 using DGBCommerce.Domain.Models;
 using Microsoft.Extensions.Configuration;
 using System.Text;
+using System.Windows.Forms;
 
 namespace DGBCommerce.BackgroundWorker
 {
@@ -163,7 +164,7 @@ namespace DGBCommerce.BackgroundWorker
             Log($"End {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
 
             // Write output to log
-            var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Log";
+            var path = Path.GetDirectoryName(Application.ExecutablePath) + "\\Log";
             Log($"Writing log to '{path}'", ref sbLog);
 
             if (!Path.Exists(path))
