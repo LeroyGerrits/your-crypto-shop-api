@@ -36,13 +36,19 @@ namespace DGBCommerce.Data.Services
             => await Request<List<ListReceivedByAddressResponse>>("listreceivedbyaddress");
 
         public async Task<string> SendToAddress(string address, decimal amount)
-            => await Request<string>("sendtoaddress", address, amount);
+            => await SendToAddress(address, amount, string.Empty, string.Empty, false);
+
+        public async Task<string> SendToAddress(string address, decimal amount, string comment, string commentTo, bool subtractFeeFromAmount)
+            => await Request<string>("sendtoaddress", address, Math.Round(amount, 8), comment, commentTo, subtractFeeFromAmount);
 
         public async Task<ValidateAddressResponse> ValidateAddress(string address)
             => await Request<ValidateAddressResponse>("validateaddress", address);
 
         public async Task<string> WalletLock()
             => await Request<string>("walletlock");
+
+        public async Task<string> WalletPassphrase(string passphrase)
+            => await WalletPassphrase(passphrase, 5);
 
         public async Task<string> WalletPassphrase(string passphrase, int timeoutInSeconds)
             => await Request<string>("walletpassphrase", passphrase, timeoutInSeconds);
@@ -127,7 +133,10 @@ namespace DGBCommerce.Data.Services
                 throw new RpcResponseDeserializationException("There was a problem deserializing the response from the wallet", jsonException);
             }
 
-            return rpcResponse!.Result ?? throw new RpcException("Result could not be deserialized.");
+            if (rpcResponse?.Error?.Message != null)
+                throw new RpcException($"RPC '{rpcMethod}' error: {rpcResponse.Error.Message}");
+
+            return rpcResponse!.Result!;
         }
     }
 }

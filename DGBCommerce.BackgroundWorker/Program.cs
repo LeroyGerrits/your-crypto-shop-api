@@ -16,6 +16,7 @@ namespace DGBCommerce.BackgroundWorker
             string rpcDaemonUrl = _configuration.GetSection("RpcSettings:DaemonUrl").Value ?? throw new Exception("RPC setting 'DaemonUrl' not set.");
             string rpcUsername = _configuration.GetSection("RpcSettings:Username").Value ?? throw new Exception("RPC setting 'Username' not set.");
             string rpcPassword = _configuration.GetSection("RpcSettings:Password").Value ?? throw new Exception("RPC setting 'Password' not set.");
+            string rpcWalletPassphrase = _configuration.GetSection("RpcSettings:WalletPassphrase").Value ?? throw new Exception("RPC setting 'WalletPassphrase' not set.");
 
             DataAccessLayer dataAccessLayer = new(connectionString);
             OrderRepository orderRepository = new(dataAccessLayer);
@@ -97,25 +98,40 @@ namespace DGBCommerce.BackgroundWorker
                                 Log($"! Updated", ref sbLog);
 
                                 // Send the merchant 99% of the paid amount
-                                var amountToSendToMerchant = order.Transaction.AmountPaid * 0.99m;
-                                var resultSendToAddress = await rpcService.SendToAddress(merchantDigiByteWalletAddress, amountToSendToMerchant);
-                                var transactionToCreate = new Transaction()
-                                {
-                                    ShopId = Guid.Empty,
-                                    Recipient = merchantDigiByteWalletAddress,
-                                    AmountDue = amountToSendToMerchant,
-                                    AmountPaid = amountToSendToMerchant,
-                                    Tx = resultSendToAddress
-                                };
+                                var amountToSendToMerchant = Math.Round(order.Transaction.AmountPaid * 0.99m, 8); // sendtoaddress only supports up to 8 decimals
+                                string resultSendToAddress = string.Empty;
 
-                                var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);
-                                if (resultTransaction.Success)
+                                try
                                 {
-                                    Log($"! Paid merchant {amountToSendToMerchant:N8} at {merchantDigiByteWalletAddress}: DGB Commerce Transaction {resultTransaction.Identifier} (Tx {resultSendToAddress})", ref sbLog);
+                                    await rpcService.WalletPassphrase(rpcWalletPassphrase);
+                                    resultSendToAddress = await rpcService.SendToAddress(merchantDigiByteWalletAddress, amountToSendToMerchant);
+                                    await rpcService.WalletLock();
                                 }
-                                else
+                                catch (Exception ex)
                                 {
-                                    Log($"! Transaction creation error: {resultTransaction.Message}", ref sbLog);
+                                    Log($"! SendtoAddress error: {ex.Message}", ref sbLog);
+                                }
+
+                                if (!string.IsNullOrEmpty(resultSendToAddress))
+                                {
+                                    var transactionToCreate = new Transaction()
+                                    {
+                                        ShopId = order.ShopId,
+                                        Recipient = merchantDigiByteWalletAddress,
+                                        AmountDue = amountToSendToMerchant,
+                                        AmountPaid = amountToSendToMerchant,
+                                        Tx = resultSendToAddress
+                                    };
+
+                                    var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);
+                                    if (resultTransaction.Success)
+                                    {
+                                        Log($"! Paid merchant {amountToSendToMerchant:N8} at {merchantDigiByteWalletAddress}: DGB Commerce Transaction {resultTransaction.Identifier} (Tx {resultSendToAddress})", ref sbLog);
+                                    }
+                                    else
+                                    {
+                                        Log($"! Transaction creation error: {resultTransaction.Message}", ref sbLog);
+                                    }
                                 }
                             }
                             else
