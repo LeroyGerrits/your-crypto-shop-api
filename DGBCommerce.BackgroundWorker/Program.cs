@@ -64,9 +64,9 @@ namespace DGBCommerce.BackgroundWorker
                     {
                         var resultTransaction = await transactionRepository.UpdateAmountPaid(transaction, balance, Guid.Empty);
                         if (resultTransaction.Success)
-                            Log($"! Updated", ref sbLog);
+                            Log($"! Transaction updated", ref sbLog);
                         else
-                            Log($"! Update error: {resultTransaction.Message}", ref sbLog);
+                            Log($"! Transaction update error: {resultTransaction.Message}", ref sbLog);
                     }
                 }
             }
@@ -92,77 +92,76 @@ namespace DGBCommerce.BackgroundWorker
 
                         if (merchantDigiByteWalletAddress != null)
                         {
-                            var resultOrder = await orderRepository.UpdateStatus(order, Domain.Enums.OrderStatus.Paid, Guid.Empty);
-                            if (resultOrder.Success)
+                            // Send the merchant 99% of the paid amount
+                            var amountToSendToMerchant = Math.Round(order.Transaction.AmountPaid * 0.99m, 8); // sendtoaddress only supports up to 8 decimals
+                            string resultSendToAddress = string.Empty;
+
+                            try
                             {
-                                Log($"! Updated", ref sbLog);
+                                await rpcService.WalletPassphrase(rpcWalletPassphrase);
+                                resultSendToAddress = await rpcService.SendToAddress(merchantDigiByteWalletAddress, amountToSendToMerchant);
+                                await rpcService.WalletLock();
+                            }
+                            catch (Exception ex)
+                            {
+                                Log($"! SendtoAddress error: {ex.Message}", ref sbLog);
+                            }
 
-                                // Send the merchant 99% of the paid amount
-                                var amountToSendToMerchant = Math.Round(order.Transaction.AmountPaid * 0.99m, 8); // sendtoaddress only supports up to 8 decimals
-                                string resultSendToAddress = string.Empty;
-
-                                try
+                            if (!string.IsNullOrEmpty(resultSendToAddress))
+                            {
+                                var transactionToCreate = new Transaction()
                                 {
-                                    await rpcService.WalletPassphrase(rpcWalletPassphrase);
-                                    resultSendToAddress = await rpcService.SendToAddress(merchantDigiByteWalletAddress, amountToSendToMerchant);
-                                    await rpcService.WalletLock();
+                                    ShopId = order.ShopId,
+                                    Recipient = merchantDigiByteWalletAddress,
+                                    AmountDue = amountToSendToMerchant,
+                                    AmountPaid = amountToSendToMerchant,
+                                    Tx = resultSendToAddress
+                                };
+
+                                var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);
+                                if (resultTransaction.Success)
+                                {
+                                    Log($"! Paid merchant {amountToSendToMerchant:N8} at {merchantDigiByteWalletAddress}: DGB Commerce Transaction {resultTransaction.Identifier} (Tx {resultSendToAddress})", ref sbLog);
                                 }
-                                catch (Exception ex)
+                                else
                                 {
-                                    Log($"! SendtoAddress error: {ex.Message}", ref sbLog);
+                                    Log($"! Transaction creation error: {resultTransaction.Message}", ref sbLog);
                                 }
 
-                                if (!string.IsNullOrEmpty(resultSendToAddress))
+                                var resultOrder = await orderRepository.UpdateStatus(order, Domain.Enums.OrderStatus.Paid, Guid.Empty);
+                                if (resultOrder.Success)
                                 {
-                                    var transactionToCreate = new Transaction()
-                                    {
-                                        ShopId = order.ShopId,
-                                        Recipient = merchantDigiByteWalletAddress,
-                                        AmountDue = amountToSendToMerchant,
-                                        AmountPaid = amountToSendToMerchant,
-                                        Tx = resultSendToAddress
-                                    };
-
-                                    var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);
-                                    if (resultTransaction.Success)
-                                    {
-                                        Log($"! Paid merchant {amountToSendToMerchant:N8} at {merchantDigiByteWalletAddress}: DGB Commerce Transaction {resultTransaction.Identifier} (Tx {resultSendToAddress})", ref sbLog);
-                                    }
-                                    else
-                                    {
-                                        Log($"! Transaction creation error: {resultTransaction.Message}", ref sbLog);
-                                    }
+                                    Log($"! Order status set to '{Domain.Enums.OrderStatus.Paid}'", ref sbLog);
+                                }
+                                else
+                                {
+                                    Log($"! Order update error: {resultOrder.Message}", ref sbLog);
                                 }
                             }
                             else
                             {
-                                Log($"! Update error: {resultOrder.Message}", ref sbLog);
+                                Log($"! Can not pay merchant; shop has no DigiByte wallet configured", ref sbLog);
                             }
                         }
                         else
                         {
-                            Log($"! Could not update, no DigiByte wallet address set for shop", ref sbLog);
+                            // Set order to abandoned if it has been awaiting payment for x days?
                         }
                     }
-                    else
-                    {
-                        // Set order to abandoned if it has been awaiting payment for x days?
-                    }
                 }
+
+                Log("", ref sbLog);
+                Log($"End {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
+
+                // Write output to log
+                var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Log";
+                if (!Path.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                using StreamWriter writer = new($"{path}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.log");
+                writer.Write(sbLog.ToString());
             }
-
-            Log("", ref sbLog);
-            Log($"End {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
-
-            // Write output to log
-            var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Log";
-            if (!Path.Exists(path))
-                Directory.CreateDirectory(path);
-
-            using StreamWriter writer = new($"{path}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.log");
-            writer.Write(sbLog.ToString());
         }
-
 
 
         private static void Log(string message, ref StringBuilder sbLog)
