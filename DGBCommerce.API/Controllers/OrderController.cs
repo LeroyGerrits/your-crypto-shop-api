@@ -23,6 +23,7 @@ namespace DGBCommerce.API.Controllers
         ICustomerRepository customerRepository,
         IDeliveryMethodRepository deliveryMethodRepository,
         IMailService mailService,
+        IMerchantRepository merchantRepository,
         IOrderRepository orderRepository,
         IOrderItemRepository orderItemRepository,
         IRpcService rpcService,
@@ -47,6 +48,10 @@ namespace DGBCommerce.API.Controllers
 
             if (!shop.HasWallet)
                 return NotFound(new { message = "Shop has no wallet configured." });
+
+            var merchant = await merchantRepository.GetById(shop.MerchantId, shop.MerchantId);
+            if (merchant == null)
+                return NotFound(new { message = "Merchant not found." });
 
             var deliveryMethod = await deliveryMethodRepository.GetByIdPublic(value.DeliveryMethodId);
             if (deliveryMethod == null)
@@ -144,15 +149,18 @@ namespace DGBCommerce.API.Controllers
                 if (customer.Gender == Gender.Female) salutation = "Ms.";
 
                 StringBuilder sbMail = new();
+                sbMail.Append("<head>");
                 sbMail.Append("<style>");
                 sbMail.Append("table { border-collapse:collapse; }");
                 sbMail.Append("td, th { border:1px solid #aaa; padding:5px; }");
                 sbMail.Append("</style>");
+                sbMail.Append("</head>");
+                sbMail.Append("<body>");
                 sbMail.Append($"<p>Hi {salutation} {customer.FirstName} {customer.LastName},</p>");
                 sbMail.Append($"<p>Your order on {shop.Name} was succesfully created.</p>");
                 sbMail.Append($"<table>");
                 sbMail.Append($"<tr>");
-                sbMail.Append($"<th>Product</th>");
+                sbMail.Append($"<th style=\"text-align:left;\">Product</th>");
                 sbMail.Append($"<th style=\"text-align:right;\">Amount</th>");
                 sbMail.Append($"<th style=\"text-align:right;\">Price</th>");
                 sbMail.Append($"<th style=\"text-align:right;\">Total</th>");
@@ -178,9 +186,9 @@ namespace DGBCommerce.API.Controllers
                 sbMail.Append($"</tr>");
 
                 sbMail.Append($"<tr>");
-                sbMail.Append($"<td colspan=\"4\" style=\"text-align:right;\">Ɗ&nbsp;{cumulativeAmount.ToString("#.########")}</td>");
+                sbMail.Append($"<td colspan=\"4\" style=\"text-align:right;\"><strong>Ɗ&nbsp;{cumulativeAmount.ToString("#.########")}</strong></td>");
                 sbMail.Append($"</tr>");
-                sbMail.Append($"<table>");
+                sbMail.Append($"</table>");
 
                 foreach (var orderItemToCreate in orderItemsToCreate)
                     await orderItemRepository.Create(orderItemToCreate, Guid.Empty);
@@ -217,9 +225,10 @@ namespace DGBCommerce.API.Controllers
                     sbMail.Append($"<p>You will receive additional information and payment instructions as soon as the merchant processes your order.</p>");
                 }
 
-                sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
                 sbMail.Append($"<p>DGB Commerce</p>");
+                sbMail.Append("</body>");
                 mailService.SendMail(customer.EmailAddress, $"Your order on {shop.Name}", sbMail.ToString());
+                mailService.SendMail(merchant.EmailAddress, $"New order placed on {shop.Name} (COPY)", sbMail.ToString());
             }
 
             return Ok(resultOrder);
