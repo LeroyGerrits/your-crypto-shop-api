@@ -163,14 +163,26 @@ namespace DGBCommerce.BackgroundWorker
             Log("", ref sbLog);
             Log($"End {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
 
-            // Write output to log
-            var path = Path.GetDirectoryName(Application.ExecutablePath) + "\\Log";
-            Log($"Writing log to '{path}'", ref sbLog);
+            var logPath = Path.GetDirectoryName(Application.ExecutablePath) + "\\Log";
 
-            if (!Path.Exists(path))
-                Directory.CreateDirectory(path);
+            // Delete log files older than 3 days
+            string[] files = Directory.GetFiles(logPath);
 
-            using StreamWriter writer = new($"{path}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.log");
+            foreach (string file in files)
+            {
+                FileInfo fileInfo = new(file);
+
+                if (fileInfo.CreationTime < DateTime.Now.AddDays(-3))
+                    fileInfo.Delete();
+            }
+
+            // Write output to log            
+            Log($"Writing log to '{logPath}'", ref sbLog);
+
+            if (!Path.Exists(logPath))
+                Directory.CreateDirectory(logPath);
+
+            using StreamWriter writer = new($"{logPath}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.log");
             writer.Write(sbLog.ToString());
         }
 
