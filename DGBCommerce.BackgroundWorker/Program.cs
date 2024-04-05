@@ -148,19 +148,29 @@ namespace DGBCommerce.BackgroundWorker
                             // Set order to abandoned if it has been awaiting payment for x days?
                         }
                     }
+                    else
+                    {
+                        Log($"! Order transaction is not yet paid in full", ref sbLog);
+                    }
                 }
-
-                Log("", ref sbLog);
-                Log($"End {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
-
-                // Write output to log
-                var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Log";
-                if (!Path.Exists(path))
-                    Directory.CreateDirectory(path);
-
-                using StreamWriter writer = new($"{path}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.log");
-                writer.Write(sbLog.ToString());
+                else
+                {
+                    Log($"! Order has no transaction", ref sbLog);
+                }
             }
+
+            Log("", ref sbLog);
+            Log($"End {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
+
+            // Write output to log
+            var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Log";
+            Log($"Writing log to '{path}'", ref sbLog);
+
+            if (!Path.Exists(path))
+                Directory.CreateDirectory(path);
+
+            using StreamWriter writer = new($"{path}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.log");
+            writer.Write(sbLog.ToString());
         }
 
 
