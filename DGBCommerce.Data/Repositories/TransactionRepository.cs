@@ -57,7 +57,8 @@ namespace DGBCommerce.Data.Repositories
                     Recipient = Utilities.DbNullableString(row["trx_recipient"]),
                     AmountDue = Convert.ToDecimal(row["trx_amount_due"]),                    
                     AmountPaid = Convert.ToDecimal(row["trx_amount_paid"]),
-                    PaidInFull = Utilities.DBNullableDateTime(row["trx_paid_in_full"])
+                    PaidInFull = Utilities.DBNullableDateTime(row["trx_paid_in_full"]),
+                    Tx = Utilities.DbNullableString(row["trx_tx"])
                 });
             }
 

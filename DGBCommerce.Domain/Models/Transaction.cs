@@ -9,5 +9,6 @@
         public required decimal AmountDue { get; set; }        
         public required decimal AmountPaid { get; set; }
         public DateTime? PaidInFull { get; set; }
+        public string? Tx { get; set; }
     }
 }

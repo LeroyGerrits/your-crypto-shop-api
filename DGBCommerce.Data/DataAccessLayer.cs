@@ -182,7 +182,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@TRX_SHOP", SqlDbType.UniqueIdentifier) { Value = transaction.ShopId },
                 new SqlParameter("@TRX_RECIPIENT", SqlDbType.VarChar) { Value = transaction.Recipient },
                 new SqlParameter("@TRX_AMOUNT_DUE", SqlDbType.Decimal) { Value = transaction.AmountDue },
-                new SqlParameter("@TRX_AMOUNT_PAID", SqlDbType.Decimal) { Value = transaction.AmountPaid }
+                new SqlParameter("@TRX_AMOUNT_PAID", SqlDbType.Decimal) { Value = transaction.AmountPaid },
+                new SqlParameter("@TRX_TX", SqlDbType.VarChar) { Value = transaction.Tx }
             ], mutationId);
         #endregion
 

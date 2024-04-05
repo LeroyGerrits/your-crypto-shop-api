@@ -1,6 +1,7 @@
 ﻿using DGBCommerce.Data;
 using DGBCommerce.Data.Repositories;
 using DGBCommerce.Data.Services;
+using DGBCommerce.Domain.Models;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 
@@ -19,11 +20,20 @@ namespace DGBCommerce.BackgroundWorker
             DataAccessLayer dataAccessLayer = new(connectionString);
             OrderRepository orderRepository = new(dataAccessLayer);
             RpcService rpcService = new(rpcDaemonUrl, rpcUsername, rpcPassword);
+            ShopRepository shopRepository = new(dataAccessLayer);
             TransactionRepository transactionRepository = new(dataAccessLayer);
 
             StringBuilder sbLog = new();
             Log($"Start {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
-            
+
+            // Retrieve shops and DigiByte wallets and construct dictionary
+            var shops = await shopRepository.Get(new Domain.Parameters.GetShopsParameters());
+            Dictionary<Guid, string> dictDigiByteWalletPerShop = [];
+
+            foreach (var shop in shops)
+                if (shop.Wallet != null)
+                    dictDigiByteWalletPerShop.Add(shop.Id!.Value, shop.Wallet.Address);
+
             // Retrieve addresses and balances and construct dictionary
             var listReceivedByAddress = await rpcService.ListReceivedByAddress();
             Dictionary<string, decimal> dictBalancePerAddress = [];
@@ -34,7 +44,7 @@ namespace DGBCommerce.BackgroundWorker
 
             // Retrieve unpaid transactions and check if balance for corresponding wallets has changed
             var unpaidTransactions = await transactionRepository.GetUnpaid();
-            foreach (Domain.Models.Transaction transaction in unpaidTransactions)
+            foreach (Transaction transaction in unpaidTransactions)
             {
                 Log("", ref sbLog);
                 Log($"Transaction {transaction.Id}", ref sbLog);
@@ -71,14 +81,52 @@ namespace DGBCommerce.BackgroundWorker
                 {
                     Log($"- Transaction: {order.Transaction.Id}", ref sbLog);
 
-                    // If transaction was paid in full earlier, update order's status
                     if (order.Transaction.PaidInFull.HasValue)
                     {
-                        var resultOrder = await orderRepository.UpdateStatus(order, Domain.Enums.OrderStatus.Paid, Guid.Empty);
-                        if (resultOrder.Success)
-                            Log($"! Updated", ref sbLog);
+                        // If transaction was paid in full earlier, update order's status
+                        string? merchantDigiByteWalletAddress = null;
+
+                        if (dictDigiByteWalletPerShop.TryGetValue(order.ShopId, out var value))
+                            merchantDigiByteWalletAddress = value;
+
+                        if (merchantDigiByteWalletAddress != null)
+                        {
+                            var resultOrder = await orderRepository.UpdateStatus(order, Domain.Enums.OrderStatus.Paid, Guid.Empty);
+                            if (resultOrder.Success)
+                            {
+                                Log($"! Updated", ref sbLog);
+
+                                // Send the merchant 99% of the paid amount
+                                var amountToSendToMerchant = order.Transaction.AmountPaid * 0.99m;
+                                var resultSendToAddress = await rpcService.SendToAddress(merchantDigiByteWalletAddress, amountToSendToMerchant);
+                                var transactionToCreate = new Transaction()
+                                {
+                                    ShopId = Guid.Empty,
+                                    Recipient = merchantDigiByteWalletAddress,
+                                    AmountDue = amountToSendToMerchant,
+                                    AmountPaid = amountToSendToMerchant,
+                                    Tx = resultSendToAddress
+                                };
+
+                                var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);
+                                if (resultTransaction.Success)
+                                {
+                                    Log($"! Paid merchant {amountToSendToMerchant:N8} at {merchantDigiByteWalletAddress}: DGB Commerce Transaction {resultTransaction.Identifier} (Tx {resultSendToAddress})", ref sbLog);
+                                }
+                                else
+                                {
+                                    Log($"! Transaction creation error: {resultTransaction.Message}", ref sbLog);
+                                }
+                            }
+                            else
+                            {
+                                Log($"! Update error: {resultOrder.Message}", ref sbLog);
+                            }
+                        }
                         else
-                            Log($"! Update error: {resultOrder.Message}", ref sbLog);
+                        {
+                            Log($"! Could not update, no DigiByte wallet address set for shop", ref sbLog);
+                        }
                     }
                     else
                     {
@@ -98,6 +146,8 @@ namespace DGBCommerce.BackgroundWorker
             using StreamWriter writer = new($"{path}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.log");
             writer.Write(sbLog.ToString());
         }
+
+
 
         private static void Log(string message, ref StringBuilder sbLog)
         {
