@@ -3,6 +3,7 @@ using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using DGBCommerce.Domain.Parameters;
 using System.Data;
 
@@ -22,6 +23,15 @@ namespace DGBCommerce.Data.Repositories
         {
             var shops = await GetRaw(new GetOrdersParameters() { MerchantId = merchantId, Id = id });
             return shops.ToList().SingleOrDefault();
+        }
+
+        public async Task<IEnumerable<PublicOrder>> GetPublic(GetOrdersParameters parameters)
+            => await GetRawPublic(parameters);
+
+        public async Task<PublicOrder?> GetByIdPublic(Guid shopId, Guid id)
+        {
+            var orders = await GetRawPublic(new GetOrdersParameters() { ShopId = shopId, Id = id });
+            return orders.ToList().SingleOrDefault();
         }
 
         public Task<MutationResult> Create(Order item, Guid mutationId)
@@ -103,11 +113,68 @@ namespace DGBCommerce.Data.Repositories
                         Recipient = Utilities.DbNullableString(row["ord_transaction_recipient"]),
                         AmountDue = Convert.ToDecimal(row["ord_transaction_amount_due"]),
                         AmountPaid = Convert.ToDecimal(row["ord_transaction_amount_paid"]),
-                        PaidInFull = Utilities.DBNullableDateTime(row["ord_transaction_paid_in_full"])
+                        PaidInFull = Utilities.DBNullableDateTime(row["ord_transaction_paid_in_full"]),
+                        Tx = Utilities.DbNullableString(row["ord_transaction_tx"])
                     };
                 }
 
                 orders.Add(order);
+            }
+
+            return orders;
+        }
+
+        private async Task<IEnumerable<PublicOrder>> GetRawPublic(GetOrdersParameters parameters)
+        {
+            DataTable table = await _dataAccessLayer.GetOrders(parameters);
+            List<PublicOrder> orders = [];
+
+            foreach (DataRow row in table.Rows)
+            {
+                orders.Add(new PublicOrder()
+                {
+                    Id = new Guid(row["ord_id"].ToString()!),
+                    ShopId = new Guid(row["ord_shop"].ToString()!),
+                    CustomerId = new Guid(row["ord_customer"].ToString()!),
+                    Date = Convert.ToDateTime(row["ord_date"]),
+                    Status = (OrderStatus)Convert.ToInt32(row["ord_status"]),
+                    BillingAddress = new()
+                    {
+                        AddressLine1 = Utilities.DbNullableString(row["ord_address_billing_address_line_1"]),
+                        AddressLine2 = Utilities.DbNullableString(row["ord_address_billing_address_line_2"]),
+                        PostalCode = Utilities.DbNullableString(row["ord_address_billing_postal_code"]),
+                        City = Utilities.DbNullableString(row["ord_address_billing_city"]),
+                        Province = Utilities.DbNullableString(row["ord_address_billing_country"]),
+                        Country = new()
+                        {
+                            Id = new Guid(row["ord_address_billing_country"].ToString()!),
+                            Code = Utilities.DbNullableString(row["ord_address_billing_country_code"]),
+                            Name = Utilities.DbNullableString(row["ord_address_billing_country_name"])
+                        }
+                    },
+                    ShippingAddress = new()
+                    {
+                        AddressLine1 = Utilities.DbNullableString(row["ord_address_shipping_address_line_1"]),
+                        AddressLine2 = Utilities.DbNullableString(row["ord_address_shipping_address_line_2"]),
+                        PostalCode = Utilities.DbNullableString(row["ord_address_shipping_postal_code"]),
+                        City = Utilities.DbNullableString(row["ord_address_shipping_city"]),
+                        Province = Utilities.DbNullableString(row["ord_address_shipping_country"]),
+                        Country = new()
+                        {
+                            Id = new Guid(row["ord_address_shipping_country"].ToString()!),
+                            Code = Utilities.DbNullableString(row["ord_address_shipping_country_code"]),
+                            Name = Utilities.DbNullableString(row["ord_address_shipping_country_name"])
+                        }
+                    },
+                    DeliveryMethodId = new Guid(row["ord_delivery_method"].ToString()!),
+                    Comments = row["ord_comments"].ToString(),
+                    TransactionId = Utilities.DbNullableGuid(row["ord_transaction"]),
+                    TransactionRecipient = Utilities.DbNullableString(row["ord_transaction_recipient"]),
+                    TransactionAmountDue = Convert.ToDecimal(row["ord_transaction_amount_due"]),
+                    TransactionAmountPaid = Convert.ToDecimal(row["ord_transaction_amount_paid"]),
+                    TransactionPaidInFull = Utilities.DBNullableDateTime(row["ord_transaction_paid_in_full"]),
+                    TransactionTx = Utilities.DbNullableString(row["ord_transaction_tx"])
+                });
             }
 
             return orders;

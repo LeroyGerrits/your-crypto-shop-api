@@ -1,29 +1,38 @@
-using DGBCommerce.API.Controllers.Requests;
+﻿using DGBCommerce.API.Controllers.Requests;
 using DGBCommerce.API.Services;
+using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Interfaces.Services;
 using DGBCommerce.Domain.Models;
+using DGBCommerce.Domain.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Text;
+using System.Web;
 
 namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class OrderController(
+        IOptions<AppSettings> appSettings,
         IAddressService addressService,
         ICustomerRepository customerRepository,
         IDeliveryMethodRepository deliveryMethodRepository,
-        IRpcService rpcService,
+        IMailService mailService,
         IOrderRepository orderRepository,
         IOrderItemRepository orderItemRepository,
+        IRpcService rpcService,
         IShopRepository shopRepository,
         IShoppingCartRepository shoppingCartRepository,
         IShoppingCartItemRepository shoppingCartItemRepository,
         ITransactionRepository transactionRepository) : ControllerBase
     {
+        private readonly AppSettings _appSettings = appSettings.Value;
+
         [AllowAnonymous]
         [HttpPost("public")]
         public async Task<ActionResult> Post([FromBody] CreateOrderRequest value)
@@ -51,6 +60,9 @@ namespace DGBCommerce.API.Controllers
 
             if (value.CustomerId != null)
                 customer = await customerRepository.GetById(value.CustomerId.Value!);
+
+            if (customer == null)
+                customer = await customerRepository.GetByEmailAddress(shop.Id, value.EmailAddress);
 
             if (customer == null)
             {
@@ -97,9 +109,9 @@ namespace DGBCommerce.API.Controllers
                 // Creating the order was successfull, now create the order items
                 orderToCreate.Id = resultOrder.Identifier;
                 List<OrderItem> orderItemsToCreate = [];
+                var shoppingCartItems = await shoppingCartItemRepository.GetByShoppingCartId(shoppingCart.Id!.Value);
 
                 // Shopping cart items
-                var shoppingCartItems = await shoppingCartItemRepository.GetByShoppingCartId(shoppingCart.Id!.Value);
                 foreach (var shoppingCartItem in shoppingCartItems)
                 {
                     orderItemsToCreate.Add(new()
@@ -122,6 +134,54 @@ namespace DGBCommerce.API.Controllers
                     Description = deliveryMethod.Name
                 });
 
+                // Calculate cumulative amount
+                var cumulativeAmount = orderItemsToCreate.Sum(i => i.Amount * i.Price);
+
+                // Mail template
+                string salutation = "Mr./Ms.";
+
+                if (customer.Gender == Gender.Male) salutation = "Mr.";
+                if (customer.Gender == Gender.Female) salutation = "Ms.";
+
+                StringBuilder sbMail = new();
+                sbMail.Append("<style>");
+                sbMail.Append("table { border-collapse:collapse; }");
+                sbMail.Append("td, th { border:1px solid #aaa; padding:5px; }");
+                sbMail.Append("</style>");
+                sbMail.Append($"<p>Hi {salutation} {customer.FirstName} {customer.LastName},</p>");
+                sbMail.Append($"<p>Your order on {shop.Name} was succesfully created.</p>");
+                sbMail.Append($"<table>");
+                sbMail.Append($"<tr>");
+                sbMail.Append($"<th>Product</th>");
+                sbMail.Append($"<th style=\"text-align:right;\">Amount</th>");
+                sbMail.Append($"<th style=\"text-align:right;\">Price</th>");
+                sbMail.Append($"<th style=\"text-align:right;\">Total</th>");
+                sbMail.Append($"</tr>");
+
+                foreach (var shoppingCartItem in shoppingCartItems)
+                {
+                    sbMail.Append($"<tr>");
+                    sbMail.Append($"<td>{HttpUtility.HtmlEncode(shoppingCartItem.ProductName)}</td>");
+                    sbMail.Append($"<td style=\"text-align:right;\">{shoppingCartItem.Amount}</td>");
+                    sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{shoppingCartItem.ProductPrice!.Value.ToString("#.########")}</td>");
+                    sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{shoppingCartItem.Total.ToString("#.########")}</td>");
+                    sbMail.Append($"</tr>");
+                }
+
+                sbMail.Append($"<tr>");
+                sbMail.Append($"<td colspan=\"3\">{HttpUtility.HtmlEncode(deliveryMethod.Name)}</td>");
+                
+                if (deliveryMethod.Costs.HasValue)
+                    sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{deliveryMethod.Costs.Value.ToString("#.########")}</td>");
+                else
+                    sbMail.Append($"<td></td>");
+                sbMail.Append($"</tr>");
+
+                sbMail.Append($"<tr>");
+                sbMail.Append($"<td colspan=\"4\" style=\"text-align:right;\">Ɗ&nbsp;{cumulativeAmount.ToString("#.########")}</td>");
+                sbMail.Append($"</tr>");
+                sbMail.Append($"<table>");
+
                 foreach (var orderItemToCreate in orderItemsToCreate)
                     await orderItemRepository.Create(orderItemToCreate, Guid.Empty);
 
@@ -135,7 +195,7 @@ namespace DGBCommerce.API.Controllers
                         Id = newTransactionId,
                         ShopId = shop.Id,
                         Recipient = newDigiByteAddress,
-                        AmountDue = orderItemsToCreate.Sum(i => i.Amount * i.Price),
+                        AmountDue = cumulativeAmount,
                         AmountPaid = 0
                     };
 
@@ -143,8 +203,10 @@ namespace DGBCommerce.API.Controllers
                     if (resultTransaction.Success)
                     {
                         var resultOrderTransaction = await orderRepository.UpdateTransaction(orderToCreate, newTransactionId, Guid.Empty);
-                        
-                        // Send e-mail
+                        string shopSubDomain = !string.IsNullOrEmpty(shop.SubDomain) ? shop.SubDomain : shop.Id.ToString();
+                        string orderStatusUrl = $"https://{shopSubDomain}.dgbcommerce.com/order-status/{orderToCreate.Id}";
+                        sbMail.Append($"<p>Should you have been unable to complete the payment after placing your order, you can still do so by navigating to the following link:</p>");
+                        sbMail.Append($"<p><a href=\"{orderStatusUrl}\">{orderStatusUrl}</a></p>");
                     }
                 }
 
@@ -152,11 +214,26 @@ namespace DGBCommerce.API.Controllers
                 // Once the merchant updates the order status, the customer will receive a separate e-mail with a payment link.
                 if (shop.OrderMethod == ShopOrderMethod.ManualActionRequired)
                 {
-                    // Send e-mail
+                    sbMail.Append($"<p>You will receive additional information and payment instructions as soon as the merchant processes your order.</p>");
                 }
+
+                sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
+                sbMail.Append($"<p>DGB Commerce</p>");
+                mailService.SendMail(customer.EmailAddress, $"Your order on {shop.Name}", sbMail.ToString());
             }
 
             return Ok(resultOrder);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/{shopId}/{id}")]
+        public async Task<ActionResult<IEnumerable<PublicOrder>>> GetPublicById(Guid shopId, Guid id)
+        {
+            var order = await orderRepository.GetByIdPublic(shopId, id);
+            if (order == null)
+                return NotFound();
+
+            return Ok(order);
         }
     }
 }
