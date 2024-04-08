@@ -11,13 +11,11 @@ namespace DGBCommerce.API.Controllers
     [Route("[controller]")]
     public class FinancialStatementTransactionController(IFinancialStatementTransactionRepository financialStatementTransactionRepository) : ControllerBase
     {
-        private readonly IFinancialStatementTransactionRepository _financialStatementTransactionRepository = financialStatementTransactionRepository;
-
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FinancialStatementTransaction>>> Get(FinancialStatementTransactionType? type, DateTime? dateFrom, DateTime? dateUntil, Guid? currencyId, Recurrance? recurrance, string? description)
         {
-            var financialStatementTransactions = await _financialStatementTransactionRepository.Get(new GetFinancialStatementTransactionsParameters()
+            var financialStatementTransactions = await financialStatementTransactionRepository.Get(new GetFinancialStatementTransactionsParameters()
             {
                 Type = type,
                 DateFrom = dateFrom,
@@ -33,7 +31,7 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FinancialStatementTransaction>> Get(Guid id)
         {
-            var financialStatementTransaction = await _financialStatementTransactionRepository.GetById(id);
+            var financialStatementTransaction = await financialStatementTransactionRepository.GetById(id);
             if (financialStatementTransaction == null)
                 return NotFound();
 

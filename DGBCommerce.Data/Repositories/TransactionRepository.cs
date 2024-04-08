@@ -37,7 +37,7 @@ namespace DGBCommerce.Data.Repositories
             => throw new InvalidOperationException($"{nameof(Transaction)} objects can not be updated.");
 
         public Task<MutationResult> UpdateAmountPaid(Transaction item, decimal amountPaid, Guid mutationId)
-            => _dataAccessLayer.UpdateTransactionAmountPaid(item.Id!.Value, amountPaid, mutationId);
+            => _dataAccessLayer.UpdateTransactionAmountPaid(item.Id, amountPaid, mutationId);
 
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
             => throw new InvalidOperationException($"{nameof(Transaction)} objects can not be deleted.");

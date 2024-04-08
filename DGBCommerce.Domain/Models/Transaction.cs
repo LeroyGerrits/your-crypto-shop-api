@@ -2,7 +2,7 @@
 {
     public class Transaction
     {
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
         public required Guid ShopId { get; set; }
         public DateTime Date { get; set; }
         public required string Recipient { get; set; }

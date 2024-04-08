@@ -1,12 +1,13 @@
-﻿using DGBCommerce.API.Controllers.Requests;
+﻿using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.API.Controllers.Requests;
 using DGBCommerce.API.Services;
-using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Interfaces.Services;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Models.ViewModels;
+using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,8 @@ namespace DGBCommerce.API.Controllers
         IAddressService addressService,
         ICustomerRepository customerRepository,
         IDeliveryMethodRepository deliveryMethodRepository,
+        IHttpContextAccessor httpContextAccessor,
+        IJwtUtils jwtUtils,
         IMailService mailService,
         IMerchantRepository merchantRepository,
         IOrderRepository orderRepository,
@@ -33,6 +36,27 @@ namespace DGBCommerce.API.Controllers
         ITransactionRepository transactionRepository) : ControllerBase
     {
         private readonly AppSettings _appSettings = appSettings.Value;
+
+        [MerchantAuthenticationRequired]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Order>>> Get(Guid? shopId, Guid? customerId, string? customer, DateTime? dateFrom, DateTime? dateUntil, OrderStatus? status)
+        {
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var orders = await orderRepository.Get(new GetOrdersParameters()
+            {
+                MerchantId = authenticatedMerchantId.Value,
+                ShopId = shopId,
+                CustomerId = customerId,
+                Customer = customer,
+                DateFrom = dateFrom,
+                DateUntil = dateUntil,
+                Status = status
+            });
+            return Ok(orders.ToList());
+        }
 
         [AllowAnonymous]
         [HttpPost("public")]
@@ -66,8 +90,7 @@ namespace DGBCommerce.API.Controllers
             if (value.CustomerId != null)
                 customer = await customerRepository.GetById(value.CustomerId.Value!);
 
-            if (customer == null)
-                customer = await customerRepository.GetByEmailAddress(shop.Id, value.EmailAddress);
+            customer ??= await customerRepository.GetByEmailAddress(shop.Id, value.EmailAddress);
 
             if (customer == null)
             {
@@ -233,6 +256,8 @@ namespace DGBCommerce.API.Controllers
 
             return Ok(resultOrder);
         }
+
+
 
         [AllowAnonymous]
         [HttpGet("public/{shopId}/{id}")]
