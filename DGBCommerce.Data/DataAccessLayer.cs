@@ -158,7 +158,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id },
                 new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id },
-                new SqlParameter("@SHP_ORDER_METHOD", SqlDbType.TinyInt) { Value = shop.OrderMethod }
+                new SqlParameter("@SHP_ORDER_METHOD", SqlDbType.TinyInt) { Value = shop.OrderMethod },
+                new SqlParameter("@SHP_REQUIRE_ADDRESSES", SqlDbType.Bit) { Value = shop.RequireAddresses }
             ], mutationId);
 
         public async Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart)
@@ -760,7 +761,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id },
                 new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id },
-                new SqlParameter("@SHP_ORDER_METHOD", SqlDbType.TinyInt) { Value = shop.OrderMethod }
+                new SqlParameter("@SHP_ORDER_METHOD", SqlDbType.TinyInt) { Value = shop.OrderMethod },
+                new SqlParameter("@SHP_REQUIRE_ADDRESSES", SqlDbType.Bit) { Value = shop.RequireAddresses }
             ], mutationId);
 
         public async Task<MutationResult> UpdateShoppingCartItem(ShoppingCartItem shoppingCartItem)

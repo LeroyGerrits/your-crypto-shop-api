@@ -66,6 +66,7 @@ namespace DGBCommerce.Data.Repositories
                     MerchantId = new Guid(row["shp_merchant"].ToString()!),
                     SubDomain = Utilities.DbNullableString(row["shp_subdomain"]),
                     OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"]),
+                    RequireAddresses = Convert.ToBoolean(row["shp_require_addresses"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
                 };
 
@@ -125,9 +126,10 @@ namespace DGBCommerce.Data.Repositories
                     CountryName = Utilities.DbNullableString(row["shp_country_name"]),
                     CategoryId = Utilities.DbNullableGuid(row["shp_category"]),
                     CategoryName = Utilities.DbNullableString(row["shp_category_name"]),
-                    Featured = Convert.ToBoolean(row["shp_featured"]),
                     HasWallet = (row["shp_wallet"] != DBNull.Value),
-                    OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"])
+                    OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"]),
+                    RequireAddresses = Convert.ToBoolean(row["shp_require_addresses"]),
+                    Featured = Convert.ToBoolean(row["shp_featured"])
                 });
             }
 
@@ -153,10 +155,11 @@ namespace DGBCommerce.Data.Repositories
                     CountryCode = Utilities.DbNullableString(row["shp_country_code"]),
                     CountryName = Utilities.DbNullableString(row["shp_country_name"]),
                     CategoryId = Utilities.DbNullableGuid(row["shp_category"]),
-                    CategoryName = Utilities.DbNullableString(row["shp_category_name"]),
-                    Featured = Convert.ToBoolean(row["shp_featured"]),
+                    CategoryName = Utilities.DbNullableString(row["shp_category_name"]),                    
                     HasWallet = (row["shp_wallet"] != DBNull.Value),
-                    OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"])
+                    OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"]),
+                    RequireAddresses = Convert.ToBoolean(row["shp_require_addresses"]),
+                    Featured = Convert.ToBoolean(row["shp_featured"])
                 });
             }
 
