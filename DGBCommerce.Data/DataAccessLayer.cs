@@ -81,7 +81,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
                 new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id },
                 new SqlParameter("@ORD_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = order.DeliveryMethodId },
-                new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments }
+                new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments },
+                new SqlParameter("@ORD_SENDER_WALLET_ADDRESS", SqlDbType.VarChar) { Value = order.SenderWalletAddress }
             ], mutationId);
 
         public async Task<MutationResult> CreateOrderItem(OrderItem orderItem, Guid mutationId)
@@ -116,6 +117,7 @@ namespace DGBCommerce.Data
             => await NonQuery("SP_MUTATE_Product", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
                 new SqlParameter("@PRD_SHOP", SqlDbType.UniqueIdentifier) { Value = product.ShopId },
+                new SqlParameter("@PRD_CODE", SqlDbType.NVarChar) { Value = product.Code },
                 new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = product.Name },
                 new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = product.Description },
                 new SqlParameter("@PRD_STOCK", SqlDbType.Int) { Value = product.Stock },
@@ -467,6 +469,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@PRD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
                 new SqlParameter("@PRD_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId },
+                new SqlParameter("@PRD_CODE", SqlDbType.NVarChar) { Value = parameters.Code },
                 new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
                 new SqlParameter("@PRD_VISIBLE", SqlDbType.Bit) { Value = parameters.Visible },
                 new SqlParameter("@PRD_SHOW_ON_HOME", SqlDbType.Bit) { Value = parameters.ShowOnHome }
@@ -650,7 +653,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
                 new SqlParameter("@ORD_ADDRESS_SHIPPING", SqlDbType.UniqueIdentifier) { Value = order.ShippingAddress.Id },
                 new SqlParameter("@ORD_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = order.DeliveryMethodId },
-                new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments }
+                new SqlParameter("@ORD_COMMENTS", SqlDbType.NVarChar) { Value = order.Comments },
+                new SqlParameter("@ORD_SENDER_WALLET_ADDRESS", SqlDbType.VarChar) { Value = order.SenderWalletAddress }
             ], mutationId);
 
         public async Task<MutationResult> UpdateOrderStatus(Guid orderId, OrderStatus status, Guid mutationId)
@@ -692,6 +696,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
                 new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = product.Id },
                 new SqlParameter("@PRD_SHOP", SqlDbType.UniqueIdentifier) { Value = product.ShopId },
+                new SqlParameter("@PRD_CODE", SqlDbType.NVarChar) { Value = product.Code },
                 new SqlParameter("@PRD_NAME", SqlDbType.NVarChar) { Value = product.Name },
                 new SqlParameter("@PRD_DESCRIPTION", SqlDbType.NVarChar) { Value = product.Description },
                 new SqlParameter("@PRD_STOCK", SqlDbType.Int) { Value = product.Stock },

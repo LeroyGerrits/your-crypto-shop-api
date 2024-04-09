@@ -101,7 +101,8 @@ namespace DGBCommerce.Data.Repositories
                         }
                     },
                     DeliveryMethodId = new Guid(row["ord_delivery_method"].ToString()!),
-                    Comments = row["ord_comments"].ToString()
+                    Comments = row["ord_comments"].ToString(),
+                    SenderWalletAddress = row["ord_sender_wallet_address"].ToString()
                 };
 
                 if (row["ord_transaction"] != DBNull.Value)
@@ -168,6 +169,7 @@ namespace DGBCommerce.Data.Repositories
                     },
                     DeliveryMethodId = new Guid(row["ord_delivery_method"].ToString()!),
                     Comments = row["ord_comments"].ToString(),
+                    SenderWalletAddress = row["ord_sender_wallet_address"].ToString(),
                     TransactionId = Utilities.DbNullableGuid(row["ord_transaction"]),
                     TransactionRecipient = Utilities.DbNullableString(row["ord_transaction_recipient"]),
                     TransactionAmountDue = Convert.ToDecimal(row["ord_transaction_amount_due"]),

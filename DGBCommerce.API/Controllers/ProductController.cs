@@ -24,7 +24,7 @@ namespace DGBCommerce.API.Controllers
     {
         [MerchantAuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> Get(string? name, Guid? shopId, Guid? categoryId, bool? visible, bool? showOnHome)
+        public async Task<ActionResult<IEnumerable<Product>>> Get(string? code, string? name, Guid? shopId, Guid? categoryId, bool? visible, bool? showOnHome)
         {
             var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -33,6 +33,7 @@ namespace DGBCommerce.API.Controllers
             var products = await productRepository.Get(new GetProductsParameters()
             {
                 MerchantId = authenticatedMerchantId.Value,
+                Code = code,
                 Name = name,
                 ShopId = shopId,
                 CategoryId = categoryId,
@@ -63,10 +64,11 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("public")]
-        public async Task<ActionResult<IEnumerable<PublicProduct>>> GetPublic(Guid shopId, string? name, Guid? categoryId, bool? visible, bool? showOnHome)
+        public async Task<ActionResult<IEnumerable<PublicProduct>>> GetPublic(Guid shopId, string? code, string? name, Guid? categoryId, bool? visible, bool? showOnHome)
         {
             var products = await productRepository.GetPublic(new GetProductsParameters()
             {
+                Code = code,
                 Name = name,
                 ShopId = shopId,
                 CategoryId = categoryId,

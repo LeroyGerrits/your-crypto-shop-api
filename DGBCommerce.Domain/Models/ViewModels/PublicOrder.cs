@@ -13,6 +13,7 @@ namespace DGBCommerce.Domain.Models.ViewModels
         public required Address ShippingAddress { get; set; }
         public required Guid DeliveryMethodId { get; set; }
         public string? Comments { get; set; }
+        public string? SenderWalletAddress { get; set; }
         public Guid? TransactionId { get; set; }
         public string? TransactionRecipient { get; set; }
         public decimal? TransactionAmountDue { get; set; }

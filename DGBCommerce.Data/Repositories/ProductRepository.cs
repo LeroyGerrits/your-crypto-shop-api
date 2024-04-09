@@ -50,6 +50,7 @@ namespace DGBCommerce.Data.Repositories
                 {
                     Id = new Guid(row["prd_id"].ToString()!),
                     ShopId = new Guid(row["prd_shop"].ToString()!),
+                    Code = Utilities.DbNullableString(row["prd_code"]),
                     Name = Utilities.DbNullableString(row["prd_name"]),
                     Description = Utilities.DbNullableString(row["prd_description"]),
                     Stock = Utilities.DbNullableInt(row["prd_stock"]),
@@ -77,6 +78,7 @@ namespace DGBCommerce.Data.Repositories
                 products.Add(new PublicProduct()
                 {
                     Id = new Guid(row["prd_id"].ToString()!),
+                    Code = Utilities.DbNullableString(row["prd_code"]),
                     Name = Utilities.DbNullableString(row["prd_name"]),
                     Description = Utilities.DbNullableString(row["prd_description"]),
                     Stock = Utilities.DbNullableInt(row["prd_stock"]),
