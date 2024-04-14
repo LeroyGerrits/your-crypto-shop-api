@@ -121,7 +121,12 @@ namespace DGBCommerce.API.Controllers
 
             var orderToCreate = new Order()
             {
-                ShopId = value.ShopId,
+                Shop = new Shop()
+                {
+                    Id = shop.Id,
+                    MerchantId = shop.MerchantId,
+                    Name = shop.Name
+                },
                 Customer = customer,
                 Date = DateTime.UtcNow,
                 Status = (shop.OrderMethod == ShopOrderMethod.Automated ? OrderStatus.AwaitingPayment : OrderStatus.New),
@@ -201,7 +206,7 @@ namespace DGBCommerce.API.Controllers
 
                 sbMail.Append($"<tr>");
                 sbMail.Append($"<td colspan=\"3\">{HttpUtility.HtmlEncode(deliveryMethod.Name)}</td>");
-                
+
                 if (deliveryMethod.Costs.HasValue)
                     sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{deliveryMethod.Costs.Value.ToString("#.########")}</td>");
                 else

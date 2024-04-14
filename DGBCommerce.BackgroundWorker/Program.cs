@@ -88,7 +88,7 @@ namespace DGBCommerce.BackgroundWorker
                         // If transaction was paid in full earlier, update order's status
                         string? merchantDigiByteWalletAddress = null;
 
-                        if (dictDigiByteWalletPerShop.TryGetValue(order.ShopId, out var value))
+                        if (dictDigiByteWalletPerShop.TryGetValue(order.Shop.Id!.Value, out var value))
                             merchantDigiByteWalletAddress = value;
 
                         if (merchantDigiByteWalletAddress != null)
@@ -112,7 +112,7 @@ namespace DGBCommerce.BackgroundWorker
                             {
                                 var transactionToCreate = new Transaction()
                                 {
-                                    ShopId = order.ShopId,
+                                    ShopId = order.Shop.Id!.Value,
                                     Recipient = merchantDigiByteWalletAddress,
                                     AmountDue = amountToSendToMerchant,
                                     AmountPaid = amountToSendToMerchant,

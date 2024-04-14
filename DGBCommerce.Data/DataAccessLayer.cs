@@ -75,7 +75,7 @@ namespace DGBCommerce.Data
         public async Task<MutationResult> CreateOrder(Order order, Guid mutationId)
             => await NonQuery("SP_MUTATE_Order", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
-                new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = order.ShopId },
+                new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = order.Shop.Id },
                 new SqlParameter("@ORD_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = order.Customer.Id },
                 new SqlParameter("@ORD_STATUS", SqlDbType.TinyInt) { Value = order.Status },
                 new SqlParameter("@ORD_ADDRESS_BILLING", SqlDbType.UniqueIdentifier) { Value = order.BillingAddress.Id },
@@ -428,6 +428,7 @@ namespace DGBCommerce.Data
                 new SqlParameter("@ORD_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@ORD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
                 new SqlParameter("@ORD_CUSTOMER", SqlDbType.UniqueIdentifier) { Value = parameters.CustomerId },
+                new SqlParameter("@ORD_CUSTOMER_CUSTOM", SqlDbType.NVarChar) { Value = parameters.Customer },
                 new SqlParameter("@ORD_DATE_FROM", SqlDbType.DateTime) { Value = parameters.DateFrom },
                 new SqlParameter("@ORD_DATE_UNTIL", SqlDbType.DateTime) { Value = parameters.DateUntil },
                 new SqlParameter("@ORD_STATUS", SqlDbType.TinyInt) { Value = parameters.Status }
