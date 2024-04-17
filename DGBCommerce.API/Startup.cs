@@ -47,6 +47,7 @@ namespace DGBCommerce.API
             services.AddScoped<ICurrencyRepository, CurrencyRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IDeliveryMethodRepository, DeliveryMethodRepository>();
+            services.AddScoped<IDeliveryMethodCostsPerCountryRepository, DeliveryMethodCostsPerCountryRepository>();
             services.AddScoped<IDigiByteWalletRepository, DigiByteWalletRepository>();
             services.AddScoped<IFaqCategoryRepository, FaqCategoryRepository>();
             services.AddScoped<IFaqRepository, FaqRepository>();

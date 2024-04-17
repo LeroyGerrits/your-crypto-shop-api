@@ -1,6 +1,8 @@
 ﻿using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.API.Controllers.Requests;
+using DGBCommerce.API.Controllers.Responses;
 using DGBCommerce.API.Services;
+using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces.Repositories;
@@ -56,6 +58,21 @@ namespace DGBCommerce.API.Controllers
                 Status = status
             });
             return Ok(orders.ToList());
+        }
+
+        [MerchantAuthenticationRequired]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Order>> Get(Guid id)
+        {
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var order = await orderRepository.GetById(authenticatedMerchantId.Value, id);
+            if (order == null)
+                return NotFound();
+
+            return Ok(order);
         }
 
         [AllowAnonymous]

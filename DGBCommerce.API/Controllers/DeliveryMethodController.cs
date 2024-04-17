@@ -1,4 +1,7 @@
 using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.API.Controllers.Requests;
+using DGBCommerce.API.Controllers.Responses;
+using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Models.ViewModels;
@@ -10,21 +13,22 @@ namespace DGBCommerce.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DeliveryMethodController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IDeliveryMethodRepository deliveryMethodRepository) : ControllerBase
+    public class DeliveryMethodController(
+        ICountryRepository countryRepository,
+        IDeliveryMethodRepository deliveryMethodRepository,
+        IDeliveryMethodCostsPerCountryRepository deliveryMethodCostsPerCountryRepository,
+        IHttpContextAccessor httpContextAccessor,
+        IJwtUtils jwtUtils) : ControllerBase
     {
-        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-        private readonly IJwtUtils _jwtUtils = jwtUtils;
-        private readonly IDeliveryMethodRepository _deliveryMethodRepository = deliveryMethodRepository;
-
         [MerchantAuthenticationRequired]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeliveryMethod>>> Get(string? name, Guid? shopId)
         {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethods = await _deliveryMethodRepository.Get(new GetDeliveryMethodsParameters()
+            var deliveryMethods = await deliveryMethodRepository.Get(new GetDeliveryMethodsParameters()
             {
                 MerchantId = authenticatedMerchantId.Value,
                 ShopId = shopId,
@@ -37,50 +41,61 @@ namespace DGBCommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Get(Guid id)
         {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
+            var deliveryMethod = await deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
             if (deliveryMethod == null)
                 return NotFound();
 
-            return Ok(deliveryMethod);
+            var deliveryMethodCostsPerCountries = await deliveryMethodCostsPerCountryRepository.Get(new GetDeliveryMethodCostsPerCountryParameters() { DeliveryMethodId = id });
+            var costsPerCountry = deliveryMethodCostsPerCountries.Select(c => new KeyValuePair<Guid, decimal>(c.CountryId, c.Costs)).ToDictionary(c => c.Key, x => x.Value);
+
+            return Ok(new GetDeliveryMethodResponse(deliveryMethod, costsPerCountry));
         }
 
         [AllowAnonymous]
         [HttpGet("public/GetByShopId/{shopId}")]
         public async Task<ActionResult<PublicDeliveryMethod>> GetByShopIdPublic(Guid shopId)
         {
-            var deliveryMethods = await _deliveryMethodRepository.GetByShopIdPublic(shopId);            
+            var deliveryMethods = await deliveryMethodRepository.GetByShopIdPublic(shopId);
             return Ok(deliveryMethods);
         }
 
         [MerchantAuthenticationRequired]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] DeliveryMethod value)
+        public async Task<ActionResult> Post([FromBody] MutateDeliveryMethodRequest value)
         {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var result = await _deliveryMethodRepository.Create(value, authenticatedMerchantId.Value);
+            var result = await deliveryMethodRepository.Create(value.DeliveryMethod, authenticatedMerchantId.Value);
+
+            if (result.Success)
+                this.ProcessCostsPerCountry(authenticatedMerchantId.Value, result.Identifier, value.CostsPerCountry);
+
             return Ok(result);
         }
 
         [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] DeliveryMethod value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] MutateDeliveryMethodRequest value)
         {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
+            var deliveryMethod = await deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
             if (deliveryMethod == null)
                 return NotFound();
 
-            var result = await _deliveryMethodRepository.Update(value, authenticatedMerchantId.Value);
+            var result = await deliveryMethodRepository.Update(value.DeliveryMethod, authenticatedMerchantId.Value);
+
+            if (result.Success)
+                this.ProcessCostsPerCountry(authenticatedMerchantId.Value, id, value.CostsPerCountry);
+
             return Ok(result);
         }
 
@@ -88,16 +103,27 @@ namespace DGBCommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<DeliveryMethod>> Delete(Guid id)
         {
-            var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var deliveryMethod = await _deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
+            var deliveryMethod = await deliveryMethodRepository.GetById(authenticatedMerchantId.Value, id);
             if (deliveryMethod == null)
                 return NotFound();
 
-            var result = await _deliveryMethodRepository.Delete(id, authenticatedMerchantId.Value);
+            var result = await deliveryMethodRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
+        }
+
+        private async void ProcessCostsPerCountry(Guid merchantId, Guid deliveryMethodId, Dictionary<Guid, decimal?> costsPerCountry)
+        {
+            var countries = await countryRepository.Get(new());
+
+            foreach (var country in countries)
+                if (costsPerCountry.TryGetValue(country.Id!.Value, out decimal? value) && value.HasValue)
+                    await deliveryMethodCostsPerCountryRepository.Create(new() { DeliveryMethodId = deliveryMethodId, CountryId = country.Id.Value, Costs = value.Value }, merchantId);
+                else
+                    await deliveryMethodCostsPerCountryRepository.Delete(deliveryMethodId, country.Id.Value, merchantId);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateCategory(Category category, Guid mutationId);
         Task<MutationResult> CreateCustomer(Customer customer, Guid mutationId);
         Task<MutationResult> CreateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
+        Task<MutationResult> CreateDeliveryMethodCostsPerCountry(DeliveryMethodCostsPerCountry deliveryMethodCostsPerCountry, Guid mutationId);
         Task<MutationResult> CreateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId);
         Task<MutationResult> CreateMerchantPasswordResetLink(MerchantPasswordResetLink merchantPasswordResetLink);
@@ -28,6 +29,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteCustomer(Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteDeliveryMethod(Guid deliveryMethodId, Guid mutationId);
+        Task<MutationResult> DeleteDeliveryMethodCostsPerCountry(Guid deliveryMethodId, Guid countryId, Guid mutationId);
         Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId);
         Task<MutationResult> DeleteOrder(Guid orderId, Guid mutationId);
         Task<MutationResult> DeleteOrderItem(Guid orderItemId, Guid mutationId);
@@ -48,6 +50,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetCountries(GetCountriesParameters parameters);
         Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters);
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);
+        Task<DataTable> GetDeliveryMethodCostsPerCountry(GetDeliveryMethodCostsPerCountryParameters parameters);
         Task<DataTable> GetDigiByteWallets(GetDigiByteWalletsParameters parameters);
         Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters);
         Task<DataTable> GetFaqs(GetFaqsParameters parameters);

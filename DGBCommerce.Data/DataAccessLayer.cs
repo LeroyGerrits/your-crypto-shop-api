@@ -44,6 +44,14 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DLM_COSTS", SqlDbType.Decimal) { Value = deliveryMethod.Costs }
             ], mutationId);
 
+        public async Task<MutationResult> CreateDeliveryMethodCostsPerCountry(DeliveryMethodCostsPerCountry deliveryMethodCostsPerCountry, Guid mutationId)
+            => await NonQuery("SP_MUTATE_DeliveryMethodCostsPerCountry", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@CPC_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = deliveryMethodCostsPerCountry.DeliveryMethodId },
+                new SqlParameter("@CPC_COUNTRY", SqlDbType.UniqueIdentifier) { Value = deliveryMethodCostsPerCountry.CountryId },
+                new SqlParameter("@CPC_COSTS", SqlDbType.Decimal) { Value = deliveryMethodCostsPerCountry.Costs }
+            ], mutationId);
+
         public async Task<MutationResult> CreateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId)
             => await NonQuery("SP_MUTATE_DigiByteWallet", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -209,6 +217,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DLM_ID", SqlDbType.UniqueIdentifier) { Value = deliveryMethodId }
             ], mutationId);
 
+        public async Task<MutationResult> DeleteDeliveryMethodCostsPerCountry(Guid deliveryMethodId, Guid countryId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_DeliveryMethodCostsPerCountry", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@CPC_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = deliveryMethodId },
+                new SqlParameter("@CPC_COUNTRY", SqlDbType.UniqueIdentifier) { Value = countryId }
+            ], mutationId);
+
         public async Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId)
             => await NonQuery("SP_MUTATE_DigiByteWallet", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
@@ -345,6 +360,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DLM_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
                 new SqlParameter("@DLM_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@DLM_NAME", SqlDbType.NVarChar) { Value = parameters.Name }
+            ]);
+
+        public async Task<DataTable> GetDeliveryMethodCostsPerCountry(GetDeliveryMethodCostsPerCountryParameters parameters)
+            => await Get("SP_GET_DeliveryMethodCostsPerCountry", [
+                new SqlParameter("@CPC_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = parameters.DeliveryMethodId },
+                new SqlParameter("@CPC_COUNTRY", SqlDbType.UniqueIdentifier) { Value = parameters.CountryId }
             ]);
 
         public async Task<DataTable> GetDigiByteWallets(GetDigiByteWalletsParameters parameters)
