@@ -30,7 +30,7 @@ namespace DGBCommerce.Data.Services
                     AddressLine2 = Utilities.DbNullableString(row["adr_address_line_2"]),
                     PostalCode = Utilities.DbNullableString(row["adr_postal_code"]),
                     City = Utilities.DbNullableString(row["adr_city"]),
-                    Province = Utilities.DbNullableString(row["adr_country"]),
+                    Province = Utilities.DbNullableString(row["adr_province"]),
                     Country = new()
                     {
                         Id = new Guid(row["adr_country"].ToString()!),

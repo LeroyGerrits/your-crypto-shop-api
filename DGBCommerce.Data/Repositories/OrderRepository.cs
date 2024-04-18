@@ -83,7 +83,7 @@ namespace DGBCommerce.Data.Repositories
                         AddressLine2 = Utilities.DbNullableString(row["ord_address_billing_address_line_2"]),
                         PostalCode = Utilities.DbNullableString(row["ord_address_billing_postal_code"]),
                         City = Utilities.DbNullableString(row["ord_address_billing_city"]),
-                        Province = Utilities.DbNullableString(row["ord_address_billing_country"]),
+                        Province = Utilities.DbNullableString(row["ord_address_billing_province"]),
                         Country = new()
                         {
                             Id = new Guid(row["ord_address_billing_country"].ToString()!),
@@ -97,7 +97,7 @@ namespace DGBCommerce.Data.Repositories
                         AddressLine2 = Utilities.DbNullableString(row["ord_address_shipping_address_line_2"]),
                         PostalCode = Utilities.DbNullableString(row["ord_address_shipping_postal_code"]),
                         City = Utilities.DbNullableString(row["ord_address_shipping_city"]),
-                        Province = Utilities.DbNullableString(row["ord_address_shipping_country"]),
+                        Province = Utilities.DbNullableString(row["ord_address_shipping_province"]),
                         Country = new()
                         {
                             Id = new Guid(row["ord_address_shipping_country"].ToString()!),

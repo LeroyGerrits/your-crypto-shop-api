@@ -72,7 +72,62 @@ namespace DGBCommerce.API.Controllers
             if (order == null)
                 return NotFound();
 
+            var orderItems = await orderItemRepository.GetByOrderId(order.Id!.Value);
+            order.Items = orderItems.ToList();
+
             return Ok(order);
+        }
+
+        [MerchantAuthenticationRequired]
+        [HttpPost("AddItem")]
+        public async Task<ActionResult> AddItem([FromBody] OrderItem value)
+        {
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var shoppingCart = await orderRepository.GetById(authenticatedMerchantId.Value, value.OrderId);
+            if (shoppingCart == null)
+                return BadRequest("Order not found.");
+
+            var result = await orderItemRepository.Create(value, authenticatedMerchantId.Value);
+            return Ok(result);
+        }
+
+        [MerchantAuthenticationRequired]
+        [HttpPut("EditItem/{id}")]
+        public async Task<ActionResult> EditItem(Guid id, [FromBody] OrderItem value)
+        {
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var shoppingCart = await orderRepository.GetById(authenticatedMerchantId.Value, value.OrderId);
+            if (shoppingCart == null)
+                return BadRequest("Order not found.");
+
+            var shoppingCartItem = await orderItemRepository.GetById(id);
+            if (shoppingCartItem == null)
+                return BadRequest("Order item not found.");
+
+            var result = await orderItemRepository.Update(value, authenticatedMerchantId.Value);
+            return Ok(result);
+        }
+
+        [MerchantAuthenticationRequired]
+        [HttpDelete("public/DeleteItem/{orderId}/{id}")]
+        public async Task<ActionResult<Shop>> DeleteItem(Guid orderId, Guid id)
+        {
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var shoppingCart = await orderRepository.GetById(authenticatedMerchantId.Value, orderId);
+            if (shoppingCart == null)
+                return BadRequest("Order not found.");
+
+            var result = await orderItemRepository.Delete(id, authenticatedMerchantId.Value);
+            return Ok(result);
         }
 
         [AllowAnonymous]

@@ -15,5 +15,12 @@ namespace DGBCommerce.Domain.Models
         public string? Comments { get; set; }
         public string? SenderWalletAddress { get; set; }
         public Transaction? Transaction { get; set; }
+        public List<OrderItem>? Items { get; set; }
+
+        public uint CumulativeAmount
+            => this.Items != null ? (uint)this.Items.Sum(item => item.Amount) : 0;
+
+        public decimal CumulativeTotal
+            => this.Items != null ? this.Items.Sum(item => item.Total) : 0;
     }
 }
