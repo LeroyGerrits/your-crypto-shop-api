@@ -1,5 +1,4 @@
 ﻿using DGBCommerce.Domain;
-using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
@@ -18,8 +17,8 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<Transaction>> GetByShopId(Guid shopId)
             => await GetRaw(new GetTransactionsParameters() { ShopId = shopId });
 
-        public async Task<IEnumerable<Transaction>> GetUnpaid()
-            => await GetRaw(new GetTransactionsParameters() { Unpaid = true });
+        public async Task<IEnumerable<Transaction>> GetUnpaidAndYoungerThan3Days()
+            => await GetRaw(new GetTransactionsParameters() { Unpaid = true, DateFrom = DateTime.UtcNow.AddDays(-3) });
 
         public Task<Transaction?> GetById(Guid merchantId, Guid id)
             => throw new InvalidOperationException($"{nameof(Transaction)} objects can not be retrieved by merchant ID.");
@@ -55,7 +54,7 @@ namespace DGBCommerce.Data.Repositories
                     ShopId = new Guid(row["trx_shop"].ToString()!),
                     Date = Convert.ToDateTime(row["trx_date"]),
                     Recipient = Utilities.DbNullableString(row["trx_recipient"]),
-                    AmountDue = Convert.ToDecimal(row["trx_amount_due"]),                    
+                    AmountDue = Convert.ToDecimal(row["trx_amount_due"]),
                     AmountPaid = Convert.ToDecimal(row["trx_amount_paid"]),
                     PaidInFull = Utilities.DBNullableDateTime(row["trx_paid_in_full"]),
                     Tx = Utilities.DbNullableString(row["trx_tx"])

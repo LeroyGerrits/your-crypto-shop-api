@@ -37,15 +37,26 @@ namespace DGBCommerce.BackgroundWorker
                     dictDigiByteWalletPerShop.Add(shop.Id!.Value, shop.Wallet.Address);
 
             // Retrieve addresses and balances and construct dictionary
-            var listReceivedByAddress = await rpcService.ListReceivedByAddress();
             Dictionary<string, decimal> dictBalancePerAddress = [];
 
-            foreach (var listReceivedByAddressItem in listReceivedByAddress)
-                if (listReceivedByAddressItem.Address != null)
-                    dictBalancePerAddress.Add(listReceivedByAddressItem.Address, listReceivedByAddressItem.Amount);
+            try
+            {
+                var listReceivedByAddress = await rpcService.ListReceivedByAddress();
+                foreach (var listReceivedByAddressItem in listReceivedByAddress)
+                    if (listReceivedByAddressItem.Address != null)
+                        dictBalancePerAddress.Add(listReceivedByAddressItem.Address, listReceivedByAddressItem.Amount);
+            }
+            catch (Exception ex)
+            {
+                Log($"! ListReceivedByAddress error: {ex.Message}", ref sbLog);
+
+                if (ex.StackTrace != null)
+                    Log(ex.StackTrace, ref sbLog);
+            }
+
 
             // Retrieve unpaid transactions and check if balance for corresponding wallets has changed
-            var unpaidTransactions = await transactionRepository.GetUnpaid();
+            var unpaidTransactions = await transactionRepository.GetUnpaidAndYoungerThan3Days();
             foreach (Transaction transaction in unpaidTransactions)
             {
                 Log("", ref sbLog);
@@ -78,6 +89,7 @@ namespace DGBCommerce.BackgroundWorker
             {
                 Log("", ref sbLog);
                 Log($"Order {order.Id}", ref sbLog);
+                Log($"- Date: {order.Date:dd-MM-yyyy HH:mm:ss}", ref sbLog);
 
                 if (order.Transaction != null)
                 {
@@ -94,18 +106,43 @@ namespace DGBCommerce.BackgroundWorker
                         if (merchantDigiByteWalletAddress != null)
                         {
                             // Send the merchant 99% of the paid amount
-                            var amountToSendToMerchant = Math.Round(order.Transaction.AmountPaid * 0.99m, 8); // sendtoaddress only supports up to 8 decimals
+                            var amountToSendToMerchant = Math.Round(order.Transaction.AmountPaid * 0.99m, 8); // Round, because sendtoaddress only supports up to 8 decimals
                             string resultSendToAddress = string.Empty;
 
                             try
                             {
                                 await rpcService.WalletPassphrase(rpcWalletPassphrase);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log($"! WalletPassphrase error: {ex.Message}", ref sbLog);
+
+                                if (ex.StackTrace != null)
+                                    Log(ex.StackTrace, ref sbLog);
+                            }
+
+                            try
+                            {
                                 resultSendToAddress = await rpcService.SendToAddress(merchantDigiByteWalletAddress, amountToSendToMerchant);
-                                await rpcService.WalletLock();
                             }
                             catch (Exception ex)
                             {
                                 Log($"! SendtoAddress error: {ex.Message}", ref sbLog);
+
+                                if (ex.StackTrace != null)
+                                    Log(ex.StackTrace, ref sbLog);
+                            }
+
+                            try
+                            {
+                                await rpcService.WalletLock();
+                            }
+                            catch (Exception ex)
+                            {
+                                Log($"! WalletLock error: {ex.Message}", ref sbLog);
+
+                                if (ex.StackTrace != null)
+                                    Log(ex.StackTrace, ref sbLog);
                             }
 
                             if (!string.IsNullOrEmpty(resultSendToAddress))
@@ -141,17 +178,33 @@ namespace DGBCommerce.BackgroundWorker
                             }
                             else
                             {
-                                Log($"! Can not pay merchant; shop has no DigiByte wallet configured", ref sbLog);
+                                Log($"! Unable to send funds to merchant", ref sbLog);
                             }
                         }
                         else
                         {
-                            // Set order to abandoned if it has been awaiting payment for x days?
+                            Log($"! Can not pay merchant; shop has no DigiByte wallet configured", ref sbLog);
                         }
                     }
                     else
                     {
                         Log($"! Order transaction is not yet paid in full", ref sbLog);
+
+                        // If order has been awaiting payment for longer than 3 days, abandon
+                        if (order.Date < DateTime.UtcNow.AddDays(-3))
+                        {
+                            Log($"! Order has been awaiting payment for more than 3 days. Abandon.", ref sbLog);
+
+                            var resultOrder = await orderRepository.UpdateStatus(order, Domain.Enums.OrderStatus.Abandoned, Guid.Empty);
+                            if (resultOrder.Success)
+                            {
+                                Log($"! Order status set to '{Domain.Enums.OrderStatus.Abandoned}'", ref sbLog);
+                            }
+                            else
+                            {
+                                Log($"! Order update error: {resultOrder.Message}", ref sbLog);
+                            }
+                        }
                     }
                 }
                 else
