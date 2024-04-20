@@ -116,6 +116,7 @@ namespace DGBCommerce.Data.Repositories
                     {
                         Id = new Guid(row["ord_transaction"].ToString()!),
                         ShopId = new Guid(row["ord_shop"].ToString()!),
+                        Date = Convert.ToDateTime(row["ord_transaction_date"]),
                         Recipient = Utilities.DbNullableString(row["ord_transaction_recipient"]),
                         AmountDue = Convert.ToDecimal(row["ord_transaction_amount_due"]),
                         AmountPaid = Convert.ToDecimal(row["ord_transaction_amount_paid"]),

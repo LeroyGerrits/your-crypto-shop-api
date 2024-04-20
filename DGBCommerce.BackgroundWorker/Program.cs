@@ -190,10 +190,10 @@ namespace DGBCommerce.BackgroundWorker
                     {
                         Log($"! Order transaction is not yet paid in full", ref sbLog);
 
-                        // If order has been awaiting payment for longer than 3 days, abandon
-                        if (order.Date < DateTime.UtcNow.AddDays(-3))
+                        // If order transaction is older than 3 days, abandon order
+                        if (order.Transaction.Date < DateTime.UtcNow.AddDays(-3))
                         {
-                            Log($"! Order has been awaiting payment for more than 3 days. Abandon.", ref sbLog);
+                            Log($"! Order has been awaiting payment for more than 3 days.", ref sbLog);
 
                             var resultOrder = await orderRepository.UpdateStatus(order, Domain.Enums.OrderStatus.Abandoned, Guid.Empty);
                             if (resultOrder.Success)
