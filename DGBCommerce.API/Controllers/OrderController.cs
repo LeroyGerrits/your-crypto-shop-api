@@ -222,6 +222,7 @@ namespace DGBCommerce.API.Controllers
                     orderItemsToCreate.Add(new()
                     {
                         OrderId = orderToCreate.Id.Value,
+                        ProductId = shoppingCartItem.ProductId,
                         Type = OrderItemType.ShoppingCartItem,
                         Amount = shoppingCartItem.Amount,
                         Price = shoppingCartItem.ProductPrice!.Value,
@@ -333,8 +334,6 @@ namespace DGBCommerce.API.Controllers
 
             return Ok(resultOrder);
         }
-
-
 
         [AllowAnonymous]
         [HttpGet("public/{shopId}/{id}")]

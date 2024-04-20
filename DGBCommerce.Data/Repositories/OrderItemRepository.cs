@@ -49,6 +49,9 @@ namespace DGBCommerce.Data.Repositories
                     OrderId = new Guid(row["ori_order"].ToString()!),
                     Type = (OrderItemType)Convert.ToInt32(row["ori_type"]),
                     ProductId = Utilities.DbNullableGuid(row["ori_product"]),
+                    ProductCode = Utilities.DbNullableString(row["ori_product_code"]),
+                    ProductName = Utilities.DbNullableString(row["ori_product_name"]),
+                    ProductPrice = Utilities.DbNullableDecimal(row["ori_product_price"]),
                     Description = Utilities.DbNullableString(row["ori_description"]),
                     Amount = Convert.ToUInt32(row["ori_amount"]),
                     Price = Convert.ToDecimal(row["ori_price"])

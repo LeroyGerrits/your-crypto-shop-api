@@ -1,5 +1,4 @@
-﻿using DGBCommerce.Domain.Enums;
-using DGBCommerce.Domain.Models;
+﻿using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Parameters;
 
 namespace DGBCommerce.Domain.Interfaces.Repositories
