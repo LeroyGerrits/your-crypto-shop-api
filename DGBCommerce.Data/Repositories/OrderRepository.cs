@@ -63,7 +63,8 @@ namespace DGBCommerce.Data.Repositories
                     {
                         Id = new Guid(row["ord_shop"].ToString()!),
                         MerchantId = new Guid(row["ord_shop_merchant"].ToString()!),
-                        Name = Utilities.DbNullableString(row["ord_shop_name"])
+                        Name = Utilities.DbNullableString(row["ord_shop_name"]),
+                        SubDomain = Utilities.DbNullableString(row["ord_shop_subdomain"]),
                     },
                     Customer = new()
                     {

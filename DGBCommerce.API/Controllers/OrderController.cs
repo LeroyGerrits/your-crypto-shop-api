@@ -13,6 +13,7 @@ using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Web;
 
@@ -79,15 +80,15 @@ namespace DGBCommerce.API.Controllers
         }
 
         [MerchantAuthenticationRequired]
-        [HttpPost("AddItem")]
-        public async Task<ActionResult> AddItem([FromBody] OrderItem value)
+        [HttpPost("{orderId}/AddItem")]
+        public async Task<ActionResult> AddItem(Guid orderId, [FromBody] OrderItem value)
         {
             var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var shoppingCart = await orderRepository.GetById(authenticatedMerchantId.Value, value.OrderId);
-            if (shoppingCart == null)
+            var order = await orderRepository.GetById(authenticatedMerchantId.Value, orderId);
+            if (order == null)
                 return BadRequest("Order not found.");
 
             var result = await orderItemRepository.Create(value, authenticatedMerchantId.Value);
@@ -95,19 +96,19 @@ namespace DGBCommerce.API.Controllers
         }
 
         [MerchantAuthenticationRequired]
-        [HttpPut("EditItem/{id}")]
-        public async Task<ActionResult> EditItem(Guid id, [FromBody] OrderItem value)
+        [HttpPut("{orderId}/EditItem/{id}")]
+        public async Task<ActionResult> EditItem(Guid orderId, Guid id, [FromBody] OrderItem value)
         {
             var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var shoppingCart = await orderRepository.GetById(authenticatedMerchantId.Value, value.OrderId);
-            if (shoppingCart == null)
+            var order = await orderRepository.GetById(authenticatedMerchantId.Value, orderId);
+            if (order == null)
                 return BadRequest("Order not found.");
 
-            var shoppingCartItem = await orderItemRepository.GetById(id);
-            if (shoppingCartItem == null)
+            var orderItem = await orderItemRepository.GetById(id);
+            if (orderItem == null)
                 return BadRequest("Order item not found.");
 
             var result = await orderItemRepository.Update(value, authenticatedMerchantId.Value);
@@ -115,19 +116,118 @@ namespace DGBCommerce.API.Controllers
         }
 
         [MerchantAuthenticationRequired]
-        [HttpDelete("public/DeleteItem/{orderId}/{id}")]
-        public async Task<ActionResult<Shop>> DeleteItem(Guid orderId, Guid id)
+        [HttpPut("{orderId}/UpdateStatus/{status}")]
+        public async Task<ActionResult> UpdateStatus(Guid orderId, OrderStatus status)
         {
             var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var shoppingCart = await orderRepository.GetById(authenticatedMerchantId.Value, orderId);
-            if (shoppingCart == null)
+            var order = await orderRepository.GetById(authenticatedMerchantId.Value, orderId);
+            if (order == null)
+                return BadRequest("Order not found.");
+
+            var result = await orderRepository.UpdateStatus(order, status, authenticatedMerchantId.Value);
+            if (result.Success)
+            {
+                string shopSubDomain = !string.IsNullOrEmpty(order.Shop.SubDomain) ? order.Shop.SubDomain : order.Shop.Id!.Value.ToString();
+                string shopUrl = $"https://{shopSubDomain}.{_appSettings.UrlDgbCommerceDomain}";
+
+                StringBuilder sbMail = new();
+                sbMail.Append("<head>");
+                sbMail.Append("<style>");
+                sbMail.Append("table { border-collapse:collapse; }");
+                sbMail.Append("td, th { border:1px solid #aaa; padding:5px; }");
+                sbMail.Append("</style>");
+                sbMail.Append("</head>");
+                sbMail.Append("<body>");
+                sbMail.Append($"<p>Hi {order.Customer.Salutation},</p>");
+
+                // Changing from New to AwaitingPayment, mail customer with payment link.
+                if (order.Status == OrderStatus.New && status == OrderStatus.AwaitingPayment)
+                {
+                    // Retrieve items so cumulative total can be calculated
+                    var orderItems = await orderItemRepository.GetByOrderId(orderId);
+                    order.Items = orderItems.ToList();
+
+                    // Create new transaction
+                    Guid newTransactionId = Guid.NewGuid();
+                    var newDigiByteAddress = await rpcService.GetNewAddress($"DGB Commerce Transaction {newTransactionId}");
+                    var transactionToCreate = new Transaction()
+                    {
+                        Id = newTransactionId,
+                        ShopId = order.Shop.Id!.Value,
+                        Recipient = newDigiByteAddress,
+                        AmountDue = order.CumulativeTotal,
+                        AmountPaid = 0
+                    };
+
+                    var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);
+                    if (resultTransaction.Success)
+                    {
+                        await orderRepository.UpdateTransaction(order, newTransactionId, Guid.Empty);
+                        string paymentUrl = $"{shopUrl}/order-status/{orderId}";
+                        sbMail.Append($"<p>The merchant has reviewed your order which can now be paid.</p>");
+                        sbMail.Append($"<p>You can complete your payment by navigating to the following link:</p>");
+                        sbMail.Append($"<p><a href=\"{paymentUrl}\">{paymentUrl}</a></p>");
+                        mailService.SendMail(order.Customer.EmailAddress, $"You can now pay your order on {order.Shop.Name}", sbMail.ToString());
+                    }
+                }
+
+                // Changing from New to Canceled, mail customer that order was canceled.
+                if (order.Status == OrderStatus.New && status == OrderStatus.Canceled)
+                {
+                    sbMail.Append($"<p>Your order on {order.Shop.Name} has been canceled.</p>");
+                    sbMail.Append($"<p>If you feel this is a mistake or unjustified, reach out to the merchant at:</p>");
+                    sbMail.Append($"<p><a href=\"{shopUrl}\">{shopUrl}</a></p>");
+                    mailService.SendMail(order.Customer.EmailAddress, $"Your order on {order.Shop.Name} was canceled", sbMail.ToString());
+                }
+
+                // Changing from Paid to Shipped, from Paid to Finished or from Shipped to Finished. Mail customer of the status change.
+                if (
+                    (order.Status == OrderStatus.Paid && status == OrderStatus.Shipped) ||
+                    (order.Status == OrderStatus.Paid && status == OrderStatus.Finished) ||
+                    (order.Status == OrderStatus.Shipped && status == OrderStatus.Finished)
+                    )
+                {
+                    sbMail.Append($"<p>The status of your order on {order.Shop.Name} has changed from '{order.Status}' to '{status}'.</p>");
+                    sbMail.Append($"<p>If you have any questions about your order, reach out to the merchant at:</p>");
+                    sbMail.Append($"<p><a href=\"{shopUrl}\">{shopUrl}</a></p>");
+                    mailService.SendMail(order.Customer.EmailAddress, $"The status of your order on {order.Shop.Name} has changed", sbMail.ToString());
+                }
+
+                sbMail.Append($"<p>DGB Commerce</p>");
+                sbMail.Append("</body>");
+            }
+
+            return Ok(result);
+        }
+
+        [MerchantAuthenticationRequired]
+        [HttpDelete("{orderId}/DeleteItem/{id}")]
+        public async Task<ActionResult> DeleteItem(Guid orderId, Guid id)
+        {
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var order = await orderRepository.GetById(authenticatedMerchantId.Value, orderId);
+            if (order == null)
                 return BadRequest("Order not found.");
 
             var result = await orderItemRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/{shopId}/{id}")]
+        public async Task<ActionResult<IEnumerable<PublicOrder>>> GetPublicById(Guid shopId, Guid id)
+        {
+            var order = await orderRepository.GetByIdPublic(shopId, id);
+            if (order == null)
+                return NotFound();
+
+            return Ok(order);
         }
 
         [AllowAnonymous]
@@ -244,11 +344,6 @@ namespace DGBCommerce.API.Controllers
                 var cumulativeAmount = orderItemsToCreate.Sum(i => i.Amount * i.Price);
 
                 // Mail template
-                string salutation = "Mr./Ms.";
-
-                if (customer.Gender == Gender.Male) salutation = "Mr.";
-                if (customer.Gender == Gender.Female) salutation = "Ms.";
-
                 StringBuilder sbMail = new();
                 sbMail.Append("<head>");
                 sbMail.Append("<style>");
@@ -257,7 +352,7 @@ namespace DGBCommerce.API.Controllers
                 sbMail.Append("</style>");
                 sbMail.Append("</head>");
                 sbMail.Append("<body>");
-                sbMail.Append($"<p>Hi {salutation} {customer.FirstName} {customer.LastName},</p>");
+                sbMail.Append($"<p>Hi {customer.Salutation},</p>");
                 sbMail.Append($"<p>Your order on {shop.Name} was succesfully created.</p>");
                 sbMail.Append($"<table>");
                 sbMail.Append($"<tr>");
@@ -335,15 +430,5 @@ namespace DGBCommerce.API.Controllers
             return Ok(resultOrder);
         }
 
-        [AllowAnonymous]
-        [HttpGet("public/{shopId}/{id}")]
-        public async Task<ActionResult<IEnumerable<PublicOrder>>> GetPublicById(Guid shopId, Guid id)
-        {
-            var order = await orderRepository.GetByIdPublic(shopId, id);
-            if (order == null)
-                return NotFound();
-
-            return Ok(order);
-        }
     }
 }
