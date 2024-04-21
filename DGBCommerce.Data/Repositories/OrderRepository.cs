@@ -179,8 +179,8 @@ namespace DGBCommerce.Data.Repositories
                     SenderWalletAddress = row["ord_sender_wallet_address"].ToString(),
                     TransactionId = Utilities.DbNullableGuid(row["ord_transaction"]),
                     TransactionRecipient = Utilities.DbNullableString(row["ord_transaction_recipient"]),
-                    TransactionAmountDue = Convert.ToDecimal(row["ord_transaction_amount_due"]),
-                    TransactionAmountPaid = Convert.ToDecimal(row["ord_transaction_amount_paid"]),
+                    TransactionAmountDue = Utilities.DbNullableDecimal(row["ord_transaction_amount_due"]),
+                    TransactionAmountPaid = Utilities.DbNullableDecimal(row["ord_transaction_amount_paid"]),
                     TransactionPaidInFull = Utilities.DBNullableDateTime(row["ord_transaction_paid_in_full"]),
                     TransactionTx = Utilities.DbNullableString(row["ord_transaction_tx"])
                 });
