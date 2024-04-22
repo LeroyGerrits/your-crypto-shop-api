@@ -370,24 +370,15 @@ namespace DGBCommerce.API.Controllers
                 sbMail.Append($"<th style=\"text-align:right;\">Total</th>");
                 sbMail.Append($"</tr>");
 
-                foreach (var shoppingCartItem in shoppingCartItems)
+                foreach (var orderItem in orderItemsToCreate)
                 {
                     sbMail.Append($"<tr>");
-                    sbMail.Append($"<td>{HttpUtility.HtmlEncode(shoppingCartItem.ProductName)}</td>");
-                    sbMail.Append($"<td style=\"text-align:right;\">{shoppingCartItem.Amount}</td>");
-                    sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{shoppingCartItem.ProductPrice!.Value.ToString("#.########")}</td>");
-                    sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{shoppingCartItem.Total.ToString("#.########")}</td>");
+                    sbMail.Append($"<td>{HttpUtility.HtmlEncode(orderItem.Description)}</td>");
+                    sbMail.Append($"<td style=\"text-align:right;\">{orderItem.Amount}</td>");
+                    sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{orderItem.Price.ToString("#.########")}</td>");
+                    sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{orderItem.Total.ToString("#.########")}</td>");
                     sbMail.Append($"</tr>");
                 }
-
-                sbMail.Append($"<tr>");
-                sbMail.Append($"<td colspan=\"3\">{HttpUtility.HtmlEncode(deliveryMethod.Name)}</td>");
-
-                if (deliveryMethod.Costs.HasValue)
-                    sbMail.Append($"<td style=\"text-align:right;\">Ɗ&nbsp;{deliveryMethod.Costs.Value.ToString("#.########")}</td>");
-                else
-                    sbMail.Append($"<td></td>");
-                sbMail.Append($"</tr>");
 
                 sbMail.Append($"<tr>");
                 sbMail.Append($"<td colspan=\"4\" style=\"text-align:right;\"><strong>Ɗ&nbsp;{cumulativeAmount.ToString("#.########")}</strong></td>");
