@@ -60,6 +60,20 @@ namespace DGBCommerce.API.Controllers
         public async Task<ActionResult<PublicDeliveryMethod>> GetByShopIdPublic(Guid shopId)
         {
             var deliveryMethods = await deliveryMethodRepository.GetByShopIdPublic(shopId);
+
+            foreach (var deliveryMethod in deliveryMethods)
+            {
+                var deliveryMethodCostsPerCountry = await deliveryMethodCostsPerCountryRepository.Get(new GetDeliveryMethodCostsPerCountryParameters() { DeliveryMethodId = deliveryMethod.Id });
+                foreach (var deliveryMethodCostPerCountry in deliveryMethodCostsPerCountry)
+                {
+                    if (deliveryMethod.CostsPerCountry.ContainsKey(deliveryMethodCostPerCountry.CountryId))
+                        deliveryMethod.CostsPerCountry[deliveryMethodCostPerCountry.CountryId] = deliveryMethodCostPerCountry.Costs;
+                    else
+                        deliveryMethod.CostsPerCountry.Add(deliveryMethodCostPerCountry.CountryId, deliveryMethodCostPerCountry.Costs);
+                }
+            }
+
+
             return Ok(deliveryMethods);
         }
 

@@ -1,8 +1,6 @@
 ﻿using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.API.Controllers.Requests;
-using DGBCommerce.API.Controllers.Responses;
 using DGBCommerce.API.Services;
-using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces.Repositories;
@@ -13,7 +11,6 @@ using DGBCommerce.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Web;
 
@@ -26,6 +23,7 @@ namespace DGBCommerce.API.Controllers
         IAddressService addressService,
         ICustomerRepository customerRepository,
         IDeliveryMethodRepository deliveryMethodRepository,
+        IDeliveryMethodCostsPerCountryRepository deliveryMethodCostsPerCountryRepository,
         IHttpContextAccessor httpContextAccessor,
         IJwtUtils jwtUtils,
         IMailService mailService,
@@ -305,6 +303,7 @@ namespace DGBCommerce.API.Controllers
                 BillingAddress = address,
                 ShippingAddress = address,
                 DeliveryMethodId = value.DeliveryMethodId,
+                SenderWalletAddress = value.SenderWalletAddress,
                 Comments = value.Comments
             };
 
@@ -331,13 +330,22 @@ namespace DGBCommerce.API.Controllers
                 }
 
                 // Delivery method
+                var deliveryMethodCostsPerCountry = await deliveryMethodCostsPerCountryRepository.Get(new GetDeliveryMethodCostsPerCountryParameters() { DeliveryMethodId = deliveryMethod.Id });
+                foreach (var deliveryMethodCostPerCountry in deliveryMethodCostsPerCountry)
+                {
+                    if (deliveryMethod.CostsPerCountry.ContainsKey(deliveryMethodCostPerCountry.CountryId))
+                        deliveryMethod.CostsPerCountry[deliveryMethodCostPerCountry.CountryId] = deliveryMethodCostPerCountry.Costs;
+                    else
+                        deliveryMethod.CostsPerCountry.Add(deliveryMethodCostPerCountry.CountryId, deliveryMethodCostPerCountry.Costs);
+                }
+
                 orderItemsToCreate.Add(new()
                 {
                     OrderId = orderToCreate.Id.Value,
                     Type = OrderItemType.DeliveryMethod,
                     Amount = 1,
-                    Price = deliveryMethod.Costs ?? 0,
-                    Description = deliveryMethod.Name
+                    Price = deliveryMethod.CostsPerCountry.TryGetValue(address.Country.Id!.Value, out decimal costsForSelectedCountry) ? costsForSelectedCountry : (deliveryMethod.Costs ?? 0),
+                    Description = deliveryMethod.Name + (deliveryMethod.CostsPerCountry.ContainsKey(address.Country.Id!.Value) ? $" (custom costs for {address.Country.Name})" :string.Empty )
                 });
 
                 // Calculate cumulative amount
