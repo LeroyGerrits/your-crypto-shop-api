@@ -73,7 +73,6 @@ namespace DGBCommerce.API.Controllers
                 }
             }
 
-
             return Ok(deliveryMethods);
         }
 
