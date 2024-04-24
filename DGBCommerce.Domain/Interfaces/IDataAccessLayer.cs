@@ -49,6 +49,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetCustomerByIdAndPassword(Guid id, string password);
         Task<DataTable> GetCountries(GetCountriesParameters parameters);
         Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters);
+        Task<DataTable> GetDashboardSales(Guid merchantId, string mode);
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);
         Task<DataTable> GetDeliveryMethodCostsPerCountry(GetDeliveryMethodCostsPerCountryParameters parameters);
         Task<DataTable> GetDigiByteWallets(GetDigiByteWalletsParameters parameters);

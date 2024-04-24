@@ -354,6 +354,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@CUS_PASSWORD", SqlDbType.VarChar) { Value = password }
             ]);
 
+        public async Task<DataTable> GetDashboardSales(Guid merchantId, string mode)
+            => await Get("SP_GET_DashboardSales", [
+                new SqlParameter("@MERCHANT_ID", SqlDbType.UniqueIdentifier) { Value = merchantId },
+                new SqlParameter("@MODE", SqlDbType.VarChar) { Value = mode }
+            ]);
+
         public async Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters)
             => await Get("SP_GET_DeliveryMethods", [
                 new SqlParameter("@DLM_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
@@ -526,7 +532,8 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.NVarChar) { Value = parameters.SubDomain },
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = parameters.CountryId },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId },
-                new SqlParameter("@SHP_FEATURED", SqlDbType.Bit) { Value = parameters.Featured }
+                new SqlParameter("@SHP_FEATURED", SqlDbType.Bit) { Value = parameters.Featured },
+                new SqlParameter("@SHP_USABLE", SqlDbType.Bit) { Value = parameters.Usable }
             ]);
 
         public async Task<DataTable> GetShopByIdAndSubDomain(Guid? id, string subDomain)

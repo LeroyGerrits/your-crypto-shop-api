@@ -44,7 +44,7 @@ namespace DGBCommerce.API.Controllers
 
         [MerchantAuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Shop>>> Get(string? name, string? subDomain, Guid? countryId, Guid? categoryId)
+        public async Task<ActionResult<IEnumerable<Shop>>> Get(string? name, string? subDomain, Guid? countryId, Guid? categoryId, bool? usable)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -56,21 +56,23 @@ namespace DGBCommerce.API.Controllers
                 Name = name,
                 SubDomain = subDomain,
                 CountryId = countryId,
-                CategoryId = categoryId
+                CategoryId = categoryId,
+                Usable = usable
             });
             return Ok(shops.ToList());
         }
 
         [AllowAnonymous]
         [HttpGet("public")]
-        public async Task<ActionResult<IEnumerable<PublicShop>>> GetPublic(string? name, string? subDomain, Guid? countryId, Guid? categoryId)
+        public async Task<ActionResult<IEnumerable<PublicShop>>> GetPublic(string? name, string? subDomain, Guid? countryId, Guid? categoryId, bool? usable)
         {
             var shops = await _shopRepository.GetPublic(new GetShopsParameters()
             {
                 Name = name,
                 SubDomain = subDomain,
                 CountryId = countryId,
-                CategoryId = categoryId
+                CategoryId = categoryId,
+                Usable = usable
             });
             return Ok(shops.ToList());
         }

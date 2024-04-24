@@ -9,5 +9,6 @@
         public Guid? CountryId { get; set; }
         public Guid? CategoryId { get; set; }
         public bool? Featured { get; set; }
+        public bool? Usable { get; set; }
     }
 }

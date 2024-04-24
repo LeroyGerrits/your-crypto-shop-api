@@ -52,6 +52,7 @@ namespace DGBCommerce.API
             services.AddScoped<IFaqCategoryRepository, FaqCategoryRepository>();
             services.AddScoped<IFaqRepository, FaqRepository>();
             services.AddScoped<IFinancialStatementTransactionRepository, FinancialStatementTransactionRepository>();
+            services.AddScoped<IGeneralRepository, GeneralRepository>();
             services.AddScoped<IMerchantRepository, MerchantRepository>();
             services.AddScoped<IMerchantPasswordResetLinkRepository, MerchantPasswordResetLinkRepository>();
             services.AddScoped<INewsMessageRepository, NewsMessageRepository>();
@@ -66,8 +67,7 @@ namespace DGBCommerce.API
             services.AddScoped<IShopRepository, ShopRepository>();
             services.AddScoped<IShopCategoryRepository, ShopCategoryRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
-            services.AddScoped<IShoppingCartItemRepository, ShoppingCartItemRepository>();
-            services.AddScoped<IStatsRepository, StatsRepository>();
+            services.AddScoped<IShoppingCartItemRepository, ShoppingCartItemRepository>();            
             services.AddScoped<ITransactionRepository, TransactionRepository>();
         }
 

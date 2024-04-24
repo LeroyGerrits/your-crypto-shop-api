@@ -2,9 +2,9 @@
 {
     public class Stats
     {
-        public required int Merchants { get; set; }
-        public required int Shops { get; set; }
-        public required int Products { get; set; }
-        public required int Orders { get; set; }        
+        public int Merchants { get; set; } = 0;
+        public int Shops { get; set; } = 0;
+        public int Products { get; set; } = 0;
+        public int Orders { get; set; } = 0;
     }
 }
