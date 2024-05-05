@@ -1,6 +1,5 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.API.Controllers.Requests;
-using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;

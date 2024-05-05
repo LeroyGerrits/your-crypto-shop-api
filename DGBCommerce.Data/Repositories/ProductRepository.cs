@@ -36,6 +36,9 @@ namespace DGBCommerce.Data.Repositories
         public Task<MutationResult> Update(Product item, Guid mutationId)
             => _dataAccessLayer.UpdateProduct(item, mutationId);
 
+        public Task<MutationResult> Duplicate(Guid id, Guid mutationId)
+            => _dataAccessLayer.UpdateProductDuplicate(id, mutationId);
+
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
             => _dataAccessLayer.DeleteProduct(id, mutationId);
 

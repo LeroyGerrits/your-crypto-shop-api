@@ -735,6 +735,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@PRD_SHOW_ON_HOME", SqlDbType.Bit) { Value = product.ShowOnHome }
             ], mutationId);
 
+        public async Task<MutationResult> UpdateProductDuplicate(Guid productId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Product", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 23 },
+                new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = productId }
+            ], mutationId);
+
         public async Task<MutationResult> UpdateProductPhoto(ProductPhoto productPhoto, Guid mutationId)
             => await NonQuery("SP_MUTATE_ProductPhoto", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },

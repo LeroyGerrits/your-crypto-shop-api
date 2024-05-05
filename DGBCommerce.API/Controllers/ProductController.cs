@@ -1,6 +1,7 @@
 using DGBCommerce.API.Controllers.Attributes;
 using DGBCommerce.API.Controllers.Requests;
 using DGBCommerce.API.Controllers.Responses;
+using DGBCommerce.Data.Repositories;
 using DGBCommerce.Domain;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
@@ -126,6 +127,22 @@ namespace DGBCommerce.API.Controllers
             if (result.Success)
                 this.ProcessCheckedCategories(authenticatedMerchantId.Value, id, value.CheckedCategories);
 
+            return Ok(result);
+        }
+
+        [MerchantAuthenticationRequired]
+        [HttpPut("{id}/Duplicate")]
+        public async Task<ActionResult> Duplicate(Guid id)
+        {
+            var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
+            if (authenticatedMerchantId == null)
+                return BadRequest("Merchant not authorized.");
+
+            var product = await productRepository.GetById(authenticatedMerchantId.Value, id);
+            if (product == null)
+                return NotFound();
+
+            var result = await productRepository.Duplicate(id, authenticatedMerchantId.Value);
             return Ok(result);
         }
 

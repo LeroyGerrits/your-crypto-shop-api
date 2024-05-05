@@ -97,6 +97,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateOrderItem(OrderItem orderItem, Guid mutationId);
         Task<MutationResult> UpdatePage(Page page, Guid mutationId);
         Task<MutationResult> UpdateProduct(Product product, Guid mutationId);
+        Task<MutationResult> UpdateProductDuplicate(Guid productId, Guid mutationId);
         Task<MutationResult> UpdateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> UpdateProductPhotoChangeDescription(Guid productPhotoId, string description, Guid mutationId);
         Task<MutationResult> UpdateProductPhotoChangeMain(Guid productPhotoId, Guid productId, Guid mutationId);
