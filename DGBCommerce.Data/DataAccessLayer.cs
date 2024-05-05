@@ -737,7 +737,7 @@ namespace DGBCommerce.Data
 
         public async Task<MutationResult> UpdateProductDuplicate(Guid productId, Guid mutationId)
             => await NonQuery("SP_MUTATE_Product", [
-                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 23 },
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 21 },
                 new SqlParameter("@PRD_ID", SqlDbType.UniqueIdentifier) { Value = productId }
             ], mutationId);
 
