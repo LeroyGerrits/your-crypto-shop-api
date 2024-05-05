@@ -147,8 +147,9 @@ namespace DGBCommerce.BackgroundWorker
 
                             if (!string.IsNullOrEmpty(resultSendToAddress))
                             {
-                                var transactionToCreate = new Transaction()
+                                var transactionToMerchantCreate = new Transaction()
                                 {
+                                    Id = Guid.NewGuid(),
                                     ShopId = order.Shop.Id!.Value,
                                     Recipient = merchantDigiByteWalletAddress,
                                     AmountDue = amountToSendToMerchant,
@@ -156,7 +157,7 @@ namespace DGBCommerce.BackgroundWorker
                                     Tx = resultSendToAddress
                                 };
 
-                                var resultTransaction = await transactionRepository.Create(transactionToCreate, Guid.Empty);
+                                var resultTransaction = await transactionRepository.Create(transactionToMerchantCreate, Guid.Empty);
                                 if (resultTransaction.Success)
                                 {
                                     Log($"! Paid merchant {amountToSendToMerchant:N8} at {merchantDigiByteWalletAddress}: DGB Commerce Transaction {resultTransaction.Identifier} (Tx {resultSendToAddress})", ref sbLog);
