@@ -12,6 +12,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
         Task<MutationResult> CreateDeliveryMethodCostsPerCountry(DeliveryMethodCostsPerCountry deliveryMethodCostsPerCountry, Guid mutationId);
         Task<MutationResult> CreateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
+        Task<MutationResult> CreateField(Field field, Guid mutationId);
         Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId);
         Task<MutationResult> CreateMerchantPasswordResetLink(MerchantPasswordResetLink merchantPasswordResetLink);
         Task<MutationResult> CreateOrder(Order order, Guid mutationId);
@@ -31,6 +32,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteDeliveryMethod(Guid deliveryMethodId, Guid mutationId);
         Task<MutationResult> DeleteDeliveryMethodCostsPerCountry(Guid deliveryMethodId, Guid countryId, Guid mutationId);
         Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId);
+        Task<MutationResult> DeleteField(Guid fieldId, Guid mutationId);
         Task<MutationResult> DeleteOrder(Guid orderId, Guid mutationId);
         Task<MutationResult> DeleteOrderItem(Guid orderItemId, Guid mutationId);
         Task<MutationResult> DeletePage(Guid pageId, Guid mutationId);
@@ -55,6 +57,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetDigiByteWallets(GetDigiByteWalletsParameters parameters);
         Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters);
         Task<DataTable> GetFaqs(GetFaqsParameters parameters);
+        Task<DataTable> GetFields(GetFieldsParameters parameters);
         Task<DataTable> GetFinancialStatementTransactions(GetFinancialStatementTransactionsParameters parameters);
         Task<DataTable> GetMerchantByEmailAddress(string emailAddress);
         Task<DataTable> GetMerchantByEmailAddressAndPassword(string emailAddress, string password, string? ipAddress);
@@ -87,6 +90,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> UpdateCustomerPasswordAndSalt(Customer customer, string password, string passwordSalt, Guid mutationId);
         Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
         Task<MutationResult> UpdateDigiByteWallet(DigiByteWallet digiByteWallet, Guid mutationId);
+        Task<MutationResult> UpdateField(Field field, Guid mutationId);
         Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId);
         Task<MutationResult> UpdateMerchantPasswordAndActivate(Merchant merchant, string password, Guid mutationId);
         Task<MutationResult> UpdateMerchantPasswordAndSalt(Merchant merchant, string password, string passwordSalt, Guid mutationId);

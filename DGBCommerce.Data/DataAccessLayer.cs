@@ -60,6 +60,20 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar, 100) { Value = digiByteWallet.Address }
             ], mutationId);
 
+        public async Task<MutationResult> CreateField(Field field, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Field", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@FLD_SHOP", SqlDbType.UniqueIdentifier) { Value = field.Shop.Id },
+                new SqlParameter("@FLD_NAME", SqlDbType.NVarChar, 255) { Value = field.Name },
+                new SqlParameter("@FLD_ENTITY", SqlDbType.TinyInt) { Value = field.Entity },
+                new SqlParameter("@FLD_TYPE", SqlDbType.TinyInt) { Value = field.Type },
+                new SqlParameter("@FLD_USER_DEFINED_MANDATORY", SqlDbType.Bit) { Value = field.UserDefinedMandatory },
+                new SqlParameter("@FLD_DATA_TYPE", SqlDbType.TinyInt) { Value = field.DataType },
+                new SqlParameter("@FLD_ENUMERATIONS", SqlDbType.NVarChar) { Value = field.Enumerations?.Length > 0 ? string.Join(Environment.NewLine, field.Enumerations) : string.Empty },
+                new SqlParameter("@FLD_SORTORDER", SqlDbType.Int) { Value = field.SortOrder },
+                new SqlParameter("@FLD_VISIBLE", SqlDbType.Bit) { Value = field.Visible }
+            ], mutationId);
+
         public async Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId)
             => await NonQuery("SP_MUTATE_Merchant", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -230,6 +244,12 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = digiByteWalletId }
             ], mutationId);
 
+        public async Task<MutationResult> DeleteField(Guid fieldId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Field", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@FLD_ID", SqlDbType.UniqueIdentifier) { Value = fieldId }
+            ], mutationId);
+
         public async Task<MutationResult> DeleteOrder(Guid orderId, Guid mutationId)
             => await NonQuery("SP_MUTATE_Order", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
@@ -393,7 +413,16 @@ namespace DGBCommerce.Data
                 new SqlParameter("@FAQ_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
                 new SqlParameter("@FAQ_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId },
                 new SqlParameter("@FAQ_TITLE", SqlDbType.NVarChar) { Value = parameters.Title },
-                new SqlParameter("@FAQ_KEYWORDS", SqlDbType.NVarChar) { Value = parameters.Keywords },
+                new SqlParameter("@FAQ_KEYWORDS", SqlDbType.NVarChar) { Value = parameters.Keywords }
+            ]);
+
+        public async Task<DataTable> GetFields(GetFieldsParameters parameters)
+            => await Get("SP_GET_Fields", [
+                new SqlParameter("@FLD_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@FLD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@FLD_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("@FLD_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
+                new SqlParameter("@FLD_VISIBLE", SqlDbType.BigInt) { Value = parameters.Visible }
             ]);
 
         public async Task<DataTable> GetFinancialStatementTransactions(GetFinancialStatementTransactionsParameters parameters)
@@ -646,6 +675,21 @@ namespace DGBCommerce.Data
                 new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.MerchantId },
                 new SqlParameter("@DBW_NAME", SqlDbType.NVarChar, 255) { Value = digiByteWallet.Name },
                 new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar, 100) { Value = digiByteWallet.Address }
+            ], mutationId);
+
+        public async Task<MutationResult> UpdateField(Field field, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Field", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@FLD_ID", SqlDbType.UniqueIdentifier) { Value = field.Id },
+                new SqlParameter("@FLD_SHOP", SqlDbType.UniqueIdentifier) { Value = field.Shop.Id },
+                new SqlParameter("@FLD_NAME", SqlDbType.NVarChar, 255) { Value = field.Name },
+                new SqlParameter("@FLD_ENTITY", SqlDbType.TinyInt) { Value = field.Entity },
+                new SqlParameter("@FLD_TYPE", SqlDbType.TinyInt) { Value = field.Type },
+                new SqlParameter("@FLD_USER_DEFINED_MANDATORY", SqlDbType.Bit) { Value = field.UserDefinedMandatory },
+                new SqlParameter("@FLD_DATA_TYPE", SqlDbType.TinyInt) { Value = field.DataType },
+                new SqlParameter("@FLD_ENUMERATIONS", SqlDbType.NVarChar) { Value = field.Enumerations?.Length > 0 ? string.Join(Environment.NewLine, field.Enumerations) : string.Empty },
+                new SqlParameter("@FLD_SORTORDER", SqlDbType.Int) { Value = field.SortOrder },
+                new SqlParameter("@FLD_VISIBLE", SqlDbType.Bit) { Value = field.Visible }
             ], mutationId);
 
         public async Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId)
