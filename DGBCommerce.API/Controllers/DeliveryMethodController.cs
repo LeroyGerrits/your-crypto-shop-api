@@ -39,7 +39,7 @@ namespace DGBCommerce.API.Controllers
 
         [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
-        public async Task<ActionResult<DeliveryMethod>> Get(Guid id)
+        public async Task<ActionResult<GetDeliveryMethodResponse>> Get(Guid id)
         {
             var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
