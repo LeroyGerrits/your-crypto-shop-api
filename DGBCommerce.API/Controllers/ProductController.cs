@@ -60,7 +60,9 @@ namespace DGBCommerce.API.Controllers
             var product2Categories = await product2CategoryRepository.Get(new GetProduct2CategoriesParameters() { MerchantId = authenticatedMerchantId.Value, ProductId = product.Id });
             var selectedCategoryIds = product2Categories.Select(c => c.CategoryId).ToList();
 
-            return Ok(new GetProductResponse(product, selectedCategoryIds));
+            var fieldData = new Dictionary<Guid, string>();
+
+            return Ok(new GetProductResponse(product, selectedCategoryIds, fieldData));
         }
 
         [AllowAnonymous]

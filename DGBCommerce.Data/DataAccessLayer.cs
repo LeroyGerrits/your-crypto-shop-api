@@ -422,6 +422,9 @@ namespace DGBCommerce.Data
                 new SqlParameter("@FLD_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
                 new SqlParameter("@FLD_SHOP_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@FLD_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
+                new SqlParameter("@FLD_ENTITY", SqlDbType.TinyInt) { Value = parameters.Entity },
+                new SqlParameter("@FLD_TYPE", SqlDbType.TinyInt) { Value = parameters.Type },
+                new SqlParameter("@FLD_DATA_TYPE", SqlDbType.TinyInt) { Value = parameters.DataType },
                 new SqlParameter("@FLD_VISIBLE", SqlDbType.BigInt) { Value = parameters.Visible }
             ]);
 

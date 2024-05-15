@@ -11,5 +11,6 @@
         public Guid? MainPhotoId { get; set; }
         public string? MainPhotoExtension { get; set; }
         public List<PublicProductPhoto>? Photos { get; set; }
+        public Dictionary<Guid, string>? FieldData { get; set; }
     }
 }

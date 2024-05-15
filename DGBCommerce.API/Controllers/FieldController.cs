@@ -1,4 +1,5 @@
 using DGBCommerce.API.Controllers.Attributes;
+using DGBCommerce.Domain.Enums;
 using DGBCommerce.Domain.Interfaces.Repositories;
 using DGBCommerce.Domain.Models;
 using DGBCommerce.Domain.Models.ViewModels;
@@ -17,7 +18,7 @@ namespace DGBCommerce.API.Controllers
     {
         [MerchantAuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Field>>> Get(string? name, Guid? shopId)
+        public async Task<ActionResult<IEnumerable<Field>>> Get(string? name, Guid? shopId, FieldEntity? entity, FieldType? type, FieldDataType? dataType, bool? visible)
         {
             var authenticatedMerchantId = jwtUtils.GetMerchantId(httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -27,7 +28,11 @@ namespace DGBCommerce.API.Controllers
             {
                 MerchantId = authenticatedMerchantId.Value,
                 ShopId = shopId,
-                Name = name
+                Name = name,
+                Entity = entity,
+                Type = type,
+                DataType = dataType,
+                Visible = visible
             });
 
             return Ok(fields.ToList());

@@ -64,7 +64,7 @@ namespace DGBCommerce.Data.Repositories
                     Entity = (FieldEntity)Convert.ToInt32(row["fld_entity"]),
                     Type = (FieldType)Convert.ToInt32(row["fld_type"]),
                     UserDefinedMandatory = Convert.ToBoolean(row["fld_user_defined_mandatory"]),
-                    DataType = (FieldDataType)Convert.ToInt32(row[""]),
+                    DataType = (FieldDataType)Convert.ToInt32(row["fld_data_type"]),
                     SortOrder = Utilities.DbNullableInt(row["fld_sortorder"]),
                     Visible = Convert.ToBoolean(row["fld_visible"])
                 };
