@@ -54,7 +54,6 @@ namespace DGBCommerce.BackgroundWorker
                     Log(ex.StackTrace, ref sbLog);
             }
 
-
             // Retrieve unpaid transactions and check if balance for corresponding wallets has changed
             var unpaidTransactions = await transactionRepository.GetUnpaidAndYoungerThan3Days();
             foreach (Transaction transaction in unpaidTransactions)
