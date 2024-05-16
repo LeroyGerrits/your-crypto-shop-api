@@ -6,6 +6,6 @@ namespace DGBCommerce.API.Controllers.Requests
     {
         public required Product Product { get; set; }
         public required string? CheckedCategories { get; set; }
-        public Dictionary<Guid, string>? FieldData { get; set; }
+        public Dictionary<Guid, string?>? FieldData { get; set; }
     }
 }

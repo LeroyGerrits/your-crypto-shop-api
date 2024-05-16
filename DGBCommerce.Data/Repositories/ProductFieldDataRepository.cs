@@ -14,7 +14,7 @@ namespace DGBCommerce.Data.Repositories
         public async Task<IEnumerable<ProductFieldData>> Get(GetProductFieldDataParameters parameters)
             => await GetRaw(parameters);
 
-        public Task<ProductProductFieldData?> GetById(Guid merchantId, Guid id)
+        public Task<ProductFieldData?> GetById(Guid merchantId, Guid id)
             => throw new InvalidOperationException("ProductFieldData objects can not be retrieved by Id.");
 
         public Task<MutationResult> Create(ProductFieldData item, Guid mutationId)

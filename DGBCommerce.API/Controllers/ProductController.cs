@@ -18,8 +18,10 @@ namespace DGBCommerce.API.Controllers
         IHttpContextAccessor httpContextAccessor,
         IJwtUtils jwtUtils,
         ICategoryRepository categoryRepository,
+        IFieldRepository fieldRepository,
         IProductRepository productRepository,
         IProduct2CategoryRepository product2CategoryRepository,
+        IProductFieldDataRepository productFieldDataRepository,
         IProductPhotoRepository productPhotoRepository
         ) : ControllerBase
     {
@@ -58,9 +60,9 @@ namespace DGBCommerce.API.Controllers
                 return NotFound();
 
             var product2Categories = await product2CategoryRepository.Get(new GetProduct2CategoriesParameters() { MerchantId = authenticatedMerchantId.Value, ProductId = product.Id });
+            var productFieldData = await productFieldDataRepository.Get(new GetProductFieldDataParameters() { MerchantId = authenticatedMerchantId.Value, ProductId = product.Id });
             var selectedCategoryIds = product2Categories.Select(c => c.CategoryId).ToList();
-
-            var fieldData = new Dictionary<Guid, string>();
+            var fieldData = productFieldData.Select(c => new KeyValuePair<Guid, string>(c.ProductId, c.Data)).ToDictionary(c => c.Key, x => x.Value);
 
             return Ok(new GetProductResponse(product, selectedCategoryIds, fieldData));
         }
@@ -107,7 +109,10 @@ namespace DGBCommerce.API.Controllers
             var result = await productRepository.Create(value.Product, authenticatedMerchantId.Value);
 
             if (result.Success)
+            {
                 this.ProcessCheckedCategories(authenticatedMerchantId.Value, result.Identifier, value.CheckedCategories);
+                this.ProcessFieldData(authenticatedMerchantId.Value, result.Identifier, value.FieldData);
+            }
 
             return Ok(result);
         }
@@ -127,7 +132,10 @@ namespace DGBCommerce.API.Controllers
             var result = await productRepository.Update(value.Product, authenticatedMerchantId.Value);
 
             if (result.Success)
+            {
                 this.ProcessCheckedCategories(authenticatedMerchantId.Value, id, value.CheckedCategories);
+                this.ProcessFieldData(authenticatedMerchantId.Value, result.Identifier, value.FieldData);
+            }
 
             return Ok(result);
         }
@@ -187,6 +195,26 @@ namespace DGBCommerce.API.Controllers
                     await product2CategoryRepository.Create(new() { ProductId = productId, CategoryId = category.Id.Value }, merchantId);
                 else
                     await product2CategoryRepository.Delete(productId, category.Id.Value, merchantId);
+            }
+        }
+
+        private async void ProcessFieldData(Guid merchantId, Guid productId, Dictionary<Guid, string?>? fieldData)
+        {
+            if (fieldData == null)
+                return;
+
+            var fields = await fieldRepository.Get(new GetFieldsParameters() { MerchantId = merchantId, Entity = Domain.Enums.FieldEntity.Product, Type = Domain.Enums.FieldType.Static });
+            foreach (Field field in fields)
+            {
+                string? data = null;
+
+                if (fieldData.TryGetValue(field.Id!.Value, out string? value) && !string.IsNullOrEmpty(value))
+                    data = value;
+
+                if (data != null)
+                    await productFieldDataRepository.Create(new() { ProductId = productId, FieldId = field.Id!.Value, Data = data }, merchantId);
+                else
+                    await productFieldDataRepository.Delete(productId, field.Id!.Value, merchantId);
             }
         }
     }
