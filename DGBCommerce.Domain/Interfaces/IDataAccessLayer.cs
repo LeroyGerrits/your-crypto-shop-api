@@ -21,6 +21,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreatePage2Category(Page2Category pageCategory, Guid mutationId);
         Task<MutationResult> CreateProduct(Product product, Guid mutationId);
         Task<MutationResult> CreateProduct2Category(Product2Category productCategory, Guid mutationId);
+        Task<MutationResult> CreateProductFieldData(ProductFieldData productFieldData, Guid mutationId);
         Task<MutationResult> CreateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
         Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart);
@@ -39,6 +40,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeletePage2Category(Guid pageId, Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteProduct(Guid productId, Guid mutationId);
         Task<MutationResult> DeleteProduct2Category(Guid productId, Guid categoryId, Guid mutationId);
+        Task<MutationResult> DeleteProductFieldData(Guid productId, Guid fieldId, Guid mutationId);
         Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
         Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId);
@@ -72,6 +74,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetPageCategories(GetPageCategoriesParameters parameters);
         Task<DataTable> GetProducts(GetProductsParameters parameters);
         Task<DataTable> GetProduct2Categories(GetProduct2CategoriesParameters parameters);
+        Task<DataTable> GetProductFieldData(GetProductFieldDataParameters parameters);
         Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters);
         Task<DataTable> GetShopCategories(GetShopCategoriesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);

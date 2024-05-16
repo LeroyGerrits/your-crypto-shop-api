@@ -155,6 +155,14 @@ namespace DGBCommerce.Data
                 new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = productCategory.CategoryId }
             ], mutationId);
 
+        public async Task<MutationResult> CreateProductFieldData(ProductFieldData productFieldData, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductFieldData", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@PFD_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productFieldData.ProductId },
+                new SqlParameter("@PFD_FIELD", SqlDbType.UniqueIdentifier) { Value = productFieldData.FieldId },
+                new SqlParameter("@PFD_DATA", SqlDbType.NVarChar) { Value = productFieldData.Data }
+            ], mutationId);
+
         public async Task<MutationResult> CreateProductPhoto(ProductPhoto productPhoto, Guid mutationId)
             => await NonQuery("SP_MUTATE_ProductPhoto", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -286,6 +294,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productId },
                 new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = categoryId }
+            ], mutationId);
+
+        public async Task<MutationResult> DeleteProductFieldData(Guid productId, Guid fieldId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ProductFieldData", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@PFD_PRODUCT", SqlDbType.UniqueIdentifier) { Value = productId },
+                new SqlParameter("@PFD_FIELD", SqlDbType.UniqueIdentifier) { Value = fieldId }
             ], mutationId);
 
         public async Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId)
@@ -541,6 +556,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@P2C_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@P2C_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId },
                 new SqlParameter("@P2C_CATEGORY", SqlDbType.UniqueIdentifier) { Value = parameters.CategoryId }
+            ]);
+
+        public async Task<DataTable> GetProductFieldData(GetProductFieldDataParameters parameters)
+            => await Get("SP_GET_ProductFieldData", [
+                new SqlParameter("@PFD_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("@PFD_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId },
+                new SqlParameter("@PFD_FIELD", SqlDbType.UniqueIdentifier) { Value = parameters.FieldId }
             ]);
 
         public async Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters)
