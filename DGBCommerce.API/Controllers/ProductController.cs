@@ -62,7 +62,7 @@ namespace DGBCommerce.API.Controllers
             var product2Categories = await product2CategoryRepository.Get(new GetProduct2CategoriesParameters() { MerchantId = authenticatedMerchantId.Value, ProductId = product.Id });
             var productFieldData = await productFieldDataRepository.Get(new GetProductFieldDataParameters() { MerchantId = authenticatedMerchantId.Value, ProductId = product.Id });
             var selectedCategoryIds = product2Categories.Select(c => c.CategoryId).ToList();
-            var fieldData = productFieldData.Select(c => new KeyValuePair<Guid, string>(c.ProductId, c.Data)).ToDictionary(c => c.Key, x => x.Value);
+            var fieldData = productFieldData.Select(c => new KeyValuePair<Guid, string>(c.FieldId, c.Data)).ToDictionary(c => c.Key, x => x.Value);
 
             return Ok(new GetProductResponse(product, selectedCategoryIds, fieldData));
         }
@@ -209,7 +209,19 @@ namespace DGBCommerce.API.Controllers
                 string? data = null;
 
                 if (fieldData.TryGetValue(field.Id!.Value, out string? value) && !string.IsNullOrEmpty(value))
-                    data = value;
+                {
+                    switch (field.DataType)
+                    {
+                        case Domain.Enums.FieldDataType.Date:
+                            var dataDate = Utilities.NullableDateTime(value);
+                            if (dataDate != null)
+                                data = dataDate.Value.ToString("yyyy-MM-dd");
+                            break;
+                        default:
+                            data = value;
+                            break;
+                    }
+                }
 
                 if (data != null)
                     await productFieldDataRepository.Create(new() { ProductId = productId, FieldId = field.Id!.Value, Data = data }, merchantId);
