@@ -31,7 +31,7 @@ namespace DGBCommerce.API
 
             services.AddSingleton(provider => _configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            
+
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
             services.AddScoped<IJwtUtils, JwtUtils>();
@@ -40,7 +40,7 @@ namespace DGBCommerce.API
             // Services
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IRpcService, RpcService>(_ => new RpcService(rpcSettings.DaemonUrl, rpcSettings.Username, rpcSettings.Password));
-            
+
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICountryRepository, CountryRepository>();
@@ -69,7 +69,8 @@ namespace DGBCommerce.API
             services.AddScoped<IShopRepository, ShopRepository>();
             services.AddScoped<IShopCategoryRepository, ShopCategoryRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
-            services.AddScoped<IShoppingCartItemRepository, ShoppingCartItemRepository>();            
+            services.AddScoped<IShoppingCartItemRepository, ShoppingCartItemRepository>();
+            services.AddScoped<IShoppingCartItemFieldDataRepository, ShoppingCartItemFieldDataRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
         }
 
@@ -98,7 +99,7 @@ namespace DGBCommerce.API
                 );
             }
 
-            app.UseMiddleware<JwtMiddleware>();            
+            app.UseMiddleware<JwtMiddleware>();
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions()
             {

@@ -9,7 +9,7 @@ namespace DGBCommerce.Domain.Models
         public required string Name { get; set; }
         public FieldEntity Entity { get; set; }
         public FieldType Type { get; set; }
-        public bool UserDefinedMandatory { get; set; }        
+        public bool UserDefinedMandatory { get; set; }
         public FieldDataType DataType { get; set; }
         public string[]? Enumerations { get; set; }
         public int? SortOrder { get; set; }

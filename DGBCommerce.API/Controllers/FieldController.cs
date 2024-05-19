@@ -55,9 +55,9 @@ namespace DGBCommerce.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("public/GetByShopId/{shopId}")]
-        public async Task<ActionResult<PublicField>> GetByShopIdPublic(Guid shopId)
+        public async Task<ActionResult<PublicField>> GetByShopIdPublic(Guid shopId, FieldEntity? entity, FieldType? type)
         {
-            var fields = await fieldRepository.GetByShopIdPublic(shopId);
+            var fields = await fieldRepository.GetByShopIdPublic(shopId, entity, type);
             return Ok(fields);
         }
 

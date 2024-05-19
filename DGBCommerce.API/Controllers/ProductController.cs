@@ -95,6 +95,9 @@ namespace DGBCommerce.API.Controllers
             var productPhotos = await productPhotoRepository.GetByProductIdPublic(product.Id!.Value);
             product.Photos = productPhotos.ToList();
 
+            var productFieldData = await productFieldDataRepository.Get(new GetProductFieldDataParameters() { ProductId = product.Id, FieldVisible = true });
+            product.FieldData = productFieldData.Select(c => new KeyValuePair<Guid, string>(c.FieldId, c.Data)).ToDictionary(c => c.Key, x => x.Value);
+
             return Ok(product);
         }
 

@@ -5,7 +5,7 @@ using System.Data;
 
 namespace DGBCommerce.Domain.Interfaces
 {
-    public interface IDataAccessLayer
+    public partial interface IDataAccessLayer
     {
         Task<MutationResult> CreateCategory(Category category, Guid mutationId);
         Task<MutationResult> CreateCustomer(Customer customer, Guid mutationId);
@@ -26,6 +26,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
         Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart);
         Task<MutationResult> CreateShoppingCartItem(ShoppingCartItem shoppingCartItem);
+        Task<MutationResult> CreateShoppingCartItemFieldData(ShoppingCartItemFieldData shoppingCartItemFieldData, Guid mutationId);
         Task<MutationResult> CreateTransaction(Transaction transaction, Guid mutationId);
 
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
@@ -44,6 +45,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
         Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId);
+        Task<MutationResult> DeleteShoppingCartItemFieldData(Guid shoppingCartItemId, Guid fieldId, Guid mutationId);
 
         Task<DataTable> GetAddress(string addressLine1, string? addressLine2, string postalCode, string city, string? province, Guid countryId);
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
@@ -81,6 +83,7 @@ namespace DGBCommerce.Domain.Interfaces
         Task<DataTable> GetShopByIdAndSubDomain(Guid? id, string subDomain);
         Task<DataTable> GetShoppingCarts(GetShoppingCartsParameters parameters);
         Task<DataTable> GetShoppingCartItems(GetShoppingCartItemsParameters parameters);
+        Task<DataTable> GetShoppingCartItemFieldData(GetShoppingCartItemFieldDataParameters parameters);
         Task<DataTable> GetStats();
         Task<DataTable> GetTransactions(GetTransactionsParameters parameters);
 

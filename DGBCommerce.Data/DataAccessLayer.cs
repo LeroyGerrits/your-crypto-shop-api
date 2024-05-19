@@ -208,6 +208,14 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SCI_AMOUNT", SqlDbType.Int) { Value = shoppingCartItem.Amount }
             ]);
 
+        public async Task<MutationResult> CreateShoppingCartItemFieldData(ShoppingCartItemFieldData shoppingCartItemFieldData, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ShoppingCartItemFieldData", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@SFD_SHOPPING_CART_ITEM", SqlDbType.UniqueIdentifier) { Value = shoppingCartItemFieldData.ShoppingCartItemId },
+                new SqlParameter("@SFD_FIELD", SqlDbType.UniqueIdentifier) { Value = shoppingCartItemFieldData.FieldId },
+                new SqlParameter("@SFD_DATA", SqlDbType.NVarChar) { Value = shoppingCartItemFieldData.Data }
+            ], mutationId);
+
         public async Task<MutationResult> CreateTransaction(Transaction transaction, Guid mutationId)
             => await NonQuery("SP_MUTATE_Transaction", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -320,6 +328,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = shoppingCartItemId }
             ]);
+
+        public async Task<MutationResult> DeleteShoppingCartItemFieldData(Guid shoppingCartItemId, Guid fieldId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_ShoppingCartItemFieldData", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@SFD_SHOPPING_CART_ITEM", SqlDbType.UniqueIdentifier) { Value = shoppingCartItemId },
+                new SqlParameter("@SFD_FIELD", SqlDbType.UniqueIdentifier) { Value = fieldId }
+            ], mutationId);
         #endregion
 
         #region Get
@@ -562,7 +577,8 @@ namespace DGBCommerce.Data
             => await Get("SP_GET_ProductFieldData", [
                 new SqlParameter("@PFD_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
                 new SqlParameter("@PFD_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId },
-                new SqlParameter("@PFD_FIELD", SqlDbType.UniqueIdentifier) { Value = parameters.FieldId }
+                new SqlParameter("@PFD_FIELD", SqlDbType.UniqueIdentifier) { Value = parameters.FieldId },
+                new SqlParameter("@PFD_FIELD_VISIBLE", SqlDbType.Bit) { Value = parameters.FieldVisible }
             ]);
 
         public async Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters)
@@ -608,6 +624,13 @@ namespace DGBCommerce.Data
                 new SqlParameter("@SCI_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
                 new SqlParameter("@SCI_SHOPPING_CART", SqlDbType.UniqueIdentifier) { Value = parameters.ShoppingCartId },
                 new SqlParameter("@SCI_PRODUCT", SqlDbType.UniqueIdentifier) { Value = parameters.ProductId }
+            ]);
+
+        public async Task<DataTable> GetShoppingCartItemFieldData(GetShoppingCartItemFieldDataParameters parameters)
+            => await Get("SP_GET_ShoppingCartItemFieldData", [
+                new SqlParameter("@SFD_SHOPPING_CART", SqlDbType.UniqueIdentifier) { Value = parameters.ShoppingCartId },
+                new SqlParameter("@SFD_SHOPPING_CART_ITEM", SqlDbType.UniqueIdentifier) { Value = parameters.ShoppingCartItemId },
+                new SqlParameter("@SFD_FIELD", SqlDbType.UniqueIdentifier) { Value = parameters.FieldId }
             ]);
 
         public async Task<DataTable> GetStats()

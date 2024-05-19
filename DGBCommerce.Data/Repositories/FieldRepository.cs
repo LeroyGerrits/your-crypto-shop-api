@@ -28,9 +28,9 @@ namespace DGBCommerce.Data.Repositories
             return categories.ToList().SingleOrDefault();
         }
 
-        public async Task<IEnumerable<PublicField>> GetByShopIdPublic(Guid shopId)
+        public async Task<IEnumerable<PublicField>> GetByShopIdPublic(Guid shopId, FieldEntity? entity, FieldType? type)
         {
-            var categories = await GetRawPublic(new GetFieldsParameters() { ShopId = shopId });
+            var categories = await GetRawPublic(new GetFieldsParameters() { ShopId = shopId, Entity = entity, Type = type });
             return categories.ToList();
         }
 
@@ -91,11 +91,21 @@ namespace DGBCommerce.Data.Repositories
 
             foreach (DataRow row in table.Rows)
             {
-                fields.Add(new()
+                PublicField field = new()
                 {
                     Id = new Guid(row["fld_id"].ToString()!),
-                    Name = Utilities.DbNullableString(row["fld_name"])
-                });
+                    Name = Utilities.DbNullableString(row["fld_name"]),
+                    DataType = (FieldDataType)Convert.ToInt32(row["fld_data_type"]),
+                    UserDefinedMandatory = Convert.ToBoolean(row["fld_user_defined_mandatory"]),
+                };
+
+                if (row["fld_enumerations"] != DBNull.Value)
+                {
+                    string enumeration = Utilities.DbNullableString(row["fld_enumerations"]);
+                    field.Enumerations = enumeration.Split(Environment.NewLine);
+                }
+
+                fields.Add(field);
             }
 
             return fields;
