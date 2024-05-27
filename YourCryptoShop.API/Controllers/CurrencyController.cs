@@ -3,6 +3,7 @@ using YourCryptoShop.Domain.Models;
 using YourCryptoShop.Domain.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using YourCryptoShop.Domain.Enums;
 
 namespace YourCryptoShop.API.Controllers
 {
@@ -14,9 +15,15 @@ namespace YourCryptoShop.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Currency>>> Get(string? name)
+        public async Task<ActionResult<IEnumerable<Currency>>> Get(CurrencyType? type, string? symbol, string? code, string? name)
         {
-            var currencies = await _currencyRepository.Get(new GetCurrenciesParameters() { Name = name });
+            var currencies = await _currencyRepository.Get(new GetCurrenciesParameters()
+            {
+                Type = type,
+                Symbol = symbol,
+                Code = code,
+                Name = name
+            });
             return Ok(currencies.ToList());
         }
 
