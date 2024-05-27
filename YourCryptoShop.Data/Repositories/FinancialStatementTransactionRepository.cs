@@ -36,8 +36,10 @@ namespace YourCryptoShop.Data.Repositories
                     Currency = new Currency()
                     {
                         Id = new Guid(row["trx_currency"].ToString()!),
-                        Name = Utilities.DbNullableString(row["trx_currency_name"]),
-                        Symbol = Utilities.DbNullableString(row["trx_currency_symbol"])
+                        Type = (CurrencyType)Convert.ToInt32(row["trc_currency_type"]),
+                        Symbol = Utilities.DbNullableString(row["trx_currency_symbol"]),
+                        Code = Utilities.DbNullableString(row["trx_currency_code"]),
+                        Name = Utilities.DbNullableString(row["trx_currency_name"])
                     },
                     Amount = Convert.ToDecimal(row["trx_amount"]),
                     Recurrance = (Recurrance)Convert.ToInt16(row["trx_recurrance"]),

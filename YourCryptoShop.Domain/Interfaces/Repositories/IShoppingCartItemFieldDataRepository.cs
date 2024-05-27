@@ -5,6 +5,6 @@ namespace YourCryptoShop.Domain.Interfaces.Repositories
 {
     public interface IShoppingCartItemFieldDataRepository : IMutableRepository<ShoppingCartItemFieldData, GetShoppingCartItemFieldDataParameters>
     {
-        Task<MutationResult> Delete(Guid shoppingCartItemId, Guid fieldId);
+        new Task<MutationResult> Delete(Guid shoppingCartItemId, Guid fieldId);
     }
 }

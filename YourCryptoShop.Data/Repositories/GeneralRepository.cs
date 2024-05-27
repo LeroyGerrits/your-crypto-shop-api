@@ -27,12 +27,12 @@ namespace YourCryptoShop.Data.Repositories
             return sales;
         }
 
-        public async Task<IEnumerable<Product>> GetDashboardMostPopularProducts(Guid merchantId)
+        public Task<IEnumerable<Product>> GetDashboardMostPopularProducts(Guid merchantId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Customer>> GetDashboardNewestCustomers(Guid merchantId)
+        public Task<IEnumerable<Customer>> GetDashboardNewestCustomers(Guid merchantId)
         {
             throw new NotImplementedException();
         }

@@ -4,6 +4,7 @@ using YourCryptoShop.Domain.Interfaces.Repositories;
 using YourCryptoShop.Domain.Models;
 using YourCryptoShop.Domain.Parameters;
 using System.Data;
+using YourCryptoShop.Domain.Enums;
 
 namespace YourCryptoShop.Data.Repositories
 {
@@ -30,7 +31,9 @@ namespace YourCryptoShop.Data.Repositories
                 currencies.Add(new()
                 {
                     Id = new Guid(row["cur_id"].ToString()!),
+                    Type = (CurrencyType)Convert.ToInt32(row["cur_type"]),
                     Symbol = Utilities.DbNullableString(row["cur_symbol"]),
+                    Code = Utilities.DbNullableString(row["cur_code"]),
                     Name = Utilities.DbNullableString(row["cur_name"])
                 });
             }
