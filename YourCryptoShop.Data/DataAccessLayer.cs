@@ -10,7 +10,7 @@ namespace YourCryptoShop.Data
 {
     public class DataAccessLayer(string connectionString) : IDataAccessLayer
     {
-        private readonly string _connectionString = connectionString; 
+        private readonly string _connectionString = connectionString;
 
         #region Create
         public async Task<MutationResult> CreateCategory(Category category, Guid mutationId)
@@ -368,7 +368,9 @@ namespace YourCryptoShop.Data
         public async Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters)
             => await Get("SP_GET_Currencies", [
                 new SqlParameter("@CUR_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@CUR_TYPE", SqlDbType.TinyInt) { Value = parameters.Type },
                 new SqlParameter("@CUR_SYMBOL", SqlDbType.NChar) { Value = parameters.Symbol },
+                new SqlParameter("@CUR_CODE", SqlDbType.VarChar) { Value = parameters.Code },
                 new SqlParameter("@CUR_NAME", SqlDbType.VarChar) { Value = parameters.Name }
             ]);
 
