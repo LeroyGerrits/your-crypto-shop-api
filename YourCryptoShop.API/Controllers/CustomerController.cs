@@ -90,7 +90,7 @@ namespace YourCryptoShop.API.Controllers
             var result = await _customerRepository.Create(value.Customer, authenticatedMerchantId.Value);
             if (result.Success && false) // TO-DO: Send e-mail with activation link pointing to merchant shop
             {
-                string accountActivationUrl = $"{_appSettings.UrlDgbCommerceWebsite}/account-activate/{result.Identifier}/{value.Customer.Password}";
+                string accountActivationUrl = $"{_appSettings.UrlYourCryptoShopWebsite}/account-activate/{result.Identifier}/{value.Customer.Password}";
 
                 StringBuilder sbMail = new();
                 sbMail.Append($"<p>Hi {value.Customer.Username},</p>");

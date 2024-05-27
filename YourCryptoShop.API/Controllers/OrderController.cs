@@ -129,7 +129,7 @@ namespace YourCryptoShop.API.Controllers
             if (result.Success)
             {
                 string shopSubDomain = !string.IsNullOrEmpty(order.Shop.SubDomain) ? order.Shop.SubDomain : order.Shop.Id!.Value.ToString();
-                string shopUrl = $"https://{shopSubDomain}.{_appSettings.UrlDgbCommerceDomain}";
+                string shopUrl = $"https://{shopSubDomain}.{_appSettings.UrlYourCryptoShopDomain}";
 
                 StringBuilder sbMail = new();
                 sbMail.Append("<head>");
@@ -407,7 +407,7 @@ namespace YourCryptoShop.API.Controllers
                     {
                         var resultOrderTransaction = await orderRepository.UpdateTransaction(orderToCreate, newTransactionId, Guid.Empty);
                         string shopSubDomain = !string.IsNullOrEmpty(shop.SubDomain) ? shop.SubDomain : shop.Id.ToString();
-                        string orderStatusUrl = $"https://{shopSubDomain}.dgbcommerce.com/order-status/{orderToCreate.Id}";
+                        string orderStatusUrl = $"https://{shopSubDomain}.yourcrypto.shop/order-status/{orderToCreate.Id}";
                         sbMail.Append($"<p>Should you have been unable to complete the payment after placing your order, you can still do so by navigating to the following link:</p>");
                         sbMail.Append($"<p><a href=\"{orderStatusUrl}\">{orderStatusUrl}</a></p>");
                     }

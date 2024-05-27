@@ -93,7 +93,7 @@ namespace YourCryptoShop.API
                 app.UseCors(
                     options => options
                     .SetIsOriginAllowedToAllowWildcardSubdomains()
-                    .WithOrigins("https://*.dgbcommerce.com")
+                    .WithOrigins("https://*.yourcrypto.shop")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                 );

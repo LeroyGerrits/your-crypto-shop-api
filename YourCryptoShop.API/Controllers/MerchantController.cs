@@ -84,7 +84,7 @@ namespace YourCryptoShop.API.Controllers
 
             if (result.Success)
             {
-                string accountActivationUrl = $"{_appSettings.UrlDgbCommerceWebsite}/account-activate/{result.Identifier}/{value.Password}";
+                string accountActivationUrl = $"{_appSettings.UrlYourCryptoShopWebsite}/account-activate/{result.Identifier}/{value.Password}";
 
                 StringBuilder sbMail = new();
                 sbMail.Append($"<p>Hi {value.Username},</p>");
@@ -197,7 +197,7 @@ namespace YourCryptoShop.API.Controllers
         [HttpPost("public/forgot-password")]
         public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
-            if (string.IsNullOrWhiteSpace(_appSettings.UrlDgbCommerceWebsite))
+            if (string.IsNullOrWhiteSpace(_appSettings.UrlYourCryptoShopWebsite))
                 throw new Exception("DGB Commerce Website URL not configured.");
 
             var merchant = await _merchantRepository.GetByEmailAddress(request.EmailAddress);
@@ -215,7 +215,7 @@ namespace YourCryptoShop.API.Controllers
             var result = await _merchantPasswordResetLinkRepository.Create(passwordResetLink, Guid.Empty);
             if (result.Success)
             {
-                string passwordResetUrl = $"{_appSettings.UrlDgbCommerceWebsite}/reset-password/{result.Identifier}/{passwordResetLink.Key}";
+                string passwordResetUrl = $"{_appSettings.UrlYourCryptoShopWebsite}/reset-password/{result.Identifier}/{passwordResetLink.Key}";
 
                 StringBuilder sbMail = new();
                 sbMail.Append($"<p>Hi {merchant.Username},</p>");
