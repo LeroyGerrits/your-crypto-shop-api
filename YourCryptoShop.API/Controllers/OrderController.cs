@@ -150,7 +150,7 @@ namespace YourCryptoShop.API.Controllers
 
                     // Create new transaction
                     Guid newTransactionId = Guid.NewGuid();
-                    var newDigiByteAddress = await rpcService.GetNewAddress($"DGB Commerce Transaction {newTransactionId}");
+                    var newDigiByteAddress = await rpcService.GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
                     var transactionToCreate = new Transaction()
                     {
                         Id = newTransactionId,
@@ -194,7 +194,7 @@ namespace YourCryptoShop.API.Controllers
                     mailService.SendMail(order.Customer.EmailAddress, $"The status of your order on {order.Shop.Name} has changed", sbMail.ToString());
                 }
 
-                sbMail.Append($"<p>DGB Commerce</p>");
+                sbMail.Append($"<p>Your Crypto Shop</p>");
                 sbMail.Append("</body>");
             }
 
@@ -392,7 +392,7 @@ namespace YourCryptoShop.API.Controllers
                 if (shop.OrderMethod == ShopOrderMethod.Automated)
                 {
                     Guid newTransactionId = Guid.NewGuid();
-                    var newDigiByteAddress = await rpcService.GetNewAddress($"DGB Commerce Transaction {newTransactionId}");
+                    var newDigiByteAddress = await rpcService.GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
                     var transactionToCreate = new Transaction()
                     {
                         Id = newTransactionId,
@@ -420,7 +420,7 @@ namespace YourCryptoShop.API.Controllers
                     sbMail.Append($"<p>You will receive additional information and payment instructions as soon as the merchant processes your order.</p>");
                 }
 
-                sbMail.Append($"<p>DGB Commerce</p>");
+                sbMail.Append($"<p>Your Crypto Shop</p>");
                 sbMail.Append("</body>");
                 mailService.SendMail(customer.EmailAddress, $"Your order on {shop.Name}", sbMail.ToString());
                 mailService.SendMail(merchant.EmailAddress, $"New order placed on {shop.Name} (COPY)", sbMail.ToString());

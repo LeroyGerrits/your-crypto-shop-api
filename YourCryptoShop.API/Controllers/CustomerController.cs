@@ -96,8 +96,8 @@ namespace YourCryptoShop.API.Controllers
                 sbMail.Append($"<p>Hi {value.Customer.Username},</p>");
                 sbMail.Append($"<p>An account for you was created. Before you can use your account, you will need to activate it. Click on the following link to activate:</p>");
                 sbMail.Append($"<p><a href=\"{accountActivationUrl}\">{accountActivationUrl}</a></p>");
-                sbMail.Append($"<p>DGB Commerce</p>");
-                _mailService.SendMail(value.Customer.EmailAddress, "Activate your DGB Commerce account", sbMail.ToString());
+                sbMail.Append($"<p>Your Crypto Shop</p>");
+                _mailService.SendMail(value.Customer.EmailAddress, "Activate your Crypto Shop account", sbMail.ToString());
             }
 
             return Ok(result);

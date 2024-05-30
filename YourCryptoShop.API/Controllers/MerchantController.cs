@@ -90,8 +90,8 @@ namespace YourCryptoShop.API.Controllers
                 sbMail.Append($"<p>Hi {value.Username},</p>");
                 sbMail.Append($"<p>Your account was registered. Before you can use your account, you will need to activate it. Click on the following link to activate:</p>");
                 sbMail.Append($"<p><a href=\"{accountActivationUrl}\">{accountActivationUrl}</a></p>");
-                sbMail.Append($"<p>DGB Commerce</p>");
-                _mailService.SendMail(value.EmailAddress, "Activate your DGB Commerce account", sbMail.ToString());
+                sbMail.Append($"<p>Your Crypto Shop</p>");
+                _mailService.SendMail(value.EmailAddress, "Activate your Crypto Shop account", sbMail.ToString());
             }
 
             return Ok(result);
@@ -198,7 +198,7 @@ namespace YourCryptoShop.API.Controllers
         public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
             if (string.IsNullOrWhiteSpace(_appSettings.UrlYourCryptoShopWebsite))
-                throw new Exception("DGB Commerce Website URL not configured.");
+                throw new Exception("Your Crypto Shop Website URL not configured.");
 
             var merchant = await _merchantRepository.GetByEmailAddress(request.EmailAddress);
             if (merchant == null)
@@ -222,8 +222,8 @@ namespace YourCryptoShop.API.Controllers
                 sbMail.Append($"<p>A password reset for your account was requested. If this was you, click on the following link to proceed setting a new password:</p>");
                 sbMail.Append($"<p><a href=\"{passwordResetUrl}\">{passwordResetUrl}</a></p>");
                 sbMail.Append($"<p>If this wasn't you, ignore this link.</p>");
-                sbMail.Append($"<p>DGB Commerce</p>");
-                _mailService.SendMail(merchant.EmailAddress, "Reset your DGB Commerce password", sbMail.ToString());
+                sbMail.Append($"<p>Your Crypto Shop</p>");
+                _mailService.SendMail(merchant.EmailAddress, "Reset your Crypto Shop password", sbMail.ToString());
             }
 
             return Ok();
