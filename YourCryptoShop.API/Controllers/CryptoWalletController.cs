@@ -10,48 +10,48 @@ namespace YourCryptoShop.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DigiByteWalletController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, IDigiByteWalletRepository digiByteWalletRepository, IRpcService rpcService) : ControllerBase
+    public class CryptoWalletController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, ICryptoWalletRepository cryptoWalletRepository, IRpcService rpcService) : ControllerBase
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IJwtUtils _jwtUtils = jwtUtils;
-        private readonly IDigiByteWalletRepository _digiByteWalletRepository = digiByteWalletRepository;
+        private readonly ICryptoWalletRepository _cryptoWalletRepository = cryptoWalletRepository;
         private readonly IRpcService _rpcService = rpcService;
 
         [MerchantAuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DigiByteWallet>>> Get(string? name, string? address)
+        public async Task<ActionResult<IEnumerable<CryptoWallet>>> Get(string? name, string? address)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var digiByteWallets = await _digiByteWalletRepository.Get(new GetDigiByteWalletsParameters()
+            var cryptoWallets = await _cryptoWalletRepository.Get(new GetCryptoWalletsParameters()
             {
                 MerchantId = authenticatedMerchantId.Value,
                 Name = name,
                 Address = address
             });
-            return Ok(digiByteWallets.ToList());
+            return Ok(cryptoWallets.ToList());
         }
 
         [MerchantAuthenticationRequired]
         [HttpGet("{id}")]
-        public async Task<ActionResult<DigiByteWallet>> Get(Guid id)
+        public async Task<ActionResult<CryptoWallet>> Get(Guid id)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var digiByteWallet = await _digiByteWalletRepository.GetById(authenticatedMerchantId.Value, id);
-            if (digiByteWallet == null)
+            var cryptoWallet = await _cryptoWalletRepository.GetById(authenticatedMerchantId.Value, id);
+            if (cryptoWallet == null)
                 return NotFound();
 
-            return Ok(digiByteWallet);
+            return Ok(cryptoWallet);
         }
 
         [MerchantAuthenticationRequired]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] DigiByteWallet value)
+        public async Task<ActionResult> Post([FromBody] CryptoWallet value)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -61,20 +61,20 @@ namespace YourCryptoShop.API.Controllers
             {
                 var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
                 if (!validateAddressResponse.IsValid)
-                    return BadRequest(new { message = "The DigiByte address you supplied is not valid." });
+                    return BadRequest(new { message = "The address you supplied is not valid." });
             }
             catch (RpcException)
             {
-                return BadRequest(new { message = "DigiByte node could not be contacted." });
+                return BadRequest(new { message = "Node could not be contacted." });
             }
 
-            var result = await _digiByteWalletRepository.Create(value, authenticatedMerchantId.Value);
+            var result = await _cryptoWalletRepository.Create(value, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
         [MerchantAuthenticationRequired]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] DigiByteWallet value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] CryptoWallet value)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -84,34 +84,34 @@ namespace YourCryptoShop.API.Controllers
             {
                 var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
                 if (!validateAddressResponse.IsValid)
-                    return BadRequest(new { message = "The DigiByte address you supplied is not valid." });
+                    return BadRequest(new { message = "The Crypto address you supplied is not valid." });
             }
             catch (RpcException)
             {
-                return BadRequest(new { message = "DigiByte node could not be contacted." });
+                return BadRequest(new { message = "Crypto node could not be contacted." });
             }
 
-            var digiByteWallet = await _digiByteWalletRepository.GetById(authenticatedMerchantId.Value, id);
-            if (digiByteWallet == null)
+            var cryptoWallet = await _cryptoWalletRepository.GetById(authenticatedMerchantId.Value, id);
+            if (cryptoWallet == null)
                 return NotFound();
 
-            var result = await _digiByteWalletRepository.Update(value, authenticatedMerchantId.Value);
+            var result = await _cryptoWalletRepository.Update(value, authenticatedMerchantId.Value);
             return Ok(result);
         }
 
         [MerchantAuthenticationRequired]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<DigiByteWallet>> Delete(Guid id)
+        public async Task<ActionResult<CryptoWallet>> Delete(Guid id)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
-            var digiByteWallet = await _digiByteWalletRepository.GetById(authenticatedMerchantId.Value, id);
-            if (digiByteWallet == null)
+            var cryptoWallet = await _cryptoWalletRepository.GetById(authenticatedMerchantId.Value, id);
+            if (cryptoWallet == null)
                 return NotFound();
 
-            var result = await _digiByteWalletRepository.Delete(id, authenticatedMerchantId.Value);
+            var result = await _cryptoWalletRepository.Delete(id, authenticatedMerchantId.Value);
             return Ok(result);
         }
     }

@@ -3,5 +3,5 @@ using YourCryptoShop.Domain.Parameters;
 
 namespace YourCryptoShop.Domain.Interfaces.Repositories
 {
-    public interface IDigiByteWalletRepository : IMutableRepository<DigiByteWallet, GetDigiByteWalletsParameters> { }
+    public interface ICryptoWalletRepository : IMutableRepository<CryptoWallet, GetCryptoWalletsParameters> { }
 }

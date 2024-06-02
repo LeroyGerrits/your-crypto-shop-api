@@ -91,10 +91,11 @@ namespace YourCryptoShop.Data.Repositories
 
                 if (row["shp_wallet"] != DBNull.Value)
                 {
-                    shop.Wallet = new DigiByteWallet()
+                    shop.Wallet = new CryptoWallet()
                     {
                         Id = Utilities.DbNullableGuid(row["shp_wallet"]),
                         MerchantId = new Guid(row["shp_merchant"].ToString()!),
+                        CurrencyId = new Guid(row["shp_wallet_currency"].ToString()!),
                         Name = Utilities.DbNullableString(row["shp_wallet_name"]),
                         Address = Utilities.DbNullableString(row["shp_wallet_address"])
                     };
