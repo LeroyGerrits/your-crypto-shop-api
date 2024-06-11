@@ -16,7 +16,7 @@ namespace YourCryptoShop.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = _configuration.GetConnectionString("YourCryptoShop") ?? throw new Exception("Connection string 'DBBCommerce' not set.");
+            string connectionString = _configuration.GetConnectionString("YourCryptoShop") ?? throw new Exception("Connection string 'YourCryptoShop' not set.");
             RpcSettings rpcSettings = _configuration.GetSection("RpcSettings").Get<RpcSettings>() ?? throw new Exception("RPC settings not configured.");
             if (rpcSettings.DaemonUrl == null) throw new Exception($"RPC {nameof(rpcSettings.DaemonUrl)} not configured.");
             if (rpcSettings.Username == null) throw new Exception($"RPC {nameof(rpcSettings.Username)} not configured.");

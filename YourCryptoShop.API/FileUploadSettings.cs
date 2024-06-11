@@ -4,6 +4,6 @@
     {
         public string? AllowedExtensions { get; set; }
         public string? BaseFolder { get; set; }
-        public int? MaximumFileSize { get; set; }        
+        public int? MaximumFileSize { get; set; }
     }
 }
