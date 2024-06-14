@@ -366,3 +366,4 @@ FodyWeavers.xsd
 /DGBCommerce.BackgroundWorker/appsettings.Development.json
 /YourCryptoShop.BackgroundWorker/appsettings.Development.json
 /YourCryptoShop.API/appsettings.Development.json
+/YourCryptoShop.Order.Console/appsettings.Development.json
