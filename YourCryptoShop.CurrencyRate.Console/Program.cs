@@ -22,22 +22,21 @@ namespace YourCryptoShop.BackgroundWorker
             DataAccessLayer dataAccessLayer = new(connectionString);
             OrderRepository orderRepository = new(dataAccessLayer);
             RpcService rpcService = new(rpcDaemonUrl, rpcUsername, rpcPassword);
-            ShopRepository shopRepository = new(dataAccessLayer);
+            CurrencyRepository currencyRepository = new(dataAccessLayer);
             TransactionRepository transactionRepository = new(dataAccessLayer);
 
             StringBuilder sbLog = new();
             Log($"Start {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
 
-            // Retrieve shops and DigiByte wallets and construct dictionary
-            var shops = await shopRepository.Get(new Domain.Parameters.GetShopsParameters());
-            Dictionary<Guid, string> dictDigiByteWalletPerShop = [];
+            // Retrieve currencies and construct dictionary
+            var currencies = await currencyRepository.Get(new Domain.Parameters.GetCurrenciesParameters());
+            Dictionary<Guid, Currency> dictCurrencies = [];
 
-            foreach (var shop in shops)
-                if (shop.Wallet != null)
-                    dictDigiByteWalletPerShop.Add(shop.Id!.Value, shop.Wallet.Address);
+            foreach (var currency in currencies)
+                dictCurrencies.Add(currency.Id!.Value, currency);
 
-            // Retrieve addresses and balances and construct dictionary
-            Dictionary<string, decimal> dictBalancePerAddress = [];
+            // Retrieve rates from CryptoCompare
+            var getRatesResponse = 
 
             try
             {
@@ -251,7 +250,7 @@ namespace YourCryptoShop.BackgroundWorker
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Application.ExecutablePath)!)
-                .AddJsonFile("appsettings" + (env == "Development" ? ".Development" : string.Empty) + ".json", optional: false, reloadOnChange: true); ;
+                .AddJsonFile("appsettings" + (env == "Development" ? ".Development" : string.Empty) + ".json", optional: false, reloadOnChange: true);
 
             return builder.Build();
         }

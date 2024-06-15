@@ -9,5 +9,6 @@ namespace YourCryptoShop.Domain.Parameters
         public string? Symbol { get; set; }
         public string? Code { get; set; }
         public string? Name { get; set; }
+        public bool? Supported { get; set; }
     }
 }

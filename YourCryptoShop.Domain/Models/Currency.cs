@@ -9,5 +9,6 @@ namespace YourCryptoShop.Domain.Models
         public required string Code { get; set; }
         public required string Name { get; set; }
         public required CurrencyType Type { get; set; }
+        public bool Supported { get; set; } = false;
     }
 }

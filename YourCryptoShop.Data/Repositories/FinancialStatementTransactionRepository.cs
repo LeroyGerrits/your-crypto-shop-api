@@ -36,7 +36,7 @@ namespace YourCryptoShop.Data.Repositories
                     Currency = new Currency()
                     {
                         Id = new Guid(row["trx_currency"].ToString()!),
-                        Type = (CurrencyType)Convert.ToInt32(row["trc_currency_type"]),
+                        Type = (CurrencyType)Convert.ToInt32(row["trx_currency_type"]),
                         Symbol = Utilities.DbNullableString(row["trx_currency_symbol"]),
                         Code = Utilities.DbNullableString(row["trx_currency_code"]),
                         Name = Utilities.DbNullableString(row["trx_currency_name"])

@@ -15,14 +15,15 @@ namespace YourCryptoShop.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Currency>>> Get(CurrencyType? type, string? symbol, string? code, string? name)
+        public async Task<ActionResult<IEnumerable<Currency>>> Get(CurrencyType? type, string? symbol, string? code, string? name, bool? supported)
         {
             var currencies = await _currencyRepository.Get(new GetCurrenciesParameters()
             {
                 Type = type,
                 Symbol = symbol,
                 Code = code,
-                Name = name
+                Name = name,
+                Supported = supported
             });
             return Ok(currencies.ToList());
         }
