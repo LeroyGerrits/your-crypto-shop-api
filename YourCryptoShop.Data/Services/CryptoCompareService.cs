@@ -1,23 +1,17 @@
 ﻿using YourCryptoShop.Domain.Interfaces.Services;
-using YourCryptoShop.Domain.Models.Request;
-using YourCryptoShop.Domain.Models.Response;
 using Newtonsoft.Json;
 using YourCryptoShop.Domain.Models.Response.CryptoCompare;
-using System.Net;
-using System.Text;
-using YourCryptoShop.Domain.Exceptions;
 
 namespace YourCryptoShop.Data.Services
 {
     public class CryptoCompareService(string apiKey) : ICryptoCompareService
     {
-        private readonly string _baseUrl = "https://min-api.cryptocompare.com/data/pricemulti?fsyms=BCH,DCR,DOGE,LTC,XMR&tsyms=USD,EUR,CAD,GBP";
-        private readonly string _apiKey = apiKey;
-
-        public async Task<GetRatesResponse> GetRates()
+        private readonly string _baseUrl = "https://min-api.cryptocompare.com";
+        
+        public async Task<GetRatesResponse> GetRates(List<string> from, List<string> to)
         {
             HttpClient httpClient = new();
-            HttpRequestMessage httpRequestMessage = new(HttpMethod.Get, _baseUrl);
+            HttpRequestMessage httpRequestMessage = new(HttpMethod.Get, $"{_baseUrl}/data/pricemulti?fsyms={string.Join(',', from)}&tsyms={string.Join(',', to)}");
             HttpResponseMessage httpResponseMessage;
 
             try

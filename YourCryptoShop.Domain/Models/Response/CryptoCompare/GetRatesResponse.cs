@@ -2,10 +2,9 @@
 {
     public class GetRatesResponse
     {
-        public required Dictionary<string, decimal> BCH { get; set; }
-        public required Dictionary<string, decimal> DCR { get; set; }
-        public required Dictionary<string, decimal> DOGE { get; set; }
-        public required Dictionary<string, decimal> LTC { get; set; }
-        public required Dictionary<string, decimal> XMR { get; set; }
+        public required Dictionary<string, decimal> CAD { get; set; }
+        public required Dictionary<string, decimal> EUR { get; set; }
+        public required Dictionary<string, decimal> GBP { get; set; }
+        public required Dictionary<string, decimal> USD { get; set; }
     }
 }

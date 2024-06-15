@@ -1,9 +1,6 @@
 ﻿using System.Net;
 using System.Text;
 using YourCryptoShop.Domain.Exceptions;
-using System.Net;
-using System.Text;
-using YourCryptoShop.Domain.Exceptions;
 using YourCryptoShop.Domain.Interfaces.Services;
 using YourCryptoShop.Domain.Models.Request;
 using YourCryptoShop.Domain.Models.Response;

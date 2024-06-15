@@ -4,6 +4,6 @@ namespace YourCryptoShop.Domain.Interfaces.Services
 {
     public interface ICryptoCompareService
     {
-        Task<GetRatesResponse> GetRates();
+        Task<GetRatesResponse> GetRates(List<string> from, List<string> to);
     }
 }

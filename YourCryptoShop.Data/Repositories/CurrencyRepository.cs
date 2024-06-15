@@ -34,7 +34,8 @@ namespace YourCryptoShop.Data.Repositories
                     Type = (CurrencyType)Convert.ToInt32(row["cur_type"]),
                     Symbol = Utilities.DbNullableString(row["cur_symbol"]),
                     Code = Utilities.DbNullableString(row["cur_code"]),
-                    Name = Utilities.DbNullableString(row["cur_name"])
+                    Name = Utilities.DbNullableString(row["cur_name"]),
+                    Supported = Convert.ToBoolean(row["cur_supported"])
                 });
             }
 

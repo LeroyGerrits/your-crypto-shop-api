@@ -2,10 +2,10 @@
 {
     public class CurrencyRate
     {
-        public required Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public required Guid CurrencyFromId { get; set; }
         public required Guid CurrencyToId { get; set; }
         public required decimal Rate { get; set; }
-        public required DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.UtcNow;
     }
 }

@@ -216,7 +216,11 @@ namespace YourCryptoShop.BackgroundWorker
             Log("", ref sbLog);
             Log($"End {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
 
+            // Create log path if it doesn't exist yet
             var logPath = Path.GetDirectoryName(Application.ExecutablePath) + "\\Log";
+
+            if (!Path.Exists(logPath))
+                Directory.CreateDirectory(logPath);
 
             // Delete log files older than 3 days
             string[] files = Directory.GetFiles(logPath);
@@ -229,12 +233,8 @@ namespace YourCryptoShop.BackgroundWorker
                     fileInfo.Delete();
             }
 
-            // Write output to log            
+            // Write output to log
             Log($"Writing log to '{logPath}'", ref sbLog);
-
-            if (!Path.Exists(logPath))
-                Directory.CreateDirectory(logPath);
-
             using StreamWriter writer = new($"{logPath}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.log");
             writer.Write(sbLog.ToString());
         }

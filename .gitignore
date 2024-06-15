@@ -367,3 +367,4 @@ FodyWeavers.xsd
 /YourCryptoShop.BackgroundWorker/appsettings.Development.json
 /YourCryptoShop.API/appsettings.Development.json
 /YourCryptoShop.Order.Console/appsettings.Development.json
+/YourCryptoShop.CurrencyRate.Console/appsettings.Development.json

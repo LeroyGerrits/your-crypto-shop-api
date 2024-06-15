@@ -55,6 +55,7 @@ namespace YourCryptoShop.Domain.Interfaces
         Task<DataTable> GetCustomerByIdAndPassword(Guid id, string password);
         Task<DataTable> GetCountries(GetCountriesParameters parameters);
         Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters);
+        Task<DataTable> GetCurrencyRates(GetCurrencyRatesParameters parameters);
         Task<DataTable> GetDashboardSales(Guid merchantId, string mode);
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);
         Task<DataTable> GetDeliveryMethodCostsPerCountry(GetDeliveryMethodCostsPerCountryParameters parameters);
@@ -91,6 +92,7 @@ namespace YourCryptoShop.Domain.Interfaces
         Task<MutationResult> UpdateCategoryChangeParent(Guid categoryId, Guid parentId, Guid mutationId);
         Task<MutationResult> UpdateCategoryMoveDown(Guid categoryId, Guid? parentId, Guid mutationId);
         Task<MutationResult> UpdateCategoryMoveUp(Guid categoryId, Guid? parentId, Guid mutationId);
+        Task<MutationResult> UpdateCurrencyRate(CurrencyRate currencyRate, Guid mutationId);
         Task<MutationResult> UpdateCustomer(Customer customer, Guid mutationId);
         Task<MutationResult> UpdateCustomerPasswordAndActivate(Customer customer, string password, Guid mutationId);
         Task<MutationResult> UpdateCustomerPasswordAndSalt(Customer customer, string password, string passwordSalt, Guid mutationId);

@@ -375,6 +375,13 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@CUR_SUPPORTED", SqlDbType.Bit) { Value = parameters.Supported }
             ]);
 
+        public async Task<DataTable> GetCurrencyRates(GetCurrencyRatesParameters parameters)
+            => await Get("SP_GET_CurrencyRates", [
+                new SqlParameter("@RAT_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@RAT_CURRENCY_FROM", SqlDbType.UniqueIdentifier) { Value = parameters.CurrencyFromId },
+                new SqlParameter("@RAT_CURRENCY_TO", SqlDbType.UniqueIdentifier) { Value = parameters.CurrencyToId }
+            ]);
+
         public async Task<DataTable> GetCustomers(GetCustomersParameters parameters)
             => await Get("SP_GET_Customers", [
                 new SqlParameter("@CUS_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
@@ -680,6 +687,15 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = 23 },
                 new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = categoryId },
                 new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = parentId }
+            ], mutationId);
+
+        public async Task<MutationResult> UpdateCurrencyRate(CurrencyRate currencyRate, Guid mutationId)
+            => await NonQuery("SP_MUTATE_CurrencyRate", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@RAT_ID", SqlDbType.UniqueIdentifier) { Value = currencyRate.Id },
+                new SqlParameter("@RAT_CURRENCY_FROM", SqlDbType.UniqueIdentifier) { Value = currencyRate.CurrencyFromId },
+                new SqlParameter("@RAT_CURRENCY_TO", SqlDbType.UniqueIdentifier) { Value = currencyRate.CurrencyToId },
+                new SqlParameter("@RAT_RATE", SqlDbType.Decimal) { Value = currencyRate.Rate }
             ], mutationId);
 
         public async Task<MutationResult> UpdateCustomer(Customer customer, Guid mutationId)
