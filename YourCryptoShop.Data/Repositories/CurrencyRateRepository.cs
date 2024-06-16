@@ -2,7 +2,6 @@
 using YourCryptoShop.Domain.Interfaces;
 using YourCryptoShop.Domain.Interfaces.Repositories;
 using YourCryptoShop.Domain.Models;
-using YourCryptoShop.Domain.Models.ViewModels;
 using YourCryptoShop.Domain.Parameters;
 using System.Data;
 

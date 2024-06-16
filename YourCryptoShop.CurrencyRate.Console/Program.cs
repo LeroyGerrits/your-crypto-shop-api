@@ -6,9 +6,6 @@ using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.Windows.Forms;
 using YourCryptoShop.Domain.Models.Response.CryptoCompare;
-using System.Transactions;
-using System.Runtime.CompilerServices;
-using System.Data.Common;
 
 namespace YourCryptoShop.BackgroundWorker
 {
@@ -64,8 +61,8 @@ namespace YourCryptoShop.BackgroundWorker
             {
                 List<CurrencyRate> currencyRates = [];
 
-                foreach (var rate in getRatesResponse.CAD) 
-                    currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["CAD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value , Rate = rate.Value});
+                foreach (var rate in getRatesResponse.CAD)
+                    currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["CAD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
 
                 foreach (var rate in getRatesResponse.EUR)
                     currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["EUR"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });

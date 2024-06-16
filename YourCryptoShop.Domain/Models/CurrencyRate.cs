@@ -7,5 +7,8 @@
         public required Guid CurrencyToId { get; set; }
         public required decimal Rate { get; set; }
         public DateTime Date { get; set; } = DateTime.UtcNow;
+
+        public decimal InvertedRate
+            => 1 / this.Rate;
     }
 }

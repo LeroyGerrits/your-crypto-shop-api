@@ -45,6 +45,7 @@ namespace YourCryptoShop.API
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+            services.AddScoped<ICurrencyRateRepository, CurrencyRateRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IDeliveryMethodRepository, DeliveryMethodRepository>();
             services.AddScoped<IDeliveryMethodCostsPerCountryRepository, DeliveryMethodCostsPerCountryRepository>();
