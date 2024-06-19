@@ -21,17 +21,17 @@ namespace YourCryptoShop.Data.Repositories
         }
 
         public Task<MutationResult> Create(CryptoWallet item, Guid mutationId)
-            => _dataAccessLayer.CreateDigiByteWallet(item, mutationId);
+            => _dataAccessLayer.CreateCryptoWallet(item, mutationId);
 
         public Task<MutationResult> Update(CryptoWallet item, Guid mutationId)
-            => _dataAccessLayer.UpdateDigiByteWallet(item, mutationId);
+            => _dataAccessLayer.UpdateCryptoWallet(item, mutationId);
 
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
-            => _dataAccessLayer.DeleteDigiByteWallet(id, mutationId);
+            => _dataAccessLayer.DeleteCryptoWallet(id, mutationId);
 
         private async Task<IEnumerable<CryptoWallet>> GetRaw(GetCryptoWalletsParameters parameters)
         {
-            DataTable table = await _dataAccessLayer.GetDigiByteWallets(parameters);
+            DataTable table = await _dataAccessLayer.GetCryptoWallets(parameters);
             List<CryptoWallet> deliveryMethods = [];
 
             foreach (DataRow row in table.Rows)

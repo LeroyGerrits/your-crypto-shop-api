@@ -8,10 +8,10 @@ namespace YourCryptoShop.Domain.Interfaces
     public partial interface IDataAccessLayer
     {
         Task<MutationResult> CreateCategory(Category category, Guid mutationId);
+        Task<MutationResult> CreateCryptoWallet(CryptoWallet cryptoWallet, Guid mutationId);
         Task<MutationResult> CreateCustomer(Customer customer, Guid mutationId);
         Task<MutationResult> CreateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
         Task<MutationResult> CreateDeliveryMethodCostsPerCountry(DeliveryMethodCostsPerCountry deliveryMethodCostsPerCountry, Guid mutationId);
-        Task<MutationResult> CreateDigiByteWallet(CryptoWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> CreateField(Field field, Guid mutationId);
         Task<MutationResult> CreateMerchant(Merchant merchant, Guid mutationId);
         Task<MutationResult> CreateMerchantPasswordResetLink(MerchantPasswordResetLink merchantPasswordResetLink);
@@ -30,10 +30,10 @@ namespace YourCryptoShop.Domain.Interfaces
         Task<MutationResult> CreateTransaction(Transaction transaction, Guid mutationId);
 
         Task<MutationResult> DeleteCategory(Guid categoryId, Guid mutationId);
+        Task<MutationResult> DeleteCryptoWallet(Guid cryptoWalletId, Guid mutationId);
         Task<MutationResult> DeleteCustomer(Guid categoryId, Guid mutationId);
         Task<MutationResult> DeleteDeliveryMethod(Guid deliveryMethodId, Guid mutationId);
         Task<MutationResult> DeleteDeliveryMethodCostsPerCountry(Guid deliveryMethodId, Guid countryId, Guid mutationId);
-        Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId);
         Task<MutationResult> DeleteField(Guid fieldId, Guid mutationId);
         Task<MutationResult> DeleteOrder(Guid orderId, Guid mutationId);
         Task<MutationResult> DeleteOrderItem(Guid orderItemId, Guid mutationId);
@@ -49,6 +49,7 @@ namespace YourCryptoShop.Domain.Interfaces
 
         Task<DataTable> GetAddress(string addressLine1, string? addressLine2, string postalCode, string city, string? province, Guid countryId);
         Task<DataTable> GetCategories(GetCategoriesParameters parameters);
+        Task<DataTable> GetCryptoWallets(GetCryptoWalletsParameters parameters);
         Task<DataTable> GetCustomers(GetCustomersParameters parameters);
         Task<DataTable> GetCustomerByEmailAddress(Guid shopId, string emailAddress);
         Task<DataTable> GetCustomerByEmailAddressAndPassword(Guid shopId, string emailAddress, string password, string? ipAddress);
@@ -59,7 +60,6 @@ namespace YourCryptoShop.Domain.Interfaces
         Task<DataTable> GetDashboardSales(Guid merchantId, string mode);
         Task<DataTable> GetDeliveryMethods(GetDeliveryMethodsParameters parameters);
         Task<DataTable> GetDeliveryMethodCostsPerCountry(GetDeliveryMethodCostsPerCountryParameters parameters);
-        Task<DataTable> GetDigiByteWallets(GetCryptoWalletsParameters parameters);
         Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters);
         Task<DataTable> GetFaqs(GetFaqsParameters parameters);
         Task<DataTable> GetFields(GetFieldsParameters parameters);
@@ -92,12 +92,12 @@ namespace YourCryptoShop.Domain.Interfaces
         Task<MutationResult> UpdateCategoryChangeParent(Guid categoryId, Guid parentId, Guid mutationId);
         Task<MutationResult> UpdateCategoryMoveDown(Guid categoryId, Guid? parentId, Guid mutationId);
         Task<MutationResult> UpdateCategoryMoveUp(Guid categoryId, Guid? parentId, Guid mutationId);
+        Task<MutationResult> UpdateCryptoWallet(CryptoWallet cryptoWallet, Guid mutationId);
         Task<MutationResult> UpdateCurrencyRate(CurrencyRate currencyRate, Guid mutationId);
         Task<MutationResult> UpdateCustomer(Customer customer, Guid mutationId);
         Task<MutationResult> UpdateCustomerPasswordAndActivate(Customer customer, string password, Guid mutationId);
         Task<MutationResult> UpdateCustomerPasswordAndSalt(Customer customer, string password, string passwordSalt, Guid mutationId);
         Task<MutationResult> UpdateDeliveryMethod(DeliveryMethod deliveryMethod, Guid mutationId);
-        Task<MutationResult> UpdateDigiByteWallet(CryptoWallet digiByteWallet, Guid mutationId);
         Task<MutationResult> UpdateField(Field field, Guid mutationId);
         Task<MutationResult> UpdateMerchant(Merchant merchant, Guid mutationId);
         Task<MutationResult> UpdateMerchantPasswordAndActivate(Merchant merchant, string password, Guid mutationId);

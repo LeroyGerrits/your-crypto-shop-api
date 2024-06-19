@@ -61,6 +61,9 @@ namespace YourCryptoShop.BackgroundWorker
             {
                 List<CurrencyRate> currencyRates = [];
 
+                foreach (var rate in getRatesResponse.AUD)
+                    currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["AUD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
+
                 foreach (var rate in getRatesResponse.CAD)
                     currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["CAD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
 
@@ -85,8 +88,6 @@ namespace YourCryptoShop.BackgroundWorker
                     if (!resultCurrencyRate.Success)
                         Log($"! CurrencyRate update error: {resultCurrencyRate.Message}", ref sbLog);
                 }
-
-                // TO-DO: Make DB call to update all product prices accordingly
             }
             else
             {

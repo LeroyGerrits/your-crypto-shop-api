@@ -8,7 +8,7 @@ namespace YourCryptoShop.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DigiByteNodeController(IRpcService rpcService) : ControllerBase
+    public class CryptoNodeController(IRpcService rpcService) : ControllerBase
     {
         private readonly IRpcService _rpcService = rpcService;
 

@@ -28,13 +28,13 @@ namespace YourCryptoShop.BackgroundWorker
             StringBuilder sbLog = new();
             Log($"Start {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
 
-            // Retrieve shops and DigiByte wallets and construct dictionary
+            // Retrieve shops and crypto wallets and construct dictionary
             var shops = await shopRepository.Get(new Domain.Parameters.GetShopsParameters());
-            Dictionary<Guid, string> dictDigiByteWalletPerShop = [];
+            Dictionary<Guid, string> dictCryptoWalletPerShop = [];
 
             foreach (var shop in shops)
                 if (shop.Wallet != null)
-                    dictDigiByteWalletPerShop.Add(shop.Id!.Value, shop.Wallet.Address);
+                    dictCryptoWalletPerShop.Add(shop.Id!.Value, shop.Wallet.Address);
 
             // Retrieve addresses and balances and construct dictionary
             Dictionary<string, decimal> dictBalancePerAddress = [];
@@ -97,12 +97,12 @@ namespace YourCryptoShop.BackgroundWorker
                     if (order.Transaction.PaidInFull.HasValue)
                     {
                         // If transaction was paid in full earlier, update order's status
-                        string? merchantDigiByteWalletAddress = null;
+                        string? merchantCryptoWalletAddress = null;
 
-                        if (dictDigiByteWalletPerShop.TryGetValue(order.Shop.Id!.Value, out var value))
-                            merchantDigiByteWalletAddress = value;
+                        if (dictCryptoWalletPerShop.TryGetValue(order.Shop.Id!.Value, out var value))
+                            merchantCryptoWalletAddress = value;
 
-                        if (merchantDigiByteWalletAddress != null)
+                        if (merchantCryptoWalletAddress != null)
                         {
                             // Send the merchant 99% of the paid amount
                             var amountToSendToMerchant = Math.Round(order.Transaction.AmountPaid * 0.99m, 8); // Round, because sendtoaddress only supports up to 8 decimals
@@ -122,7 +122,7 @@ namespace YourCryptoShop.BackgroundWorker
 
                             try
                             {
-                                resultSendToAddress = await rpcService.SendToAddress(merchantDigiByteWalletAddress, amountToSendToMerchant);
+                                resultSendToAddress = await rpcService.SendToAddress(merchantCryptoWalletAddress, amountToSendToMerchant);
                             }
                             catch (Exception ex)
                             {
@@ -150,7 +150,7 @@ namespace YourCryptoShop.BackgroundWorker
                                 {
                                     Id = Guid.NewGuid(),
                                     ShopId = order.Shop.Id!.Value,
-                                    Recipient = merchantDigiByteWalletAddress,
+                                    Recipient = merchantCryptoWalletAddress,
                                     AmountDue = amountToSendToMerchant,
                                     AmountPaid = amountToSendToMerchant,
                                     Tx = resultSendToAddress
@@ -159,7 +159,7 @@ namespace YourCryptoShop.BackgroundWorker
                                 var resultTransaction = await transactionRepository.Create(transactionToMerchantCreate, Guid.Empty);
                                 if (resultTransaction.Success)
                                 {
-                                    Log($"! Paid merchant {amountToSendToMerchant:N8} at {merchantDigiByteWalletAddress}: Your Crypto Shop Transaction {resultTransaction.Identifier} (Tx {resultSendToAddress})", ref sbLog);
+                                    Log($"! Paid merchant {amountToSendToMerchant:N8} at {merchantCryptoWalletAddress}: Your Crypto Shop Transaction {resultTransaction.Identifier} (Tx {resultSendToAddress})", ref sbLog);
                                 }
                                 else
                                 {
@@ -183,7 +183,7 @@ namespace YourCryptoShop.BackgroundWorker
                         }
                         else
                         {
-                            Log($"! Can not pay merchant; shop has no DigiByte wallet configured", ref sbLog);
+                            Log($"! Can not pay merchant; shop has no crypto wallet configured", ref sbLog);
                         }
                     }
                     else

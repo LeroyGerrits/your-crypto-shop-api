@@ -150,12 +150,12 @@ namespace YourCryptoShop.API.Controllers
 
                     // Create new transaction
                     Guid newTransactionId = Guid.NewGuid();
-                    var newDigiByteAddress = await rpcService.GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
+                    var newCryptoAddress = await rpcService.GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
                     var transactionToCreate = new Transaction()
                     {
                         Id = newTransactionId,
                         ShopId = order.Shop.Id!.Value,
-                        Recipient = newDigiByteAddress,
+                        Recipient = newCryptoAddress,
                         AmountDue = order.CumulativeTotal,
                         AmountPaid = 0
                     };
@@ -392,12 +392,12 @@ namespace YourCryptoShop.API.Controllers
                 if (shop.OrderMethod == ShopOrderMethod.Automated)
                 {
                     Guid newTransactionId = Guid.NewGuid();
-                    var newDigiByteAddress = await rpcService.GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
+                    var newCryptoAddress = await rpcService.GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
                     var transactionToCreate = new Transaction()
                     {
                         Id = newTransactionId,
                         ShopId = shop.Id,
-                        Recipient = newDigiByteAddress,
+                        Recipient = newCryptoAddress,
                         AmountDue = cumulativeAmount,
                         AmountPaid = 0
                     };

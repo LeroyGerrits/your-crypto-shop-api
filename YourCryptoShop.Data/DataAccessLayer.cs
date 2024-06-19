@@ -22,6 +22,15 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@CAT_VISIBLE", SqlDbType.Bit) { Value = category.Visible }
             ], mutationId);
 
+        public async Task<MutationResult> CreateCryptoWallet(CryptoWallet cryptoWallet, Guid mutationId)
+            => await NonQuery("SP_MUTATE_CryptoWallet", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@CRW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = cryptoWallet.MerchantId },
+                new SqlParameter("@CRW_CURRENCY", SqlDbType.UniqueIdentifier) { Value = cryptoWallet.CurrencyId },
+                new SqlParameter("@CRW_NAME", SqlDbType.NVarChar, 255) { Value = cryptoWallet.Name },
+                new SqlParameter("@CRW_ADDRESS", SqlDbType.VarChar, 100) { Value = cryptoWallet.Address }
+            ], mutationId);
+
         public async Task<MutationResult> CreateCustomer(Customer customer, Guid mutationId)
             => await NonQuery("SP_MUTATE_Customer", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
@@ -50,14 +59,6 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@CPC_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = deliveryMethodCostsPerCountry.DeliveryMethodId },
                 new SqlParameter("@CPC_COUNTRY", SqlDbType.UniqueIdentifier) { Value = deliveryMethodCostsPerCountry.CountryId },
                 new SqlParameter("@CPC_COSTS", SqlDbType.Decimal) { Value = deliveryMethodCostsPerCountry.Costs }
-            ], mutationId);
-
-        public async Task<MutationResult> CreateDigiByteWallet(CryptoWallet digiByteWallet, Guid mutationId)
-            => await NonQuery("SP_MUTATE_DigiByteWallet", [
-                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
-                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.MerchantId },
-                new SqlParameter("@DBW_NAME", SqlDbType.NVarChar, 255) { Value = digiByteWallet.Name },
-                new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar, 100) { Value = digiByteWallet.Address }
             ], mutationId);
 
         public async Task<MutationResult> CreateField(Field field, Guid mutationId)
@@ -235,6 +236,12 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@CAT_ID", SqlDbType.UniqueIdentifier) { Value = categoryId }
             ], mutationId);
 
+        public async Task<MutationResult> DeleteCryptoWallet(Guid cryptoWalletId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_CryptoWallet", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@CRW_ID", SqlDbType.UniqueIdentifier) { Value = cryptoWalletId }
+            ], mutationId);
+
         public async Task<MutationResult> DeleteCustomer(Guid customerId, Guid mutationId)
             => await NonQuery("SP_MUTATE_Customer", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
@@ -252,12 +259,6 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@CPC_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = deliveryMethodId },
                 new SqlParameter("@CPC_COUNTRY", SqlDbType.UniqueIdentifier) { Value = countryId }
-            ], mutationId);
-
-        public async Task<MutationResult> DeleteDigiByteWallet(Guid digiByteWalletId, Guid mutationId)
-            => await NonQuery("SP_MUTATE_DigiByteWallet", [
-                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
-                new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = digiByteWalletId }
             ], mutationId);
 
         public async Task<MutationResult> DeleteField(Guid fieldId, Guid mutationId)
@@ -365,6 +366,15 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@CTR_NAME", SqlDbType.VarChar) { Value = parameters.Name }
             ]);
 
+        public async Task<DataTable> GetCryptoWallets(GetCryptoWalletsParameters parameters)
+            => await Get("SP_GET_CryptoWallets", [
+                new SqlParameter("@CRW_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
+                new SqlParameter("@CRW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("@CRW_CURRENCY", SqlDbType.UniqueIdentifier) { Value = parameters.CurrencyId },
+                new SqlParameter("@CRW_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
+                new SqlParameter("@CRW_ADDRESS", SqlDbType.VarChar) { Value = parameters.Address }
+            ]);
+
         public async Task<DataTable> GetCurrencies(GetCurrenciesParameters parameters)
             => await Get("SP_GET_Currencies", [
                 new SqlParameter("@CUR_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
@@ -432,14 +442,6 @@ namespace YourCryptoShop.Data
             => await Get("SP_GET_DeliveryMethodCostsPerCountry", [
                 new SqlParameter("@CPC_DELIVERY_METHOD", SqlDbType.UniqueIdentifier) { Value = parameters.DeliveryMethodId },
                 new SqlParameter("@CPC_COUNTRY", SqlDbType.UniqueIdentifier) { Value = parameters.CountryId }
-            ]);
-
-        public async Task<DataTable> GetDigiByteWallets(GetCryptoWalletsParameters parameters)
-            => await Get("SP_GET_DigiByteWallets", [
-                new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = parameters.Id },
-                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
-                new SqlParameter("@DBW_NAME", SqlDbType.NVarChar) { Value = parameters.Name },
-                new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar) { Value = parameters.Address }
             ]);
 
         public async Task<DataTable> GetFaqCategories(GetFaqCategoriesParameters parameters)
@@ -689,6 +691,16 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@CAT_PARENT", SqlDbType.UniqueIdentifier) { Value = parentId }
             ], mutationId);
 
+        public async Task<MutationResult> UpdateCryptoWallet(CryptoWallet cryptoWallet, Guid mutationId)
+            => await NonQuery("SP_MUTATE_CryptoWallet", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
+                new SqlParameter("@CRW_ID", SqlDbType.UniqueIdentifier) { Value = cryptoWallet.Id },
+                new SqlParameter("@CRW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = cryptoWallet.MerchantId },
+                new SqlParameter("@CRW_CURRENCY", SqlDbType.UniqueIdentifier) { Value = cryptoWallet.CurrencyId },
+                new SqlParameter("@CRW_NAME", SqlDbType.NVarChar, 255) { Value = cryptoWallet.Name },
+                new SqlParameter("@CRW_ADDRESS", SqlDbType.VarChar, 100) { Value = cryptoWallet.Address }
+            ], mutationId);
+
         public async Task<MutationResult> UpdateCurrencyRate(CurrencyRate currencyRate, Guid mutationId)
             => await NonQuery("SP_MUTATE_CurrencyRate", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
@@ -733,15 +745,6 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@DLM_SHOP", SqlDbType.UniqueIdentifier) { Value = deliveryMethod.Shop.Id },
                 new SqlParameter("@DLM_NAME", SqlDbType.NVarChar, 255) { Value = deliveryMethod.Name },
                 new SqlParameter("@DLM_COSTS", SqlDbType.Decimal) { Value = deliveryMethod.Costs }
-            ], mutationId);
-
-        public async Task<MutationResult> UpdateDigiByteWallet(CryptoWallet digiByteWallet, Guid mutationId)
-            => await NonQuery("SP_MUTATE_DigiByteWallet", [
-                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Update },
-                new SqlParameter("@DBW_ID", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.Id },
-                new SqlParameter("@DBW_MERCHANT", SqlDbType.UniqueIdentifier) { Value = digiByteWallet.MerchantId },
-                new SqlParameter("@DBW_NAME", SqlDbType.NVarChar, 255) { Value = digiByteWallet.Name },
-                new SqlParameter("@DBW_ADDRESS", SqlDbType.VarChar, 100) { Value = digiByteWallet.Address }
             ], mutationId);
 
         public async Task<MutationResult> UpdateField(Field field, Guid mutationId)
