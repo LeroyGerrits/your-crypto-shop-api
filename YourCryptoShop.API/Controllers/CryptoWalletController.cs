@@ -19,7 +19,7 @@ namespace YourCryptoShop.API.Controllers
 
         [MerchantAuthenticationRequired]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CryptoWallet>>> Get(string? name, string? address)
+        public async Task<ActionResult<IEnumerable<CryptoWallet>>> Get(Guid? currencyId, string? name, string? address)
         {
             var authenticatedMerchantId = _jwtUtils.GetMerchantId(_httpContextAccessor);
             if (authenticatedMerchantId == null)
@@ -28,6 +28,7 @@ namespace YourCryptoShop.API.Controllers
             var cryptoWallets = await _cryptoWalletRepository.Get(new GetCryptoWalletsParameters()
             {
                 MerchantId = authenticatedMerchantId.Value,
+                CurrencyId = currencyId,
                 Name = name,
                 Address = address
             });
