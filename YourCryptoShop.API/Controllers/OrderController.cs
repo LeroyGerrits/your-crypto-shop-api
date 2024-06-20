@@ -30,11 +30,11 @@ namespace YourCryptoShop.API.Controllers
         IMerchantRepository merchantRepository,
         IOrderRepository orderRepository,
         IOrderItemRepository orderItemRepository,
-        IRpcService rpcService,
         IShopRepository shopRepository,
         IShoppingCartRepository shoppingCartRepository,
         IShoppingCartItemRepository shoppingCartItemRepository,
-        ITransactionRepository transactionRepository) : ControllerBase
+        ITransactionRepository transactionRepository,
+        IUtils utils) : ControllerBase
     {
         private readonly AppSettings _appSettings = appSettings.Value;
 
@@ -150,7 +150,7 @@ namespace YourCryptoShop.API.Controllers
 
                     // Create new transaction
                     Guid newTransactionId = Guid.NewGuid();
-                    var newCryptoAddress = await rpcService.GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
+                    var newCryptoAddress = await utils.GetRpcService(order.Currency.Code).GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
                     var transactionToCreate = new Transaction()
                     {
                         Id = newTransactionId,
@@ -345,7 +345,7 @@ namespace YourCryptoShop.API.Controllers
                     Type = OrderItemType.DeliveryMethod,
                     Amount = 1,
                     Price = deliveryMethod.CostsPerCountry.TryGetValue(address.Country.Id!.Value, out decimal costsForSelectedCountry) ? costsForSelectedCountry : (deliveryMethod.Costs ?? 0),
-                    Description = deliveryMethod.Name + (deliveryMethod.CostsPerCountry.ContainsKey(address.Country.Id!.Value) ? $" (custom costs for {address.Country.Name})" :string.Empty )
+                    Description = deliveryMethod.Name + (deliveryMethod.CostsPerCountry.ContainsKey(address.Country.Id!.Value) ? $" (custom costs for {address.Country.Name})" : string.Empty)
                 });
 
                 // Calculate cumulative amount
@@ -392,7 +392,7 @@ namespace YourCryptoShop.API.Controllers
                 if (shop.OrderMethod == ShopOrderMethod.Automated)
                 {
                     Guid newTransactionId = Guid.NewGuid();
-                    var newCryptoAddress = await rpcService.GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
+                    var newCryptoAddress = await utils.GetRpcService(value.Currency.Code).GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
                     var transactionToCreate = new Transaction()
                     {
                         Id = newTransactionId,

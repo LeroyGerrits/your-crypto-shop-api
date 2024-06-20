@@ -1,10 +1,10 @@
 ﻿using YourCryptoShop.Data;
 using YourCryptoShop.Data.Repositories;
-using YourCryptoShop.Data.Services;
 using YourCryptoShop.Domain.Models;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.Windows.Forms;
+using YourCryptoShop.Data.Services.RpcServices;
 
 namespace YourCryptoShop.BackgroundWorker
 {

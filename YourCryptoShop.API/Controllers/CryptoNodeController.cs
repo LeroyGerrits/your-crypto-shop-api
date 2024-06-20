@@ -1,5 +1,3 @@
-using YourCryptoShop.Domain.Interfaces.Services;
-using YourCryptoShop.Domain.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -8,24 +6,16 @@ namespace YourCryptoShop.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CryptoNodeController(IRpcService rpcService) : ControllerBase
+    public class CryptoNodeController(
+        IUtils utils
+        ) : ControllerBase
     {
-        private readonly IRpcService _rpcService = rpcService;
-
         [AllowAnonymous]
-        [HttpGet("getblockcount")]
-        public async Task<ActionResult<uint>> GetBlockCount()
+        [HttpGet("getblockcount/{coin}")]
+        public async Task<ActionResult<uint>> GetBlockCount(string coin)
         {
-            var currentBlock = await _rpcService.GetBlockCount();
+            var currentBlock = await utils.GetRpcService(coin).GetBlockCount();
             return Ok(currentBlock);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("getdifficulty")]
-        public async Task<ActionResult<GetDifficultyResponse>> GetDifficulty()
-        {
-            var difficulty = await _rpcService.GetDifficulty();
-            return Ok(difficulty);
         }
 
         [AllowAnonymous]
@@ -36,34 +26,26 @@ namespace YourCryptoShop.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("getmininginfo")]
-        public async Task<ActionResult<GetMiningInfoResponse>> GetMiningInfo()
+        [HttpGet("getnewaddress/{coin}")]
+        public async Task<ActionResult<string>> GetNewAddress(string coin)
         {
-            var hashRate = await _rpcService.GetMiningInfo();
-            return Ok(hashRate);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("getnewaddress")]
-        public async Task<ActionResult<GetMiningInfoResponse>> GetNewAddress()
-        {
-            var newAddress = await _rpcService.GetNewAddress();
+            var newAddress = await utils.GetRpcService(coin).GetNewAddress();
             return Ok(newAddress);
         }
 
         [AllowAnonymous]
-        [HttpGet("getnewaddress/{label}")]
-        public async Task<ActionResult<GetMiningInfoResponse>> GetNewAddress(string? label)
+        [HttpGet("getnewaddress/{coin}/{label}")]
+        public async Task<ActionResult<string>> GetNewAddress(string coin, string? label)
         {
-            var newAddress = await _rpcService.GetNewAddress(label);
+            var newAddress = await utils.GetRpcService(coin).GetNewAddress(label);
             return Ok(newAddress);
         }
 
         [AllowAnonymous]
-        [HttpGet("getnewaddress/{label}/{addressType}")]
-        public async Task<ActionResult<GetMiningInfoResponse>> GetNewAddress(string? label, string? addressType)
+        [HttpGet("getnewaddress/{coin}/{label}/{addressType}")]
+        public async Task<ActionResult<string>> GetNewAddress(string coin, string? label, string? addressType)
         {
-            var newAddress = await _rpcService.GetNewAddress(label, addressType);
+            var newAddress = await utils.GetRpcService(coin).GetNewAddress(label, addressType);
             return Ok(newAddress);
         }
     }

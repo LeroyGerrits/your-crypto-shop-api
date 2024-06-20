@@ -2,9 +2,11 @@
 using YourCryptoShop.Data;
 using YourCryptoShop.Data.Repositories;
 using YourCryptoShop.Data.Services;
+using YourCryptoShop.Data.Services.RpcServices;
 using YourCryptoShop.Domain.Interfaces;
 using YourCryptoShop.Domain.Interfaces.Repositories;
 using YourCryptoShop.Domain.Interfaces.Services;
+using YourCryptoShop.Domain.Interfaces.Services.RpcServices;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 
@@ -36,10 +38,18 @@ namespace YourCryptoShop.API
             services.AddScoped<IDataAccessLayer, DataAccessLayer>(_ => new DataAccessLayer(connectionString));
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IMailService, MailService>();
+            services.AddScoped<IUtils, Utils>();
 
             // Services
             services.AddScoped<IAddressService, AddressService>();
-            services.AddScoped<IRpcService, RpcService>(_ => new RpcService(rpcSettings.DaemonUrl, rpcSettings.Username, rpcSettings.Password));
+            
+            // RPC Services
+            services.AddScoped<IBitcoinCashRpcService, BitcoinCashRpcService>(_ => new BitcoinCashRpcService(rpcSettings.Username, rpcSettings.Password));
+            services.AddScoped<IDecredRpcService, DecredRpcService>(_ => new DecredRpcService(rpcSettings.Username, rpcSettings.Password));
+            services.AddScoped<IDigiByteRpcService, DigiByteRpcService>(_ => new DigiByteRpcService(rpcSettings.Username, rpcSettings.Password));
+            services.AddScoped<IDogecoinRpcService, DogecoinRpcService>(_ => new DogecoinRpcService(rpcSettings.Username, rpcSettings.Password));
+            services.AddScoped<ILitecoinRpcService, LitecoinRpcService>(_ => new LitecoinRpcService(rpcSettings.Username, rpcSettings.Password));
+            services.AddScoped<IMoneroRpcService, MoneroRpcService>(_ => new MoneroRpcService(rpcSettings.Username, rpcSettings.Password));
 
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();

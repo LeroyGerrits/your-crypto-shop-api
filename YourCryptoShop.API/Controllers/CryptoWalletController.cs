@@ -1,7 +1,6 @@
 using YourCryptoShop.API.Controllers.Attributes;
 using YourCryptoShop.Domain.Exceptions;
 using YourCryptoShop.Domain.Interfaces.Repositories;
-using YourCryptoShop.Domain.Interfaces.Services;
 using YourCryptoShop.Domain.Models;
 using YourCryptoShop.Domain.Parameters;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +9,19 @@ namespace YourCryptoShop.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CryptoWalletController(IHttpContextAccessor httpContextAccessor, IJwtUtils jwtUtils, ICryptoWalletRepository cryptoWalletRepository, IRpcService rpcService) : ControllerBase
+    public class CryptoWalletController(
+        IHttpContextAccessor httpContextAccessor,
+        IJwtUtils jwtUtils,
+        ICryptoWalletRepository cryptoWalletRepository,
+        ICurrencyRepository currencyRepository,
+        IUtils utils
+        ) : ControllerBase
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IJwtUtils _jwtUtils = jwtUtils;
         private readonly ICryptoWalletRepository _cryptoWalletRepository = cryptoWalletRepository;
-        private readonly IRpcService _rpcService = rpcService;
+        private readonly ICurrencyRepository _currencyRepository = currencyRepository;
+        private readonly IUtils _utils = utils;
 
         [MerchantAuthenticationRequired]
         [HttpGet]
@@ -58,9 +64,13 @@ namespace YourCryptoShop.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
+            var currency = await _currencyRepository.GetById(value.CurrencyId);
+            if (currency == null)
+                return NotFound("Currency not found");
+
             try
             {
-                var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
+                var validateAddressResponse = await _utils.GetRpcService(currency.Code).ValidateAddress(value.Address);
                 if (!validateAddressResponse.IsValid)
                     return BadRequest(new { message = "The address you supplied is not valid." });
             }
@@ -81,9 +91,13 @@ namespace YourCryptoShop.API.Controllers
             if (authenticatedMerchantId == null)
                 return BadRequest("Merchant not authorized.");
 
+            var currency = await _currencyRepository.GetById(value.CurrencyId);
+            if (currency == null)
+                return NotFound("Currency not found");
+
             try
             {
-                var validateAddressResponse = await _rpcService.ValidateAddress(value.Address);
+                var validateAddressResponse = await _utils.GetRpcService(currency.Code).ValidateAddress(value.Address);
                 if (!validateAddressResponse.IsValid)
                     return BadRequest(new { message = "The Crypto address you supplied is not valid." });
             }
