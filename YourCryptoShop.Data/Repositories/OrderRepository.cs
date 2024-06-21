@@ -107,6 +107,7 @@ namespace YourCryptoShop.Data.Repositories
                         }
                     },
                     DeliveryMethodId = new Guid(row["ord_delivery_method"].ToString()!),
+                    CurrencyId = new Guid(row["ord_currency"].ToString()!),
                     Comments = row["ord_comments"].ToString(),
                     SenderWalletAddress = row["ord_sender_wallet_address"].ToString()
                 };
@@ -175,6 +176,7 @@ namespace YourCryptoShop.Data.Repositories
                         }
                     },
                     DeliveryMethodId = new Guid(row["ord_delivery_method"].ToString()!),
+                    CurrencyId = new Guid(row["ord_currency"].ToString()!),
                     Comments = row["ord_comments"].ToString(),
                     SenderWalletAddress = row["ord_sender_wallet_address"].ToString(),
                     TransactionId = Utilities.DbNullableGuid(row["ord_transaction"]),

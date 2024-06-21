@@ -17,7 +17,7 @@ namespace YourCryptoShop.BackgroundWorker
             string connectionString = _configuration.GetConnectionString("YourCryptoShop") ?? throw new Exception("connectionString 'DBBCommerce' not set.");
 
             DataAccessLayer dataAccessLayer = new(connectionString);
-            CryptoCompareService cryptoCompareService = new(string.Empty);
+            CryptoCompareService cryptoCompareService = new();
             CurrencyRepository currencyRepository = new(dataAccessLayer);
             CurrencyRateRepository currencyRateRepository = new(dataAccessLayer);
 

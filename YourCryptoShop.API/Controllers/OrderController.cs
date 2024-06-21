@@ -21,7 +21,8 @@ namespace YourCryptoShop.API.Controllers
     public class OrderController(
         IOptions<AppSettings> appSettings,
         IAddressService addressService,
-        ICustomerRepository customerRepository,
+        ICurrencyRepository currencyRepository,
+        ICustomerRepository customerRepository,        
         IDeliveryMethodRepository deliveryMethodRepository,
         IDeliveryMethodCostsPerCountryRepository deliveryMethodCostsPerCountryRepository,
         IHttpContextAccessor httpContextAccessor,
@@ -125,9 +126,15 @@ namespace YourCryptoShop.API.Controllers
             if (order == null)
                 return BadRequest("Order not found.");
 
+            var currency = await currencyRepository.GetById(order.CurrencyId);
+            if (currency == null)
+                return BadRequest(new { message = "Currency not found." });
+
             var result = await orderRepository.UpdateStatus(order, status, authenticatedMerchantId.Value);
             if (result.Success)
             {
+                
+
                 string shopSubDomain = !string.IsNullOrEmpty(order.Shop.SubDomain) ? order.Shop.SubDomain : order.Shop.Id!.Value.ToString();
                 string shopUrl = $"https://{shopSubDomain}.{_appSettings.UrlYourCryptoShopDomain}";
 
@@ -150,7 +157,7 @@ namespace YourCryptoShop.API.Controllers
 
                     // Create new transaction
                     Guid newTransactionId = Guid.NewGuid();
-                    var newCryptoAddress = await utils.GetRpcService(order.Currency.Code).GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
+                    var newCryptoAddress = await utils.GetRpcService(currency.Code).GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
                     var transactionToCreate = new Transaction()
                     {
                         Id = newTransactionId,
@@ -251,6 +258,10 @@ namespace YourCryptoShop.API.Controllers
             if (deliveryMethod == null)
                 return BadRequest(new { message = "Delivery method not found." });
 
+            var currency = await currencyRepository.GetById(value.CurrencyId);
+            if (currency == null)
+                return BadRequest(new { message = "Currency not found." });
+
             var address = await addressService.GetAddress(value.AddressLine1, value.AddressLine2, value.PostalCode, value.City, value.Province, value.CountryId);
             if (address == null)
                 return BadRequest(new { message = "Could not retrieve address record." });
@@ -303,6 +314,7 @@ namespace YourCryptoShop.API.Controllers
                 BillingAddress = address,
                 ShippingAddress = address,
                 DeliveryMethodId = value.DeliveryMethodId,
+                CurrencyId = value.CurrencyId,
                 SenderWalletAddress = value.SenderWalletAddress,
                 Comments = value.Comments
             };
@@ -392,7 +404,7 @@ namespace YourCryptoShop.API.Controllers
                 if (shop.OrderMethod == ShopOrderMethod.Automated)
                 {
                     Guid newTransactionId = Guid.NewGuid();
-                    var newCryptoAddress = await utils.GetRpcService(value.Currency.Code).GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
+                    var newCryptoAddress = await utils.GetRpcService(currency.Code).GetNewAddress($"Your Crypto Shop Transaction {newTransactionId}");
                     var transactionToCreate = new Transaction()
                     {
                         Id = newTransactionId,

@@ -12,6 +12,7 @@ namespace YourCryptoShop.Domain.Models.ViewModels
         public required Address BillingAddress { get; set; }
         public required Address ShippingAddress { get; set; }
         public required Guid DeliveryMethodId { get; set; }
+        public required Guid CurrencyId { get; set; }
         public string? Comments { get; set; }
         public string? SenderWalletAddress { get; set; }
         public Guid? TransactionId { get; set; }

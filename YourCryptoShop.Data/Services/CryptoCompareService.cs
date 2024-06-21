@@ -4,7 +4,7 @@ using YourCryptoShop.Domain.Models.Response.CryptoCompare;
 
 namespace YourCryptoShop.Data.Services
 {
-    public class CryptoCompareService(string apiKey) : ICryptoCompareService
+    public class CryptoCompareService : ICryptoCompareService
     {
         private readonly string _baseUrl = "https://min-api.cryptocompare.com";
         
