@@ -18,12 +18,13 @@ namespace YourCryptoShop.Domain.Interfaces
         Task<MutationResult> CreateOrder(Order order, Guid mutationId);
         Task<MutationResult> CreateOrderItem(OrderItem orderItem, Guid mutationId);
         Task<MutationResult> CreatePage(Page page, Guid mutationId);
-        Task<MutationResult> CreatePage2Category(Page2Category pageCategory, Guid mutationId);
+        Task<MutationResult> CreatePage2Category(Page2Category pageCategory, Guid mutationId);        
         Task<MutationResult> CreateProduct(Product product, Guid mutationId);
         Task<MutationResult> CreateProduct2Category(Product2Category productCategory, Guid mutationId);
         Task<MutationResult> CreateProductFieldData(ProductFieldData productFieldData, Guid mutationId);
         Task<MutationResult> CreateProductPhoto(ProductPhoto productPhoto, Guid mutationId);
         Task<MutationResult> CreateShop(Shop shop, Guid mutationId);
+        Task<MutationResult> CreateShop2CryptoWallet(Shop2CryptoWallet shopCryptoWallet, Guid mutationId);
         Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart);
         Task<MutationResult> CreateShoppingCartItem(ShoppingCartItem shoppingCartItem);
         Task<MutationResult> CreateShoppingCartItemFieldData(ShoppingCartItemFieldData shoppingCartItemFieldData, Guid mutationId);
@@ -44,6 +45,7 @@ namespace YourCryptoShop.Domain.Interfaces
         Task<MutationResult> DeleteProductFieldData(Guid productId, Guid fieldId, Guid mutationId);
         Task<MutationResult> DeleteProductPhoto(Guid productPhotoId, Guid mutationId);
         Task<MutationResult> DeleteShop(Guid shopId, Guid mutationId);
+        Task<MutationResult> DeleteShop2CryptoWallet(Guid shopId, Guid cryptoWalletId, Guid mutationId);
         Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId);
         Task<MutationResult> DeleteShoppingCartItemFieldData(Guid shoppingCartItemId, Guid fieldId, Guid mutationId);
 
@@ -81,6 +83,7 @@ namespace YourCryptoShop.Domain.Interfaces
         Task<DataTable> GetProductPhotos(GetProductPhotosParameters parameters);
         Task<DataTable> GetShopCategories(GetShopCategoriesParameters parameters);
         Task<DataTable> GetShops(GetShopsParameters parameters);
+        Task<DataTable> GetShop2CryptoWallets(GetShop2CryptoWalletsParameters parameters);
         Task<DataTable> GetShopByIdAndSubDomain(Guid? id, string subDomain);
         Task<DataTable> GetShoppingCarts(GetShoppingCartsParameters parameters);
         Task<DataTable> GetShoppingCartItems(GetShoppingCartItemsParameters parameters);

@@ -20,7 +20,6 @@ namespace YourCryptoShop.API
         {
             string connectionString = _configuration.GetConnectionString("YourCryptoShop") ?? throw new Exception("Connection string 'YourCryptoShop' not set.");
             RpcSettings rpcSettings = _configuration.GetSection("RpcSettings").Get<RpcSettings>() ?? throw new Exception("RPC settings not configured.");
-            if (rpcSettings.DaemonUrl == null) throw new Exception($"RPC {nameof(rpcSettings.DaemonUrl)} not configured.");
             if (rpcSettings.Username == null) throw new Exception($"RPC {nameof(rpcSettings.Username)} not configured.");
             if (rpcSettings.Password == null) throw new Exception($"RPC {nameof(rpcSettings.Password)} not configured.");
 
@@ -78,6 +77,7 @@ namespace YourCryptoShop.API
             services.AddScoped<IProductFieldDataRepository, ProductFieldDataRepository>();
             services.AddScoped<IProductPhotoRepository, ProductPhotoRepository>();
             services.AddScoped<IShopRepository, ShopRepository>();
+            services.AddScoped<IShop2CryptoWalletRepository, Shop2CryptoWalletRepository>();
             services.AddScoped<IShopCategoryRepository, ShopCategoryRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IShoppingCartItemRepository, ShoppingCartItemRepository>();

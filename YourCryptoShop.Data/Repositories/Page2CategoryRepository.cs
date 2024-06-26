@@ -15,16 +15,16 @@ namespace YourCryptoShop.Data.Repositories
             => await GetRaw(parameters);
 
         public Task<Page2Category?> GetById(Guid merchantId, Guid id)
-            => throw new InvalidOperationException("PageCategory objects can not be retrieved by Id.");
+            => throw new InvalidOperationException($"{nameof(Page2Category)} objects can not be retrieved by Id.");
 
         public Task<MutationResult> Create(Page2Category item, Guid mutationId)
             => _dataAccessLayer.CreatePage2Category(item, mutationId);
 
         public Task<MutationResult> Update(Page2Category item, Guid mutationId)
-            => throw new InvalidOperationException("PageCategory objects can not be updated.");
+            => throw new InvalidOperationException($"{nameof(Page2Category)} objects can not be updated.");
 
         public Task<MutationResult> Delete(Guid id, Guid mutationId)
-            => throw new InvalidOperationException("PageCategory objects can not be deleted by Id.");
+            => throw new InvalidOperationException($"{nameof(Page2Category)} objects can not be deleted by Id.");
 
         public Task<MutationResult> Delete(Guid pageId, Guid categoryId, Guid mutationId)
             => _dataAccessLayer.DeletePage2Category(pageId, categoryId, mutationId);

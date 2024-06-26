@@ -89,15 +89,14 @@ namespace YourCryptoShop.Data.Repositories
                     };
                 }
 
-                if (row["shp_wallet"] != DBNull.Value)
+                if (row["shp_currency"] != DBNull.Value)
                 {
-                    shop.Wallet = new CryptoWallet()
+                    shop.Currency = new Currency()
                     {
-                        Id = Utilities.DbNullableGuid(row["shp_wallet"]),
-                        MerchantId = new Guid(row["shp_merchant"].ToString()!),
-                        CurrencyId = new Guid(row["shp_wallet_currency"].ToString()!),
-                        Name = Utilities.DbNullableString(row["shp_wallet_name"]),
-                        Address = Utilities.DbNullableString(row["shp_wallet_address"])
+                        Id = Utilities.DbNullableGuid(row["shp_currency"]),
+                        Type = (CurrencyType)Convert.ToInt16(row["shp_currency_type"]),
+                        Code = Utilities.DbNullableString(row["shp_currency_code"]),
+                        Name = Utilities.DbNullableString(row["shp_currency_name"]),
                     };
                 }
 
@@ -127,7 +126,6 @@ namespace YourCryptoShop.Data.Repositories
                     CountryName = Utilities.DbNullableString(row["shp_country_name"]),
                     CategoryId = Utilities.DbNullableGuid(row["shp_category"]),
                     CategoryName = Utilities.DbNullableString(row["shp_category_name"]),
-                    HasWallet = (row["shp_wallet"] != DBNull.Value),
                     OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"]),
                     RequireAddresses = Convert.ToBoolean(row["shp_require_addresses"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])
@@ -156,8 +154,7 @@ namespace YourCryptoShop.Data.Repositories
                     CountryCode = Utilities.DbNullableString(row["shp_country_code"]),
                     CountryName = Utilities.DbNullableString(row["shp_country_name"]),
                     CategoryId = Utilities.DbNullableGuid(row["shp_category"]),
-                    CategoryName = Utilities.DbNullableString(row["shp_category_name"]),                    
-                    HasWallet = (row["shp_wallet"] != DBNull.Value),
+                    CategoryName = Utilities.DbNullableString(row["shp_category_name"]),
                     OrderMethod = (ShopOrderMethod)Convert.ToInt32(row["shp_order_method"]),
                     RequireAddresses = Convert.ToBoolean(row["shp_require_addresses"]),
                     Featured = Convert.ToBoolean(row["shp_featured"])

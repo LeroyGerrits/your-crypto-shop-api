@@ -188,9 +188,16 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar) { Value = shop.SubDomain },
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id },
-                new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id },
+                new SqlParameter("@SHP_CURRENCY", SqlDbType.UniqueIdentifier) { Value = shop.Currency?.Id },
                 new SqlParameter("@SHP_ORDER_METHOD", SqlDbType.TinyInt) { Value = shop.OrderMethod },
                 new SqlParameter("@SHP_REQUIRE_ADDRESSES", SqlDbType.Bit) { Value = shop.RequireAddresses }
+            ], mutationId);
+
+        public async Task<MutationResult> CreateShop2CryptoWallet(Shop2CryptoWallet shopCryptoWallet, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Shop2CryptoWallet", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Create },
+                new SqlParameter("@S2C_SHOP", SqlDbType.UniqueIdentifier) { Value = shopCryptoWallet.ShopId },
+                new SqlParameter("@S2C_CRYPTO_WALLET", SqlDbType.UniqueIdentifier) { Value = shopCryptoWallet.CryptoWalletId }
             ], mutationId);
 
         public async Task<MutationResult> CreateShoppingCart(ShoppingCart shoppingCart)
@@ -322,6 +329,13 @@ namespace YourCryptoShop.Data
             => await NonQuery("SP_MUTATE_Shop", [
                 new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
                 new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier) { Value = shopId }
+            ], mutationId);
+
+        public async Task<MutationResult> DeleteShop2CryptoWallet(Guid shopId, Guid cryptoWalletId, Guid mutationId)
+            => await NonQuery("SP_MUTATE_Shop2CryptoWallet", [
+                new SqlParameter("@COMMAND", SqlDbType.TinyInt) { Value = MutationType.Delete },
+                new SqlParameter("@S2C_SHOP", SqlDbType.UniqueIdentifier) { Value = shopId },
+                new SqlParameter("@S2C_CRYPTO_WALLET", SqlDbType.UniqueIdentifier) { Value = cryptoWalletId }
             ], mutationId);
 
         public async Task<MutationResult> DeleteShoppingCartItem(Guid shoppingCartItemId)
@@ -618,6 +632,13 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@SHP_USABLE", SqlDbType.Bit) { Value = parameters.Usable }
             ]);
 
+        public async Task<DataTable> GetShop2CryptoWallets(GetShop2CryptoWalletsParameters parameters)
+            => await Get("SP_GET_Shop2CryptoWallets", [
+                new SqlParameter("@S2C_MERCHANT", SqlDbType.UniqueIdentifier) { Value = parameters.MerchantId },
+                new SqlParameter("@S2C_SHOP", SqlDbType.UniqueIdentifier) { Value = parameters.ShopId },
+                new SqlParameter("@S2C_CRYPTO_WALLET", SqlDbType.UniqueIdentifier) { Value = parameters.CryptoWalletId }
+            ]);
+
         public async Task<DataTable> GetShopByIdAndSubDomain(Guid? id, string subDomain)
             => await Get("SP_GET_Shop_BySubDomain", [
                 new SqlParameter("@SHP_ID", SqlDbType.UniqueIdentifier) { Value = id },
@@ -909,7 +930,7 @@ namespace YourCryptoShop.Data
                 new SqlParameter("@SHP_SUBDOMAIN", SqlDbType.VarChar, 100) { Value = shop.SubDomain },
                 new SqlParameter("@SHP_COUNTRY", SqlDbType.UniqueIdentifier) { Value = shop.Country?.Id },
                 new SqlParameter("@SHP_CATEGORY", SqlDbType.UniqueIdentifier) { Value = shop.Category?.Id },
-                new SqlParameter("@SHP_WALLET", SqlDbType.UniqueIdentifier) { Value = shop.Wallet?.Id },
+                new SqlParameter("@SHP_CURRENCY", SqlDbType.UniqueIdentifier) { Value = shop.Currency?.Id },
                 new SqlParameter("@SHP_ORDER_METHOD", SqlDbType.TinyInt) { Value = shop.OrderMethod },
                 new SqlParameter("@SHP_REQUIRE_ADDRESSES", SqlDbType.Bit) { Value = shop.RequireAddresses }
             ], mutationId);

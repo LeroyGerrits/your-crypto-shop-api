@@ -22,7 +22,7 @@ namespace YourCryptoShop.API.Controllers
         IOptions<AppSettings> appSettings,
         IAddressService addressService,
         ICurrencyRepository currencyRepository,
-        ICustomerRepository customerRepository,        
+        ICustomerRepository customerRepository,
         IDeliveryMethodRepository deliveryMethodRepository,
         IDeliveryMethodCostsPerCountryRepository deliveryMethodCostsPerCountryRepository,
         IHttpContextAccessor httpContextAccessor,
@@ -133,7 +133,7 @@ namespace YourCryptoShop.API.Controllers
             var result = await orderRepository.UpdateStatus(order, status, authenticatedMerchantId.Value);
             if (result.Success)
             {
-                
+
 
                 string shopSubDomain = !string.IsNullOrEmpty(order.Shop.SubDomain) ? order.Shop.SubDomain : order.Shop.Id!.Value.ToString();
                 string shopUrl = $"https://{shopSubDomain}.{_appSettings.UrlYourCryptoShopDomain}";
@@ -247,7 +247,7 @@ namespace YourCryptoShop.API.Controllers
             if (shop == null)
                 return NotFound(new { message = "Shop not found." });
 
-            if (!shop.HasWallet)
+            if (shop.CryptoWalletIds == null || shop.CryptoWalletIds.Count == 0)
                 return NotFound(new { message = "Shop has no wallet configured." });
 
             var merchant = await merchantRepository.GetById(shop.MerchantId, shop.MerchantId);

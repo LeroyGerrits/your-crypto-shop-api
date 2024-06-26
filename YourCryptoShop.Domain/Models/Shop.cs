@@ -9,8 +9,8 @@ namespace YourCryptoShop.Domain.Models
         public required string Name { get; set; }
         public string? SubDomain { get; set; }
         public Country? Country { get; set; }
-        public ShopCategory? Category { get; set; }        
-        public CryptoWallet? Wallet { get; set; }
+        public ShopCategory? Category { get; set; }
+        public Currency? Currency { get; set; }
         public ShopOrderMethod OrderMethod { get; set; }
         public bool RequireAddresses { get; set; }
         public bool Featured { get; set; }

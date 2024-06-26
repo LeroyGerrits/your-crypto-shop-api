@@ -14,8 +14,8 @@ namespace YourCryptoShop.Domain.Models.ViewModels
         public string? CountryCode { get; set; }
         public string? CountryName { get; set; }
         public Guid? CategoryId { get; set; }
-        public string? CategoryName { get; set; }        
-        public bool HasWallet { get; set; }
+        public string? CategoryName { get; set; }
+        public List<Guid>? CryptoWalletIds { get; set; }
         public ShopOrderMethod OrderMethod { get; set; }
         public bool RequireAddresses { get; set; }
         public bool Featured { get; set; }

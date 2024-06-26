@@ -21,20 +21,48 @@ namespace YourCryptoShop.BackgroundWorker
 
             DataAccessLayer dataAccessLayer = new(connectionString);
             OrderRepository orderRepository = new(dataAccessLayer);
+            CryptoWalletRepository cryptoWalletRepository = new(dataAccessLayer);
             RpcService rpcService = new(rpcDaemonUrl, rpcUsername, rpcPassword);
             ShopRepository shopRepository = new(dataAccessLayer);
+            Shop2CryptoWalletRepository shop2CryptoWalletRepository = new(dataAccessLayer);
             TransactionRepository transactionRepository = new(dataAccessLayer);
 
             StringBuilder sbLog = new();
             Log($"Start {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
 
-            // Retrieve shops and crypto wallets and construct dictionary
-            var shops = await shopRepository.Get(new Domain.Parameters.GetShopsParameters());
-            Dictionary<Guid, string> dictCryptoWalletPerShop = [];
+            // Retrieve crypto wallets and construct dictionary
+            Dictionary<Guid, CryptoWallet> dictCryptoWallets = [];
+            var cryptoWallets = await cryptoWalletRepository.Get(new Domain.Parameters.GetCryptoWalletsParameters());
 
-            foreach (var shop in shops)
-                if (shop.Wallet != null)
-                    dictCryptoWalletPerShop.Add(shop.Id!.Value, shop.Wallet.Address);
+            foreach (var cryptoWallet in cryptoWallets)
+                dictCryptoWallets.Add(cryptoWallet.Id!.Value, cryptoWallet);
+
+            // Retrieve shops and crypto wallets and construct dictionary
+            var shopCryptoWallets = await shop2CryptoWalletRepository.Get(new Domain.Parameters.GetShop2CryptoWalletsParameters());
+            Dictionary<Guid, Dictionary<Guid, string>> dictCryptoWalletAddressPerCurrencyPerShop = [];
+
+            foreach (var shopCryptoWallet in shopCryptoWallets)
+            {
+                CryptoWallet? cryptoWallet = null;
+
+                if (dictCryptoWallets.TryGetValue(shopCryptoWallet.CryptoWalletId, out CryptoWallet? valueCryptoWallet))
+                    cryptoWallet = valueCryptoWallet;
+
+                if (cryptoWallet == null)
+                    continue;
+
+                if (dictCryptoWalletAddressPerCurrencyPerShop.TryGetValue(shopCryptoWallet.ShopId, out Dictionary<Guid, string>? value))
+                {
+                    if (!value.ContainsKey(shopCryptoWallet.CryptoWalletId))
+                    {
+                        value[shopCryptoWallet.CryptoWalletId] = cryptoWallet.Address;
+                    }
+                }
+                else
+                {
+                    dictCryptoWalletAddressPerCurrencyPerShop.Add(shopCryptoWallet.ShopId, new() { { shopCryptoWallet.CryptoWalletId, cryptoWallet.Address } });
+                }
+            }
 
             // Retrieve addresses and balances and construct dictionary
             Dictionary<string, decimal> dictBalancePerAddress = [];
@@ -99,8 +127,8 @@ namespace YourCryptoShop.BackgroundWorker
                         // If transaction was paid in full earlier, update order's status
                         string? merchantCryptoWalletAddress = null;
 
-                        if (dictCryptoWalletPerShop.TryGetValue(order.Shop.Id!.Value, out var value))
-                            merchantCryptoWalletAddress = value;
+                        if (dictCryptoWalletAddressPerCurrencyPerShop.TryGetValue(order.Shop.Id!.Value, out var valueShop) && valueShop.TryGetValue(order.CurrencyId, out string? valueCryptoWallet))
+                            merchantCryptoWalletAddress = valueCryptoWallet;
 
                         if (merchantCryptoWalletAddress != null)
                         {

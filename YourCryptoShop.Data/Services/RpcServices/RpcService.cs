@@ -10,6 +10,10 @@ namespace YourCryptoShop.Data.Services.RpcServices
 {
     public class RpcService(string daemonUrl, string rpcUsername, string rpcPassword) : IRpcService
     {
+        private readonly string _daemonUrl = daemonUrl;
+        private readonly string _rpcUsername = rpcUsername;
+        private readonly string _rpcPassword = rpcPassword;
+
         public async Task<uint> GetBlockCount()
             => await Request<uint>("getblockcount");
 
@@ -46,10 +50,10 @@ namespace YourCryptoShop.Data.Services.RpcServices
         private async Task<T> Request<T>(string rpcMethod, params object?[] parameters)
         {
             JsonRpcRequest jsonRpcRequest = new(1, rpcMethod.ToString(), parameters);
-            HttpClientHandler httpHandler = new() { Credentials = new NetworkCredential(rpcUsername, rpcPassword), Proxy = null };
+            HttpClientHandler httpHandler = new() { Credentials = new NetworkCredential(_rpcUsername, _rpcPassword), Proxy = null };
             HttpClient httpClient = new(httpHandler) { Timeout = new TimeSpan(30000000) };
-            HttpRequestMessage httpRequestMessage = new(HttpMethod.Post, daemonUrl) { Content = new StringContent(jsonRpcRequest.GetRaw(), Encoding.UTF8, "application/json-rpc") };
-            httpRequestMessage.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(rpcUsername + ":" + rpcPassword)));
+            HttpRequestMessage httpRequestMessage = new(HttpMethod.Post, _daemonUrl) { Content = new StringContent(jsonRpcRequest.GetRaw(), Encoding.UTF8, "application/json-rpc") };
+            httpRequestMessage.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(_rpcUsername + ":" + _rpcPassword)));
 
             HttpResponseMessage httpResponseMessage;
 
