@@ -95,6 +95,7 @@ namespace YourCryptoShop.Data.Repositories
                     {
                         Id = Utilities.DbNullableGuid(row["shp_currency"]),
                         Type = (CurrencyType)Convert.ToInt16(row["shp_currency_type"]),
+                        Symbol = Utilities.DbNullableString(row["shp_currency_symbol"]),
                         Code = Utilities.DbNullableString(row["shp_currency_code"]),
                         Name = Utilities.DbNullableString(row["shp_currency_name"]),
                     };
