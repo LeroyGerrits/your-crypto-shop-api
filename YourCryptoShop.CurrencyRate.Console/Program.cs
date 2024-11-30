@@ -3,11 +3,11 @@ using YourCryptoShop.Data.Repositories;
 using YourCryptoShop.Data.Services;
 using YourCryptoShop.Domain.Models;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 using System.Text;
-using System.Windows.Forms;
 using YourCryptoShop.Domain.Models.Response.CryptoCompare;
 
-namespace YourCryptoShop.BackgroundWorker
+namespace YourCryptoShop.CurrencyRate.Console
 {
     internal class Program
     {
@@ -59,22 +59,22 @@ namespace YourCryptoShop.BackgroundWorker
 
             if (getRatesResponse != null)
             {
-                List<CurrencyRate> currencyRates = [];
+                List<Domain.Models.CurrencyRate> currencyRates = [];
 
                 foreach (var rate in getRatesResponse.AUD)
-                    currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["AUD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
+                    currencyRates.Add(new Domain.Models.CurrencyRate() { CurrencyFromId = dictCurrencyByCode["AUD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
 
                 foreach (var rate in getRatesResponse.CAD)
-                    currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["CAD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
+                    currencyRates.Add(new Domain.Models.CurrencyRate() { CurrencyFromId = dictCurrencyByCode["CAD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
 
                 foreach (var rate in getRatesResponse.EUR)
-                    currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["EUR"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
+                    currencyRates.Add(new Domain.Models.CurrencyRate() { CurrencyFromId = dictCurrencyByCode["EUR"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
 
                 foreach (var rate in getRatesResponse.GBP)
-                    currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["GBP"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
+                    currencyRates.Add(new Domain.Models.CurrencyRate() { CurrencyFromId = dictCurrencyByCode["GBP"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
 
                 foreach (var rate in getRatesResponse.USD)
-                    currencyRates.Add(new CurrencyRate() { CurrencyFromId = dictCurrencyByCode["USD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
+                    currencyRates.Add(new Domain.Models.CurrencyRate() { CurrencyFromId = dictCurrencyByCode["USD"].Id!.Value, CurrencyToId = dictCurrencyByCode[rate.Key].Id!.Value, Rate = rate.Value });
 
                 foreach (var currencyRate in currencyRates)
                 {
@@ -98,7 +98,7 @@ namespace YourCryptoShop.BackgroundWorker
             Log($"End {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}", ref sbLog);
 
             // Create log path if it doesn't exist yet
-            var logPath = Path.GetDirectoryName(Application.ExecutablePath) + "\\Log";
+            var logPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Log";
 
             if (!Path.Exists(logPath))
                 Directory.CreateDirectory(logPath);
@@ -123,7 +123,7 @@ namespace YourCryptoShop.BackgroundWorker
 
         private static void Log(string message, ref StringBuilder sbLog)
         {
-            Console.WriteLine(message);
+            System.Console.WriteLine(message);
             sbLog.AppendLine(message);
         }
 
@@ -131,7 +131,7 @@ namespace YourCryptoShop.BackgroundWorker
         {
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Path.GetDirectoryName(Application.ExecutablePath)!)
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!)
                 .AddJsonFile("appsettings" + (env == "Development" ? ".Development" : string.Empty) + ".json", optional: false, reloadOnChange: true);
 
             return builder.Build();
